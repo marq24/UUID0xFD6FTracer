@@ -238,7 +238,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             }
         };
         if (mHandler != null) {
-            mHandler.postDelayed(killRunnable, 250);
+            mHandler.postDelayed(killRunnable, 1000);
         }
     }
 

@@ -190,10 +190,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
         mHandler = null;
 
-
         // un-register for PrefChanges...
         //_prefs.unregisterOnSharedPreferenceChangeListener(this);
-        //_logger.unregisterDataLogerservice();
 
         isRunning = false;
         stopForeground(true);
@@ -329,13 +327,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mKeyguardManager == null) {
             mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         }
+        // only update every 20 sec the Notification text (if device ist not in LOCK state)
         if (nowTs > mLastNotifyUpdateTs + 20000) {
             mLastNotifyUpdateTs = nowTs;
             boolean notify = false;
             boolean reset = true;
             if (mBuilder != null) {
-                String txt = mNotifyText+" [found: "+mContainer.size()+"]";
-                if (txt != null) {
+                int size = mContainer.size();
+                if(size > 0) {
+                    String txt = mNotifyText + " [found: " + size + "]";
                     // in lock mode we need to split the lines...
                     /*mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
                     if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
@@ -352,12 +352,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     }*/
                     mBuilder.setContentTitle(mNotifyTitle);
                     mBuilder.setContentText(txt);
-                    notify = true;
+                    notify = !mKeyguardManager.inKeyguardRestrictedInputMode();
                     reset = false;
                     mNotifyCanBeReset = true;
                 }
             }
-
             if (reset) {
                 if (mNotifyCanBeReset) {
                     mNotifyCanBeReset = false;
@@ -371,7 +370,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if (notify) {
                 if (mNotificationManager == null) {
                     mNotificationManager = NotificationManagerCompat.from(this);
-                    //mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 }
                 mBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
                 mNotificationManager.notify(R.id.notify_backservive, mBuilder.build());
@@ -397,26 +395,33 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             String addr = result.getDevice().getAddress();
             Covid19Beacon beacon = null;
             synchronized (mContainer) {
+                // check every minute my default for outdated beacon
+                // data...
+                long delay = 60000;
+
                 beacon = mContainer.get(addr);
                 if (beacon == null) {
                     beacon = new Covid19Beacon(addr);
                     mContainer.put(addr, beacon);
+                    // if we just add a new beacon, we throw away everything
+                    // that is older then 20sec...
+                    delay = 20000;
+                }
 
-                    // check every 30sec if there are expired Beacons in our store?
-                    if(iLastContainerCheckTs + 30000 > tsNow){
-                        iLastContainerCheckTs = tsNow;
-                        ArrayList<String> addrsToRemove = new ArrayList<>();
-                        for(Covid19Beacon otherBeacon: mContainer.values()){
-                            // if beacon not returned in any scan of the last 10sec
-                            // we going to remove it again from the store
-                            if(otherBeacon.mLastTs + 10000 < tsNow){
-                                addrsToRemove.add(otherBeacon.addr);
-                            }
+                // check every x sec if there are expired Beacons in our store?
+                if(iLastContainerCheckTs + delay < tsNow){
+                    iLastContainerCheckTs = tsNow;
+                    ArrayList<String> addrsToRemove = new ArrayList<>();
+                    for(Covid19Beacon otherBeacon: mContainer.values()){
+                        // if beacon not returned in any scan of the last 15sec
+                        // we going to remove it again from the store
+                        if(otherBeacon.mLastTs + 15000 < tsNow){
+                            addrsToRemove.add(otherBeacon.addr);
                         }
-                        if(addrsToRemove.size()>0){
-                            for(String aOtherAddr: addrsToRemove){
-                                mContainer.remove(aOtherAddr);
-                            }
+                    }
+                    if(addrsToRemove.size()>0){
+                        for(String aOtherAddr: addrsToRemove){
+                            mContainer.remove(aOtherAddr);
                         }
                     }
                 }

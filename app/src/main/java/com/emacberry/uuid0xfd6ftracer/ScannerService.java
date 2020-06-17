@@ -327,7 +327,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         }
         boolean notify = false;
-        boolean reset = true;
         if (mBuilder != null) {
             int size = mContainer.size();
             if(size > 0) {
@@ -349,17 +348,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 mBuilder.setContentTitle(mNotifyTitle);
                 mBuilder.setContentText(txt);
                 notify = !mKeyguardManager.isKeyguardLocked();
-                reset = false;
                 mNotifyCanBeReset = true;
-            }
-        }
-        if (reset) {
-            if (mNotifyCanBeReset) {
-                mNotifyCanBeReset = false;
-                mBuilder.setContentTitle(mNotifyTitle);
-                mBuilder.setContentText(mNotifyText);
-                mBuilder.setStyle(null);
-                notify = true;
+            }else{
+                if (mNotifyCanBeReset) {
+                    mNotifyCanBeReset = false;
+                    mBuilder.setContentTitle(mNotifyTitle);
+                    mBuilder.setContentText(mNotifyText);
+                    mBuilder.setStyle(null);
+                    notify = true;
+                }
             }
         }
 

@@ -275,39 +275,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
             mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            /*mHandler.postDelayed(new Runnable() {
-                public void run() {
-                    if(mBluetoothAdapter != null) {
-                        Log.d(LOG_TAG_BTLE, "mBluetoothLeScanner.startScan() called");
-                        ArrayList<ScanFilter> f = new ArrayList<>();
-                        f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
-                        mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
-                    }
-                }
-            }, 2000);
-            */
         }
-        // start a listerner, IF we will find some BT device... if this is not the
-        // case, then turn OFF an ON BT!!!
-        /*mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!mBlueToothScanWasStarted) {
-                    Log.d(LOG_TAG_BTLE, "mBluetoothAdapter.startDiscovery() had no effect -> restart BluetoothAbadpter!");
-                    if (mBluetoothAdapter != null) {
-                        mBluetoothAdapter.disable();
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mBluetoothAdapter != null) {
-                                    mBluetoothAdapter.enable();
-                                }
-                            }
-                        }, 2000);
-                    }
-                }
-            }
-        }, 5000);*/
+
         // BT ON OFF OBSERVER...
         startDeviceBluetoothStatusObserver();
     }

@@ -79,6 +79,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     public void setGuiCallback(BeaconScannerActivity mainActivity) {
         mGuiCallback = mainActivity;
+        if(mainActivity == null){
+            mLastNotifyUpdateTs = -1;
+        }
     }
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -224,6 +227,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
             ArrayList<ScanFilter> f = new ArrayList<>();
             f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
+            mContainer = new HashMap<>();
             mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
             mScannIsRunning = true;
         }
@@ -387,8 +391,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     protected HashMap<String, Covid19Beacon> mContainer = new HashMap<>();
 
     private class MyScanCallback extends ScanCallback {
-
+        private long iLastContainerCheckTs = 0;
         private void handleResult(@NonNull ScanResult result) {
+            long tsNow = System.currentTimeMillis();
             String addr = result.getDevice().getAddress();
             Covid19Beacon beacon = null;
             synchronized (mContainer) {
@@ -396,12 +401,30 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 if (beacon == null) {
                     beacon = new Covid19Beacon(addr);
                     mContainer.put(addr, beacon);
+
+                    // check every 30sec if there are expired Beacons in our store?
+                    if(iLastContainerCheckTs + 30000 > tsNow){
+                        iLastContainerCheckTs = tsNow;
+                        ArrayList<String> addrsToRemove = new ArrayList<>();
+                        for(Covid19Beacon otherBeacon: mContainer.values()){
+                            // if beacon not returned in any scan of the last 10sec
+                            // we going to remove it again from the store
+                            if(otherBeacon.mLastTs + 10000 < tsNow){
+                                addrsToRemove.add(otherBeacon.addr);
+                            }
+                        }
+                        if(addrsToRemove.size()>0){
+                            for(String aOtherAddr: addrsToRemove){
+                                mContainer.remove(aOtherAddr);
+                            }
+                        }
+                    }
                 }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 beacon.mTxPower = result.getTxPower();
             }
-            beacon.addRssi(result.getTimestampNanos(), result.getRssi());
+            beacon.addRssi(result.getTimestampNanos(), result.getRssi(), tsNow);
             ScanRecord rec = result.getScanRecord();
             if (rec != null) {
                 beacon.mTxPowerLevel = rec.getTxPowerLevel();
@@ -414,7 +437,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 mGuiCallback.newBeconEvent(addr);
             }else {
                 updateNotificationText(beacon.mLastTs);
-                Log.v(LOG_TAG, addr);
+                Log.v(LOG_TAG, mContainer.size()+" "+mContainer.keySet());
             }
         }
 

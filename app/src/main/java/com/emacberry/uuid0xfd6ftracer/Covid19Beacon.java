@@ -19,8 +19,8 @@ public class Covid19Beacon {
         this.addr = addr;
     }
 
-    public void addRssi(long ts, int rssi) {
-        mLastTs = System.currentTimeMillis();
+    public void addRssi(long ts, int rssi, long tsNow) {
+        mLastTs = tsNow;
         sigHistory.put(ts, rssi);
     }
 

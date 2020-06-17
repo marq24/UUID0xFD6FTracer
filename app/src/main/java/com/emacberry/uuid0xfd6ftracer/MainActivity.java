@@ -1,59 +1,34 @@
 package com.emacberry.uuid0xfd6ftracer;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanRecord;
-import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
-import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.ParcelUuid;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.TreeMap;
-
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TERMINATE_APP = "";
+    public static final String TERMINATE_APP = "TERMINATE";
     public static final String SERVICE_ACTION = "SERVICE-ACTON";
 
-    private static final String LOG_TAG = "0xFD6F";
+    private static final String LOG_TAG = "ACTIVITY";
     private Handler mHandler = new Handler();
 
-    private DataLogger _dataProviderService;
+    private ScannerService mScannerService;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName paramComponentName) {
@@ -61,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             if (paramComponentName != null) {
                 String cName = paramComponentName.getClassName();
                 if (cName.equalsIgnoreCase("com.emacberry.uuid0xfd6ftracer.DataLogger")) {
-                    _dataProviderService = null;
+                    mScannerService = null;
                 }
             }
         }
@@ -70,16 +45,17 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName paramComponentName, IBinder service) {
             Log.w(LOG_TAG, "onServiceConnected() called... " + service);
             if (service != null) {
-                if (service instanceof DataLogger.LocalBinder) {
-                    DataLogger.LocalBinder b = (DataLogger.LocalBinder) service;
-                    _dataProviderService = b.getServerInstance();
+                if (service instanceof ScannerService.LocalBinder) {
+                    ScannerService.LocalBinder b = (ScannerService.LocalBinder) service;
+                    mScannerService = b.getServerInstance();
+                    mScannerService.setGuiCallback(MainActivity.this);
                 }
             }
         }
     };
 
     private Intent getServiceIntent() {
-        return new Intent(this, DataLogger.class);
+        return new Intent(this, ScannerService.class);
     }
 
     @Override
@@ -117,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                if (_dataProviderService != null) {
-                    _dataProviderService.startScan();
+                if (mScannerService != null) {
+                    mScannerService.startScan();
                 }
             }
         });
@@ -127,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                if (_dataProviderService != null) {
-                    _dataProviderService.stopScan();
+                if (mScannerService != null) {
+                    mScannerService.stopScan();
                 }
             }
         });
@@ -149,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            if (!DataLogger.isRunning) {
+            // make sure the scanning service is running...
+            if (!ScannerService.isRunning) {
                 Intent loggerIntent = getServiceIntent();
                 try {
                     if (android.os.Build.VERSION.SDK_INT >= 26) {
@@ -166,32 +143,10 @@ public class MainActivity extends AppCompatActivity {
             if (i != null) {
                 Log.d(LOG_TAG, "start intent extras: " + i.getExtras());
                 boolean wasStartFromService = i.hasExtra(SERVICE_ACTION);
-
-                /*boolean isAutoStartAfterBoot = i.hasExtra(BaseActivity.STARTINBACKGROUND);
-                boolean wasStartFromService = i.hasExtra(WASSTARTFROMSERVICE);
-
-                if (i.hasExtra(BaseActivity.ISBOOTCHECK) || isAutoStartAfterBoot || !DataLogger.isRunning) {
-                    if (!wasStartFromService) {
-                        _prefs.setPlanedServiceRestart(true);
-                        Intent loggerIntent = getServiceIntent();
-                        try {
-                            if (android.os.Build.VERSION.SDK_INT >= 26) {
-                                startForegroundService(loggerIntent);
-                            } else {
-                                startService(loggerIntent);
-                            }
-                        } catch (Throwable t) {
-                            Log.d(LOG_TAG, "" + t.getMessage());
-                        }
-                        _doNotStopGPSService = false;
-                        lastServiceStartTs = System.currentTimeMillis();
-                        Log.w(LOG_TAG, "START SERVICE!");
-                    }
-                }*/
-
             } else {
                 Log.d(LOG_TAG, "start intent was null");
             }
+
         } catch (Exception e) {
             try {
                 Toast.makeText(getApplicationContext(), "Exception! '" + e.getMessage() + "' Please RESTART", Toast.LENGTH_LONG).show();
@@ -213,15 +168,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Throwable e) {
             e.printStackTrace();
         }
-        /*if (canActivityOnStopAlsoStopBackgroundService()) {
-            if (lastServiceStartTs + 500 < System.currentTimeMillis()) {
-                if (!_doNotStopGPSService) {
-                    //_logger._lastNoGpsFixTimeStamp = -1;
-                    stopService(getServiceIntent());
-                    Log.w(LOG_TAG, "STOP SERVICE!");
-                }
-            }
-        }*/
         try {
             super.onStop();
         } catch (Throwable t) {
@@ -234,6 +180,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.w(this.getClass().getName(), "DESTROYED");
+        if(mScannerService != null){
+            mScannerService.setGuiCallback(null);
+        }
         mActivityIsCreated = false;
         if (mKillApp) {
             killApp();
@@ -281,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Log.d(LOG_TAG, "TERMINATE_APP - killProcess called");
                     android.os.Process.killProcess(android.os.Process.myPid());
-                    //Process.sendSignal(android.os.Process.myPid(), Process.SIGNAL_QUIT);
                 } catch (Throwable t) {
                     Log.d(LOG_TAG, "" + t.getMessage());
                 }
@@ -356,6 +304,12 @@ public class MainActivity extends AppCompatActivity {
             if (handleEvent && intent.hasExtra(SERVICE_ACTION)) {
                 //System.out.println("A");
             }
+        }
+    }
+
+    public void newBeconEvent(String addr) {
+        if(mScannerService != null){
+            Log.v(LOG_TAG, "newBeconEvent: "+mScannerService.mContainer.get(addr));
         }
     }
 }

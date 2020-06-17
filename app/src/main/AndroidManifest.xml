@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name="com.emacberry.uuid0xfd6ftracer.DataLogger"
+            android:name="com.emacberry.uuid0xfd6ftracer.ScannerService"
             android:enabled="true"
             android:exported="false"
             android:label="UUID0xFD6FTracer Service">

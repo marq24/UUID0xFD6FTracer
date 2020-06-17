@@ -1,21 +1,8 @@
 package com.emacberry.uuid0xfd6ftracer;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.DownloadManager;
-import android.app.KeyguardManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -28,47 +15,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.Criteria;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
-import android.location.GpsStatus.Listener;
-import android.location.GpsStatus.NmeaListener;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.ParcelFileDescriptor;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.TreeMap;
 
-public class DataLogger extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ScannerService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // SERVICE STUFF:
     // http://stackoverflow.com/questions/9740593/android-create-service-that-runs-when-application-stops
@@ -76,10 +40,8 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
     // Running as FourgroundService!!!
     // http://developer.android.com/guide/components/services.html#Foreground
 
-    private static final String LOG_TAG = "DataLogger";
-    private static final String LOG_TAG_BTLE = "BTLE";
+    private static final String LOG_TAG = "SCANNER";
     public static boolean isRunning = false;
-    private NotificationManager mNM;
 
     public static final ParcelUuid COVID19_UUID = ParcelUuid.fromString("0000fd6f-0000-1000-8000-00805f9b34fb");
 
@@ -107,16 +69,21 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
     }
 
     public class LocalBinder extends Binder {
-        public DataLogger getServerInstance() {
-            return DataLogger.this;
+        public ScannerService getServerInstance() {
+            return ScannerService.this;
         }
+    }
+
+    public void setGuiCallback(MainActivity mainActivity) {
+        mGuiCallback = mainActivity;
     }
 
     private BluetoothAdapter mBluetoothAdapter;
     private BroadcastReceiver mBluetoothStateReceiver;
     private BluetoothLeScanner mBluetoothLeScanner;
-    private ScanCallback mScanCallback = new DataLogger.MyScanCallback();
+    private ScanCallback mScanCallback = new ScannerService.MyScanCallback();
     private Handler mHandler = new Handler();
+    private MainActivity mGuiCallback = null;
 
     private boolean isAirplaneMode() {
         try {
@@ -127,15 +94,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
         }
     }
 
-    protected String bytesToHex(byte[] hashInBytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : hashInBytes) {
-            sb.append(String.format("%02x", b));
-            sb.append(", ");
-        }
-        return sb.toString();
-    }
-
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         Log.w(LOG_TAG, "onStartCommand() start");
@@ -148,12 +107,11 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
             }*/
         }
 
-
         try {
             if (Looper.myLooper() == null) {
                 Looper.prepare();
             }
-            Log.d(LOG_TAG_BTLE, "initBtLE() started...");
+            Log.d(LOG_TAG, "initBtLE() started...");
             if (mBluetoothAdapter == null) {
                 final BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
                 mBluetoothAdapter = bluetoothManager.getAdapter();
@@ -164,6 +122,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
 
             // BT ON OFF OBSERVER...
             startDeviceBluetoothStatusObserver();
+            mHandler.postDelayed(() -> startScan(),5000);
 
         } catch (SecurityException s) {
             Log.d(LOG_TAG, "", s);
@@ -191,18 +150,14 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
         try {
             super.onCreate();
         } catch (Throwable t) {
-            if (t.getClass().getName().equalsIgnoreCase("com.samsung.android.sdk.SsdkUnsupportedException")) {
-                Log.d(LOG_TAG, "Samsung: Accessory Framework Not installed");
-            } else {
-                t.printStackTrace();
-            }
+            t.printStackTrace();
         }
         Log.w(LOG_TAG, "Service created");
     }
 
-
     @Override
     public void onDestroy() {
+        Log.w(LOG_TAG, "Service.onDestroy() called - shutting down Scanner");
         try {
             if (mBluetoothAdapter != null) {
                 if(mBluetoothLeScanner != null && mScanCallback != null){
@@ -237,14 +192,14 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
         isRunning = false;
         stopForeground(true);
         super.onDestroy();
-        Log.w(LOG_TAG, "DataLogger destroyed!!! (fine)");
+        Log.w(LOG_TAG, "Service destroyed!!! (fine)");
     }
 
 
     public void stopScan() {
         if(mScannIsRunning){
             if(mBluetoothLeScanner != null) {
-                Log.d(LOG_TAG_BTLE, "mBluetoothLeScanner.stopScan() called");
+                Log.d(LOG_TAG, "mBluetoothLeScanner.stopScan() called");
                 try {
                     mBluetoothLeScanner.flushPendingScanResults(mScanCallback);
                 }catch(Exception e){
@@ -262,16 +217,14 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
 
     private boolean mScannIsRunning = false;
     public void  startScan(){
-        if(mBluetoothLeScanner != null && mBluetoothAdapter.isEnabled()) {
-            Log.d(LOG_TAG_BTLE, "mBluetoothLeScanner.startScan() called");
+        if(mBluetoothLeScanner != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
+            Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
             ArrayList<ScanFilter> f = new ArrayList<>();
             f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
             mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
             mScannIsRunning = true;
         }
     }
-
-
 
     private CharSequence mNotifyText;
     private CharSequence mNotifyTitle;
@@ -346,7 +299,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
         return PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private KeyguardManager mKeyguardManager = null;
+    /*private KeyguardManager mKeyguardManager = null;
     private NotificationManagerCompat mNotificationManager = null;
     private long mLastNotifyUpdateTs = 0;
     private boolean mNotifyCanBeReset = false;
@@ -362,7 +315,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
         }catch(Throwable t){
             Log.d(LOG_TAG, ""+t.getMessage());
         }
-    }
+    }*/
 
     /*private void updateNotificationText(Record rec, long nowTs) {
         final int interval = _prefs.getInt(R.string.PKEY_STATUS_AS_NOTIFICATION, R.string.DVAL_STATUS_AS_NOTIFICATION);
@@ -425,7 +378,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
                 }
             }
         }
-    }*/
+    }
 
     private void trace() {
         Log.w(LOG_TAG, "------------------------------------");
@@ -435,57 +388,13 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
             Log.w(LOG_TAG, t.toString());
         }
     }
+    */
 
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-    private class Covid19Beacon {
-        public int mTxPowerLevel;
-        public int mTxPower;
-        public String addr;
-        public long mLastTs;
-        public TreeMap<Long, Integer> sigHistory = new TreeMap<>();
-        public HashSet<String> data = new HashSet<>();
-
-        public Covid19Beacon(String addr) {
-            this.addr = addr;
-        }
-
-        public void addRssi(long ts, int rssi) {
-            mLastTs = System.currentTimeMillis();
-            sigHistory.put(ts, rssi);
-        }
-
-        public void addData(byte[] serviceData) {
-            data.add(bytesToHex(serviceData));
-        }
-
-        private String bytesToHex(byte[] bytes) {
-            char[] hexChars = new char[bytes.length * 2];
-            for (int j = 0; j < bytes.length; j++) {
-                int v = bytes[j] & 0xFF;
-                hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-                hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-            }
-            return new String(hexChars);
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer b = new StringBuffer();
-            b.append(addr);
-            b.append(" [");
-            b.append(data.size());
-            b.append("] ");
-            b.append(sigHistory.size());
-            b.append(' ');
-            b.append(new Date(mLastTs));
-            return b.toString();
-        }
-    }
-
-    private HashMap<String, Covid19Beacon> mContainer = new HashMap<>();
+    protected HashMap<String, Covid19Beacon> mContainer = new HashMap<>();
 
     private class MyScanCallback extends ScanCallback {
-        private void handleResult(@NonNull ScanResult result){
+
+        private void handleResult(@NonNull ScanResult result) {
             String addr = result.getDevice().getAddress();
             Covid19Beacon beacon = null;
             synchronized (mContainer) {
@@ -500,11 +409,18 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
             }
             beacon.addRssi(result.getTimestampNanos(), result.getRssi());
             ScanRecord rec = result.getScanRecord();
-            if(rec != null) {
+            if (rec != null) {
                 beacon.mTxPowerLevel = rec.getTxPowerLevel();
                 beacon.addData(rec.getServiceData(COVID19_UUID));
             }
-            System.out.println(beacon);
+
+            // finally letting the GUI know, that we have new data...
+            // have in mind, that this will be triggered quite often
+            if (mGuiCallback != null) {
+                mGuiCallback.newBeconEvent(addr);
+            }else {
+                Log.v(LOG_TAG, addr);
+            }
         }
 
         @Override
@@ -516,7 +432,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
-            for(ScanResult r: results){
+            for (ScanResult r : results) {
                 handleResult(r);
             }
         }
@@ -546,22 +462,22 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
                         final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
                         switch (state) {
                             case BluetoothAdapter.STATE_OFF:
-                                Log.d(LOG_TAG_BTLE, "New Bluetooth 'STATE_OFF' =" + state + " [" + lastState + "]");
+                                Log.d(LOG_TAG, "New Bluetooth 'STATE_OFF' =" + state + " [" + lastState + "]");
                                 break;
                             case BluetoothAdapter.STATE_ON:
-                                Log.d(LOG_TAG_BTLE, "New Bluetooth 'STATE_ON' =" + state + " [" + lastState + "]");
+                                Log.d(LOG_TAG, "New Bluetooth 'STATE_ON' =" + state + " [" + lastState + "]");
                                 break;
                             case 15:
-                                Log.d(LOG_TAG_BTLE, "New Bluetooth 'STATE_BLE_ON' =" + state + " [" + lastState + "]");
+                                Log.d(LOG_TAG, "New Bluetooth 'STATE_BLE_ON' =" + state + " [" + lastState + "]");
                                 break;
                             case BluetoothAdapter.STATE_TURNING_ON:
-                                Log.d(LOG_TAG_BTLE, "New Bluetooth 'STATE_TURNING_ON' =" + state + " [" + lastState + "]");
+                                Log.d(LOG_TAG, "New Bluetooth 'STATE_TURNING_ON' =" + state + " [" + lastState + "]");
                                 break;
                             case 14:
-                                Log.d(LOG_TAG_BTLE, "New Bluetooth 'STATE_BLE_TURNING_ON' =" + state + " [" + lastState + "]");
+                                Log.d(LOG_TAG, "New Bluetooth 'STATE_BLE_TURNING_ON' =" + state + " [" + lastState + "]");
                                 break;
                             case BluetoothAdapter.STATE_TURNING_OFF:
-                                Log.d(LOG_TAG_BTLE, "New Bluetooth 'STATE_TURNING_OFF' =" + state + " [" + lastState + "]");
+                                Log.d(LOG_TAG, "New Bluetooth 'STATE_TURNING_OFF' =" + state + " [" + lastState + "]");
                                 break;
                         }
 
@@ -578,7 +494,7 @@ public class DataLogger extends Service implements SharedPreferences.OnSharedPre
                                             try {
                                                 mBluetoothAdapter.cancelDiscovery();
                                             } catch (Throwable t) {
-                                                Log.d(LOG_TAG_BTLE, "", t);
+                                                Log.d(LOG_TAG, "", t);
                                             }
 
                                             if (!isAirplaneMode()) {

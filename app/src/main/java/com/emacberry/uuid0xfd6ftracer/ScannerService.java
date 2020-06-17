@@ -74,7 +74,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    public void setGuiCallback(MainActivity mainActivity) {
+    public void setGuiCallback(BeaconScannerActivity mainActivity) {
         mGuiCallback = mainActivity;
     }
 
@@ -83,7 +83,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private BluetoothLeScanner mBluetoothLeScanner;
     private ScanCallback mScanCallback = new ScannerService.MyScanCallback();
     private Handler mHandler = new Handler();
-    private MainActivity mGuiCallback = null;
+    private BeaconScannerActivity mGuiCallback = null;
 
     private boolean isAirplaneMode() {
         try {
@@ -252,15 +252,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         } else {
             builder.setSmallIcon(R.mipmap.ic_launcher);
         }
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, BeaconScannerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra(MainActivity.SERVICE_ACTION, true);
+        intent.putExtra(BeaconScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(MainActivity.TERMINATE_APP));
+            builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(BeaconScannerActivity.INTENT_EXTRA_TERMINATE_APP));
         } else {
-            builder.addAction(R.drawable.ic_outline_exit_to_app_24px_api20, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(MainActivity.TERMINATE_APP));
+            builder.addAction(R.drawable.ic_outline_exit_to_app_24px_api20, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(BeaconScannerActivity.INTENT_EXTRA_TERMINATE_APP));
         }
         builder.setColor(ContextCompat.getColor(this, R.color.notification_action));
         return builder;
@@ -291,7 +291,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }*/
 
     private PendingIntent getTerminateAppIntent(String extra) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, BeaconScannerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (extra != null) {
             intent.putExtra(extra, true);

@@ -20,22 +20,26 @@ import android.widget.Toast;
 
 import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
 
-public class MainActivity extends AppCompatActivity {
-
-    public static final String TERMINATE_APP = "TERMINATE";
-    public static final String SERVICE_ACTION = "SERVICE-ACTON";
+public class BeaconScannerActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "ACTIVITY";
-    private Handler mHandler = new Handler();
 
+    protected static final String INTENT_EXTRA_TERMINATE_APP = "TERMINATE";
+    protected static final String INTENT_EXTRA_SERVICE_ACTION = "SERVICE-ACTON";
+
+    private Handler mHandler = new Handler();
     private ScannerService mScannerService;
+
+    private boolean mActivityIsCreated = false;
+    private boolean mKillApp = false;
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName paramComponentName) {
             Log.w(LOG_TAG, "onServiceDisconnected() called... " + paramComponentName);
             if (paramComponentName != null) {
                 String cName = paramComponentName.getClassName();
-                if (cName.equalsIgnoreCase("com.emacberry.uuid0xfd6ftracer.DataLogger")) {
+                if (cName.equalsIgnoreCase("com.emacberry.uuid0xfd6ftracer.ScannerService")) {
                     mScannerService = null;
                 }
             }
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 if (service instanceof ScannerService.LocalBinder) {
                     ScannerService.LocalBinder b = (ScannerService.LocalBinder) service;
                     mScannerService = b.getServerInstance();
-                    mScannerService.setGuiCallback(MainActivity.this);
+                    mScannerService.setGuiCallback(BeaconScannerActivity.this);
                 }
             }
         }
@@ -62,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent callingIntent = getIntent();
-        if (callingIntent != null && callingIntent.getBooleanExtra(TERMINATE_APP, false)) {
-            Log.i(LOG_TAG, "TERMINATE_APP");
+        if (callingIntent != null && callingIntent.getBooleanExtra(INTENT_EXTRA_TERMINATE_APP, false)) {
+            Log.w(LOG_TAG, "TERMINATE_APP triggered via Service");
             if (mHandler != null) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -113,13 +117,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onStart() {
+        Log.w(LOG_TAG, "onStart() called");
         try {
-            Log.d(LOG_TAG, "START ACTIVITY");
             super.onStart();
             try {
                 if (mConnection != null) {
                     bindService(getServiceIntent(), mConnection, BIND_IMPORTANT | BIND_ALLOW_OOM_MANAGEMENT | BIND_ABOVE_CLIENT);
-                    Log.w(LOG_TAG, "BIND SERVICE!");
+                    Log.w(LOG_TAG, "BIND SERVICE onStart()");
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -142,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = getIntent();
             if (i != null) {
                 Log.d(LOG_TAG, "start intent extras: " + i.getExtras());
-                boolean wasStartFromService = i.hasExtra(SERVICE_ACTION);
+                boolean wasStartFromService = i.hasExtra(INTENT_EXTRA_SERVICE_ACTION);
             } else {
                 Log.d(LOG_TAG, "start intent was null");
             }
@@ -173,13 +177,13 @@ public class MainActivity extends AppCompatActivity {
         } catch (Throwable t) {
             Log.e(LOG_TAG, "super.onStop() caused " + t.getMessage());
         }
-        Log.d(LOG_TAG, "STOP ACTIVITY");
+        Log.w(LOG_TAG, "onStop() called");
     }
 
 
     @Override
     protected void onDestroy() {
-        Log.w(this.getClass().getName(), "DESTROYED");
+        Log.w(LOG_TAG, "onDestroy called");
         if(mScannerService != null){
             mScannerService.setGuiCallback(null);
         }
@@ -200,44 +204,35 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private boolean mKillApp = false;
-    private boolean mActivityIsCreated = false;
-
     protected void exitApp() {
         stopService(getServiceIntent());
         if (mHandler != null) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mKillApp = true;
-                    if (mActivityIsCreated) {
-                        // if the activity is visible we simply call 'finish' -> that will then
-                        // trigger the kill...
-                        finish();
-                    } else {
-                        killApp();
-                    }
-
+            mHandler.postDelayed(() -> {
+                mKillApp = true;
+                if (mActivityIsCreated) {
+                    // if the activity is visible we simply call 'finish' -> that will then
+                    // trigger the kill...
+                    finish();
+                } else {
+                    killApp();
                 }
+
             }, 250);
         }
     }
 
     private void killApp() {
-        Runnable killRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Log.d(LOG_TAG, "TERMINATE_APP - killProcess called");
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                } catch (Throwable t) {
-                    Log.d(LOG_TAG, "" + t.getMessage());
-                }
-                try {
-                    System.exit(0);
-                } catch (Throwable t) {
-                    Log.d(LOG_TAG, "" + t.getMessage());
-                }
+        Runnable killRunnable = () -> {
+            try {
+                Log.w(LOG_TAG, "TERMINATE_APP - killProcess called");
+                android.os.Process.killProcess(android.os.Process.myPid());
+            } catch (Throwable t) {
+                Log.e(LOG_TAG, "" + t.getMessage());
+            }
+            try {
+                System.exit(0);
+            } catch (Throwable t) {
+                Log.e(LOG_TAG, "" + t.getMessage());
             }
         };
         if (mHandler != null) {
@@ -301,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 handleEvent = false;
             }*/
 
-            if (handleEvent && intent.hasExtra(SERVICE_ACTION)) {
+            if (handleEvent && intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION)) {
                 //System.out.println("A");
             }
         }

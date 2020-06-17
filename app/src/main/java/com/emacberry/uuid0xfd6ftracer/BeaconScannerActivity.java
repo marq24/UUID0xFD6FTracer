@@ -116,6 +116,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
         mActivityIsCreated = true;
     }
 
+    @Override
     protected void onStart() {
         Log.w(LOG_TAG, "onStart() called");
         try {
@@ -164,6 +165,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     protected void onStop() {
         try {
             if (mConnection != null) {

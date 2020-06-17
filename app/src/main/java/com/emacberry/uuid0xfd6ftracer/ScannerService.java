@@ -1,5 +1,7 @@
 package com.emacberry.uuid0xfd6ftracer;
 
+import android.app.KeyguardManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -26,6 +28,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
@@ -243,6 +246,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
         builder.setContentTitle(mNotifyTitle);
         builder.setContentText(mNotifyText);
+
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             builder.setChannelId(channelId);
@@ -299,7 +303,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         return PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    /*private KeyguardManager mKeyguardManager = null;
+    private KeyguardManager mKeyguardManager = null;
     private NotificationManagerCompat mNotificationManager = null;
     private long mLastNotifyUpdateTs = 0;
     private boolean mNotifyCanBeReset = false;
@@ -315,80 +319,70 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }catch(Throwable t){
             Log.d(LOG_TAG, ""+t.getMessage());
         }
-    }*/
+    }
 
-    /*private void updateNotificationText(Record rec, long nowTs) {
-        final int interval = _prefs.getInt(R.string.PKEY_STATUS_AS_NOTIFICATION, R.string.DVAL_STATUS_AS_NOTIFICATION);
-        if (interval > 0) {
-            if (mKeyguardManager == null) {
-                mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-            }
-            if (nowTs > mLastNotifyUpdateTs + interval) {
-                mLastNotifyUpdateTs = nowTs;
-                boolean notify = false;
-                boolean reset = true;
-                if (mBuilder != null) {
-                    String txt = null;
-                    if (_logger != null) {
-                        if (_logger.isLoggingMode()) {
-                            if (_logger._mcpGuiUpdateCallback == null || mKeyguardManager.inKeyguardRestrictedInputMode()) {
-                                txt = _logger.getDisplayStringOfCurrentRecord(false, false);
-                            }
-                        }
-                    }
-
-                    if (txt != null) {
-                        // in lock mode we need to split the lines...
-                        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
-                        if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
-                            int len = txt.length();
-                            // find the "next" space... from the middle...
-                            int pos = txt.indexOf(" ", len / 2);
-                            String t1 = txt.substring(0, pos);
-                            String t2 = txt.substring(pos + 1, len);
-                            mBuilder.setContentTitle(t1);
-                            mBuilder.setContentText(t2);
-                        } else {
-                            mBuilder.setContentTitle(mNotifyTitle);
-                            mBuilder.setContentText(txt);
-                        }
-                        notify = true;
-                        reset = false;
-                        mNotifyCanBeReset = true;
-                    }
-                }
-
-                if (reset) {
-                    if (mNotifyCanBeReset) {
-                        mNotifyCanBeReset = false;
+    private void updateNotificationText(long nowTs) {
+        if (mKeyguardManager == null) {
+            mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        }
+        if (nowTs > mLastNotifyUpdateTs + 20000) {
+            mLastNotifyUpdateTs = nowTs;
+            boolean notify = false;
+            boolean reset = true;
+            if (mBuilder != null) {
+                String txt = mNotifyText+" [found: "+mContainer.size()+"]";
+                if (txt != null) {
+                    // in lock mode we need to split the lines...
+                    /*mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
+                    if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
+                        int len = txt.length();
+                        // find the "next" space... from the middle...
+                        int pos = txt.indexOf(" ", len / 2);
+                        String t1 = txt.substring(0, pos);
+                        String t2 = txt.substring(pos + 1, len);
+                        mBuilder.setContentTitle(t1);
+                        mBuilder.setContentText(t2);
+                    } else {
                         mBuilder.setContentTitle(mNotifyTitle);
-                        mBuilder.setContentText(mNotifyText);
-                        mBuilder.setStyle(null);
-                        notify = true;
-                    }
+                        mBuilder.setContentText(txt);
+                    }*/
+                    mBuilder.setContentTitle(mNotifyTitle);
+                    mBuilder.setContentText(txt);
+                    notify = true;
+                    reset = false;
+                    mNotifyCanBeReset = true;
                 }
+            }
 
-                if (notify) {
-                    if (mNotificationManager == null) {
-                        mNotificationManager = NotificationManagerCompat.from(this);
-                        //mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    }
-                    mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC);
-                    mNotificationManager.notify(R.id.notify_backservive, mBuilder.build());
+            if (reset) {
+                if (mNotifyCanBeReset) {
+                    mNotifyCanBeReset = false;
+                    mBuilder.setContentTitle(mNotifyTitle);
+                    mBuilder.setContentText(mNotifyText);
+                    mBuilder.setStyle(null);
+                    notify = true;
                 }
+            }
+
+            if (notify) {
+                if (mNotificationManager == null) {
+                    mNotificationManager = NotificationManagerCompat.from(this);
+                    //mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                }
+                mBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                mNotificationManager.notify(R.id.notify_backservive, mBuilder.build());
             }
         }
     }
 
-    private void trace() {
+    /*private void trace() {
         Log.w(LOG_TAG, "------------------------------------");
         Log.w(LOG_TAG, "Update Notification... -> ");
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
         for (StackTraceElement t : trace) {
             Log.w(LOG_TAG, t.toString());
         }
-    }
-    */
+    }*/
 
     protected HashMap<String, Covid19Beacon> mContainer = new HashMap<>();
 
@@ -419,6 +413,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if (mGuiCallback != null) {
                 mGuiCallback.newBeconEvent(addr);
             }else {
+                updateNotificationText(beacon.mLastTs);
                 Log.v(LOG_TAG, addr);
             }
         }

@@ -2,4 +2,11 @@
     <string name="app_name">UUID0xFD6FTracer</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+
+
+    <string name="notifyChannelBase">Core Service</string>
+    <string name ="menu_exit_notify_action">EXIT</string>
+    <string name="app_service_title">UUID\u00A00xFD6F\u00A0Tracer Service</string>
+    <string name="app_service_msg">Scanning environment</string>
+
 </resources>

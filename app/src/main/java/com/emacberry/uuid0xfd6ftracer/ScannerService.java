@@ -80,14 +80,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     public void setGuiCallback(BeaconScannerActivity mainActivity) {
         mGuiCallback = mainActivity;
         if(mainActivity == null){
-            mLastNotifyUpdateTs = -1;
+            mScanCallback.iDoReport = true;
         }
     }
 
     private BluetoothAdapter mBluetoothAdapter;
     private BroadcastReceiver mBluetoothStateReceiver;
     private BluetoothLeScanner mBluetoothLeScanner;
-    private ScanCallback mScanCallback = new ScannerService.MyScanCallback();
+    private MyScanCallback mScanCallback = new ScannerService.MyScanCallback();
     private Handler mHandler = new Handler();
     private BeaconScannerActivity mGuiCallback = null;
 
@@ -307,7 +307,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     private KeyguardManager mKeyguardManager = null;
     private NotificationManagerCompat mNotificationManager = null;
-    private long mLastNotifyUpdateTs = 0;
     private boolean mNotifyCanBeReset = false;
 
     public void updateNotification() {
@@ -323,57 +322,53 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private void updateNotificationText(long nowTs) {
+    private void updateNotificationText() {
         if (mKeyguardManager == null) {
             mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         }
-        // only update every 20 sec the Notification text (if device ist not in LOCK state)
-        if (nowTs > mLastNotifyUpdateTs + 20000) {
-            mLastNotifyUpdateTs = nowTs;
-            boolean notify = false;
-            boolean reset = true;
-            if (mBuilder != null) {
-                int size = mContainer.size();
-                if(size > 0) {
-                    String txt = mNotifyText + " [found: " + size + "]";
-                    // in lock mode we need to split the lines...
-                    /*mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
-                    if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
-                        int len = txt.length();
-                        // find the "next" space... from the middle...
-                        int pos = txt.indexOf(" ", len / 2);
-                        String t1 = txt.substring(0, pos);
-                        String t2 = txt.substring(pos + 1, len);
-                        mBuilder.setContentTitle(t1);
-                        mBuilder.setContentText(t2);
-                    } else {
-                        mBuilder.setContentTitle(mNotifyTitle);
-                        mBuilder.setContentText(txt);
-                    }*/
+        boolean notify = false;
+        boolean reset = true;
+        if (mBuilder != null) {
+            int size = mContainer.size();
+            if(size > 0) {
+                String txt = mNotifyText + " [found: " + size + "]";
+                // in lock mode we need to split the lines...
+                /*mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
+                if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
+                    int len = txt.length();
+                    // find the "next" space... from the middle...
+                    int pos = txt.indexOf(" ", len / 2);
+                    String t1 = txt.substring(0, pos);
+                    String t2 = txt.substring(pos + 1, len);
+                    mBuilder.setContentTitle(t1);
+                    mBuilder.setContentText(t2);
+                } else {
                     mBuilder.setContentTitle(mNotifyTitle);
                     mBuilder.setContentText(txt);
-                    notify = !mKeyguardManager.inKeyguardRestrictedInputMode();
-                    reset = false;
-                    mNotifyCanBeReset = true;
-                }
+                }*/
+                mBuilder.setContentTitle(mNotifyTitle);
+                mBuilder.setContentText(txt);
+                notify = !mKeyguardManager.isKeyguardLocked();
+                reset = false;
+                mNotifyCanBeReset = true;
             }
-            if (reset) {
-                if (mNotifyCanBeReset) {
-                    mNotifyCanBeReset = false;
-                    mBuilder.setContentTitle(mNotifyTitle);
-                    mBuilder.setContentText(mNotifyText);
-                    mBuilder.setStyle(null);
-                    notify = true;
-                }
+        }
+        if (reset) {
+            if (mNotifyCanBeReset) {
+                mNotifyCanBeReset = false;
+                mBuilder.setContentTitle(mNotifyTitle);
+                mBuilder.setContentText(mNotifyText);
+                mBuilder.setStyle(null);
+                notify = true;
             }
+        }
 
-            if (notify) {
-                if (mNotificationManager == null) {
-                    mNotificationManager = NotificationManagerCompat.from(this);
-                }
-                mBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-                mNotificationManager.notify(R.id.notify_backservive, mBuilder.build());
+        if (notify) {
+            if (mNotificationManager == null) {
+                mNotificationManager = NotificationManagerCompat.from(this);
             }
+            mBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+            mNotificationManager.notify(R.id.notify_backservive, mBuilder.build());
         }
     }
 
@@ -390,6 +385,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
+        public boolean iDoReport = false;
         private void handleResult(@NonNull ScanResult result) {
             long tsNow = System.currentTimeMillis();
             String addr = result.getDevice().getAddress();
@@ -401,11 +397,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
                 beacon = mContainer.get(addr);
                 if (beacon == null) {
-                    beacon = new Covid19Beacon(addr);
+                    beacon = new Covid19Beacon(addr, tsNow);
                     mContainer.put(addr, beacon);
                     // if we just add a new beacon, we throw away everything
                     // that is older then 20sec...
                     delay = 20000;
+                    iDoReport = true;
                 }
 
                 // check every x sec if there are expired Beacons in our store?
@@ -423,9 +420,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         for(String aOtherAddr: addrsToRemove){
                             mContainer.remove(aOtherAddr);
                         }
+                        iDoReport = true;
                     }
                 }
             }
+
+            // after mContainer sync is left we can do the rest...
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 beacon.mTxPower = result.getTxPower();
             }
@@ -438,11 +438,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
             // finally letting the GUI know, that we have new data...
             // have in mind, that this will be triggered quite often
-            if (mGuiCallback != null) {
-                mGuiCallback.newBeconEvent(addr);
-            }else {
-                updateNotificationText(beacon.mLastTs);
-                Log.v(LOG_TAG, mContainer.size()+" "+mContainer.keySet());
+            if(iDoReport) {
+                if (mGuiCallback != null) {
+                    mGuiCallback.newBeconEvent(addr);
+                } else {
+                    updateNotificationText();
+                    Log.v(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
+                }
+                iDoReport = false;
             }
         }
 

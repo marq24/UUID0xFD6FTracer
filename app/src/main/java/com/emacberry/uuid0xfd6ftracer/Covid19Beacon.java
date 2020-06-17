@@ -15,8 +15,9 @@ public class Covid19Beacon {
     public TreeMap<Long, Integer> sigHistory = new TreeMap<>();
     public HashSet<String> data = new HashSet<>();
 
-    public Covid19Beacon(String addr) {
+    public Covid19Beacon(String addr, long ts) {
         this.addr = addr;
+        this.mLastTs = ts;
     }
 
     public void addRssi(long ts, int rssi, long tsNow) {

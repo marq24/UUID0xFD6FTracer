@@ -82,12 +82,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     public void setGuiCallback(BeaconScannerActivity mainActivity) {
         mGuiCallback = mainActivity;
-        if(mainActivity == null){
-            mScanCallback.iDoReport = true;
-        }else{
+        mScanCallback.iDoReport = true;
+
+        if(mainActivity != null){
             // activity connected...
             if(!mScannIsRunning){
-                startScan();
+                startScan(false);
             }
         }
     }
@@ -209,14 +209,17 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private void handleIntentInt(@Nullable Intent intent) {
         Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
         if (intent.hasExtra(INTENT_EXTRA_START)) {
-            startScan();
+            startScan(true);
         } else if (intent.hasExtra(INTENT_EXTRA_STOP)) {
-            stopScan();
+            stopScan(true);
         }
     }
 
-    public void stopScan() {
+    public void stopScan(boolean viaGui) {
         if(mScannIsRunning){
+            if(viaGui){
+                mScannStopedViaGui = true;
+            }
             if(mBluetoothLeScanner != null) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.stopScan() called");
                 try {
@@ -236,7 +239,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private boolean mScannIsRunning = false;
-    public void  startScan(){
+    public void  startScan(boolean viaGui){
+        if(viaGui){
+            mScannStopedViaGui = false;
+        }
         if(mBluetoothLeScanner != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
             Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
             ArrayList<ScanFilter> f = new ArrayList<>();
@@ -250,19 +256,24 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private boolean mScannResultsOnStart = false;
+    private boolean mScannStopedViaGui = false;
+
     private void checkForScannStart() {
-        if(mScannIsRunning && !mScannResultsOnStart){
-            Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
-            mHandler.postDelayed(() -> stopScan(), 500);
-            mHandler.postDelayed(() -> startScan(), 5000);
-        }else if(!mScannIsRunning){
-            Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
-            mHandler.postDelayed(() -> startScan(), 500);
+        if(!mScannStopedViaGui) {
+            if (mScannIsRunning && !mScannResultsOnStart) {
+                Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
+                mHandler.postDelayed(() -> stopScan(false), 500);
+                mHandler.postDelayed(() -> startScan(false), 5000);
+            } else if (!mScannIsRunning) {
+                Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
+                mHandler.postDelayed(() -> startScan(false), 500);
+            }
         }
     }
 
-    private CharSequence mNotifyText;
     private CharSequence mNotifyTitle;
+    private CharSequence mNotifyText;
+    private String mNotifyTextAddon;
     private NotificationCompat.Builder mBuilder;
 
     private NotificationCompat.Builder getNotificationBuilder() {
@@ -271,7 +282,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         // expanded notification
         if (mNotifyTitle == null) {
             mNotifyTitle = getText(R.string.app_service_title);
-            mNotifyText = getText(R.string.app_service_msg);
+            mNotifyText = getText(R.string.app_service_msg1);
+            mNotifyTextAddon  = getString(R.string.app_service_msg2);
         }
 
         String channelId = NotificationHelper.getBaseNotificationChannelId(this);
@@ -373,7 +385,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mBuilder != null) {
             int size = mContainer.size();
             if(size > 0) {
-                String txt = mNotifyText + " [found: " + size + "]";
+                String txt = mNotifyText + " "+ String.format(mNotifyTextAddon, size);
                 // in lock mode we need to split the lines...
                 /*mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
                 if (mKeyguardManager.inKeyguardRestrictedInputMode()) {

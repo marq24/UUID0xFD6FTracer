@@ -92,7 +92,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
         requestPermissions(new String[]{
                 Manifest.permission.FOREGROUND_SERVICE,
-                //Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.BLUETOOTH_ADMIN}, 99);
@@ -109,7 +109,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 if (mScannerService != null) {
-                    mScannerService.startScan();
+                    mScannerService.startScan(true);
                 }
             }
         });
@@ -119,7 +119,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 if (mScannerService != null) {
-                    mScannerService.stopScan();
+                    mScannerService.stopScan(true);
                 }
             }
         });
@@ -330,7 +330,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             if(mViewPager != null) {
                 Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
                 if (info instanceof PlaceholderFragment) {
-                    ((PlaceholderFragment) info).setText("Active Beacons: " + size);
+                    ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_beacons), size));
                 }
             }});
         }

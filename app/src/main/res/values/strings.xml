@@ -1,14 +1,17 @@
 <resources>
-    <string name="app_name">UUID 0xFD6F Tracer</string>
+    <string name="app_name" translatable="false">UUID 0xFD6F Tracer</string>
     <string name="tab_text_1">Active Beacons</string>
-    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_2" translatable="false">Tab 2</string>
 
     <string name="notifyChannelBase">Core Service</string>
     <string name="app_service_title">Background Tracer Service</string>
-    <string name="app_service_msg">Scanning Environment...</string>
+    <string name="app_service_msg1">Scanning Environment...</string>
+    <string name="app_service_msg2">[found: %1$d]</string>
 
     <string name ="menu_exit_notify_action">EXIT</string>
-    <string name ="menu_start_notify_action">Start</string>
-    <string name ="menu_stop_notify_action">Stop</string>
+    <string name ="menu_start_notify_action">Start Scan</string>
+    <string name ="menu_stop_notify_action">Stop Scan</string>
+
+    <string name ="act_active_beacons">Active Beacons: %1$d</string>
 
 </resources>

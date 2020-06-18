@@ -8,8 +8,8 @@ android {
         applicationId "com.emacberry.uuid0xfd6ftracer"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 901
-        versionName "0.9.0.1"
+        versionCode 902
+        versionName "0.9.0.2"
         //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

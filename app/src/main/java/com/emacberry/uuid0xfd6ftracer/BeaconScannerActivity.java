@@ -59,7 +59,8 @@ public class BeaconScannerActivity extends AppCompatActivity {
                     ScannerService.LocalBinder b = (ScannerService.LocalBinder) service;
                     mScannerService = b.getServerInstance();
                     mScannerService.setGuiCallback(BeaconScannerActivity.this);
-                    BeaconScannerActivity.this.newBeconEvent(null);
+                    final int size = mScannerService.mContainer.size();
+                    runOnUiThread(()-> setActiveBeaconCount(size));
                 }
             }
         }
@@ -197,6 +198,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             }
         });
         mActivityIsCreated = true;
+        setActiveBeaconCount(0);
     }
 
     @Override
@@ -398,14 +400,18 @@ public class BeaconScannerActivity extends AppCompatActivity {
         if(mScannerService != null){
             Log.v(LOG_TAG, "newBeconEvent: "+mScannerService.mContainer.get(addr));
             final int size = mScannerService.mContainer.size();
-            runOnUiThread(()->{
-            if(mViewPager != null) {
-                Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
-                if (info instanceof PlaceholderFragment) {
-                    ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_beacons), size));
-                }
-            }});
+            runOnUiThread(()-> setActiveBeaconCount(size));
         }
+    }
+
+    private void setActiveBeaconCount(int size){
+        // setting the initial TEXT..
+        if(mViewPager != null) {
+            Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
+            if (info instanceof PlaceholderFragment) {
+                ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_beacons), size));
+            }
+        };
     }
 
     private class MyOnTabListenerAndroidX implements ActionBar.TabListener {

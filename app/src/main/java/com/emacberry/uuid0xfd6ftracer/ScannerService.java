@@ -86,8 +86,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
         if(mainActivity != null){
             // activity connected...
-            if(!mScannIsRunning){
-                startScan(false);
+            if(!mScannIsRunning && !mScannStopedViaGui){
+                startScan(true);
             }
         }
     }
@@ -247,6 +247,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 mScannStopedViaGui = true;
             }
             mScannResultsOnStart = false;
+            mContainer = new HashMap<>();
             if(mBluetoothLeScanner != null) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.stopScan() called");
                 try {

@@ -32,6 +32,9 @@
         <activity
             android:name=".BeaconScannerActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:configChanges="uiMode|orientation|keyboard|keyboardHidden|screenSize|screenLayout"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

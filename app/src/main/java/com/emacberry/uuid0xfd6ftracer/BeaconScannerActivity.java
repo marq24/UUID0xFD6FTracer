@@ -4,16 +4,20 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.emacberry.uuid0xfd6ftracer.ui.main.PlaceholderFragment;
 import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -27,11 +31,11 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
     private ScannerService mScannerService;
+    private ViewPager mViewPager;
 
     private boolean mActivityIsCreated = false;
     private boolean mKillApp = false;
 
-    private String mOnConnectAction = null;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName paramComponentName) {
@@ -57,8 +61,15 @@ public class BeaconScannerActivity extends AppCompatActivity {
         }
     };
 
-    private Intent getServiceIntent() {
-        return new Intent(this, ScannerService.class);
+    @Override
+    public void onAttachedToWindow() {
+        try{
+            if(android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+            }
+        }catch(Throwable t){
+            Log.d(LOG_TAG, ""+t.getMessage());
+        }
     }
 
     @Override
@@ -87,10 +98,10 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
+        mViewPager = findViewById(R.id.view_pager);
+        mViewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
+        tabs.setupWithViewPager(mViewPager);
         FloatingActionButton start = findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +133,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             super.onStart();
             try {
                 if (mConnection != null) {
-                    bindService(getServiceIntent(), mConnection, BIND_IMPORTANT | BIND_ALLOW_OOM_MANAGEMENT | BIND_ABOVE_CLIENT);
+                    bindService(new Intent(this, ScannerService.class), mConnection, BIND_IMPORTANT | BIND_ALLOW_OOM_MANAGEMENT | BIND_ABOVE_CLIENT);
                     Log.w(LOG_TAG, "BIND SERVICE onStart()");
                 }
             } catch (Throwable e) {
@@ -131,7 +142,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
             // make sure the scanning service is running...
             if (!ScannerService.isRunning) {
-                Intent loggerIntent = getServiceIntent();
+                Intent loggerIntent = new Intent(this, ScannerService.class);
                 try {
                     if (android.os.Build.VERSION.SDK_INT >= 26) {
                         startForegroundService(loggerIntent);
@@ -205,7 +216,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
     }
 
     protected void exitApp() {
-        stopService(getServiceIntent());
+        stopService(new Intent(this, ScannerService.class));
         if (mHandler != null) {
             mHandler.postDelayed(() -> {
                 mKillApp = true;
@@ -313,6 +324,14 @@ public class BeaconScannerActivity extends AppCompatActivity {
     public void newBeconEvent(String addr) {
         if(mScannerService != null){
             Log.v(LOG_TAG, "newBeconEvent: "+mScannerService.mContainer.get(addr));
+            final int size = mScannerService.mContainer.size();
+            runOnUiThread(()->{
+            if(mViewPager != null) {
+                Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
+                if (info instanceof PlaceholderFragment) {
+                    ((PlaceholderFragment) info).setText("Active Beacons: " + size);
+                }
+            }});
         }
     }
 }

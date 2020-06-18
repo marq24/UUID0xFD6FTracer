@@ -56,6 +56,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
                     ScannerService.LocalBinder b = (ScannerService.LocalBinder) service;
                     mScannerService = b.getServerInstance();
                     mScannerService.setGuiCallback(BeaconScannerActivity.this);
+                    BeaconScannerActivity.this.newBeconEvent(null);
                 }
             }
         }

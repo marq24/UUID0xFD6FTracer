@@ -497,10 +497,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if(iDoReport) {
                 if (mGuiCallback != null) {
                     mGuiCallback.newBeconEvent(addr);
-                } else {
-                    updateNotificationText();
-                    Log.v(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
                 }
+                updateNotificationText();
+                Log.v(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
                 iDoReport = false;
             }
         }

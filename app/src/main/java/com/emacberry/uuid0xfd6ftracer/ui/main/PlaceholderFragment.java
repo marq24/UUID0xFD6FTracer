@@ -54,11 +54,16 @@ public class PlaceholderFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mTextView = null;
+    }
+
     public void setText(String txt) {
         if(mTextView != null) {
             mTextView.setText(txt);
-        }else{
-            iTextOnBind = txt;
         }
+        iTextOnBind = txt;
     }
 }

@@ -1,7 +1,6 @@
 package com.emacberry.uuid0xfd6ftracer;
 
 import android.app.KeyguardManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -27,6 +26,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -36,6 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ScannerService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    protected static final String INTENT_EXTRA_START = "START_SCAN";
+    protected static final String INTENT_EXTRA_STOP = "STOP_SCAN";
 
     // SERVICE STUFF:
     // http://stackoverflow.com/questions/9740593/android-create-service-that-runs-when-application-stops
@@ -81,6 +84,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         mGuiCallback = mainActivity;
         if(mainActivity == null){
             mScanCallback.iDoReport = true;
+        }else{
+            // activity connected...
+            if(!mScannIsRunning){
+                startScan();
+            }
         }
     }
 
@@ -102,53 +110,51 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        Log.w(LOG_TAG, "onStartCommand() start");
-        if (intent != null) {
-            /*if (intent.hasExtra(BaseActivity.ISREINITDATALOGGER)) {
-                isReInitOfDataLogger = intent.getExtras().getBoolean(BaseActivity.ISREINITDATALOGGER);
+        if(isRunning && intent !=null){
+            handleIntentInt(intent);
+            return START_STICKY;
+        }else {
+            super.onStartCommand(intent, flags, startId);
+            Log.w(LOG_TAG, "onStartCommand() start");
+            if (intent != null) {
+
             }
-            if (isReInitOfDataLogger && intent.hasExtra(BaseActivity.NOGPSFIXARRIVED)) {
-                isReInitOfDataLogger = false;
-            }*/
+            try {
+                if (Looper.myLooper() == null) {
+                    Looper.prepare();
+                }
+                Log.d(LOG_TAG, "initBtLE() started...");
+                if (mBluetoothAdapter == null) {
+                    final BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
+                    mBluetoothAdapter = bluetoothManager.getAdapter();
+                }
+                if (mBluetoothAdapter != null) {
+                    mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+                }
+
+                // BT ON OFF OBSERVER...
+                startDeviceBluetoothStatusObserver();
+                //mHandler.postDelayed(() -> startScan(),5000);
+            } catch (SecurityException s) {
+                Log.d(LOG_TAG, "", s);
+                // TODO: check permissions!!!!
+                /*if (_logger != null) {
+                    _logger.checkPermissions("location");
+                }*/
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "" + e.getMessage());
+            } catch (Throwable t) {
+                Log.d(LOG_TAG, "" + t.getMessage());
+            }
+
+            // register for PrefChanges...
+            //_prefs.registerOnSharedPreferenceChangeListener(this);
+
+            isRunning = true;
+            showNotification();
+            Log.w(LOG_TAG, "onStartCommand() completed");
+            return START_STICKY;
         }
-
-        try {
-            if (Looper.myLooper() == null) {
-                Looper.prepare();
-            }
-            Log.d(LOG_TAG, "initBtLE() started...");
-            if (mBluetoothAdapter == null) {
-                final BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
-                mBluetoothAdapter = bluetoothManager.getAdapter();
-            }
-            if (mBluetoothAdapter != null) {
-                mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            }
-
-            // BT ON OFF OBSERVER...
-            startDeviceBluetoothStatusObserver();
-            mHandler.postDelayed(() -> startScan(),5000);
-
-        } catch (SecurityException s) {
-            Log.d(LOG_TAG, "", s);
-            // TODO: check permissions!!!!
-            /*if (_logger != null) {
-                _logger.checkPermissions("location");
-            }*/
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "" + e.getMessage());
-        } catch (Throwable t) {
-            Log.d(LOG_TAG, "" + t.getMessage());
-        }
-
-        // register for PrefChanges...
-        //_prefs.registerOnSharedPreferenceChangeListener(this);
-
-        isRunning = true;
-        showNotification();
-        Log.w(LOG_TAG, "onStartCommand() completed");
-        return START_STICKY;
     }
 
     @Override
@@ -200,6 +206,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
 
+    private void handleIntentInt(@Nullable Intent intent) {
+        Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
+        if (intent.hasExtra(INTENT_EXTRA_START)) {
+            startScan();
+        } else if (intent.hasExtra(INTENT_EXTRA_STOP)) {
+            stopScan();
+        }
+    }
+
     public void stopScan() {
         if(mScannIsRunning){
             if(mBluetoothLeScanner != null) {
@@ -212,6 +227,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 try{
                     mBluetoothLeScanner.stopScan(mScanCallback);
                     mScannIsRunning = false;
+                    updateNotification();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -228,6 +244,20 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             mContainer = new HashMap<>();
             mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
             mScannIsRunning = true;
+            updateNotification();
+        }
+        mHandler.postDelayed(() -> checkForScannStart(),30000);
+    }
+
+    private boolean mScannResultsOnStart = false;
+    private void checkForScannStart() {
+        if(mScannIsRunning && !mScannResultsOnStart){
+            Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
+            mHandler.postDelayed(() -> stopScan(), 500);
+            mHandler.postDelayed(() -> startScan(), 5000);
+        }else if(!mScannIsRunning){
+            Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
+            mHandler.postDelayed(() -> startScan(), 500);
         }
     }
 
@@ -263,6 +293,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         intent.putExtra(BeaconScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
+        if(mScannIsRunning){
+            builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
+        }else{
+            builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
+        }
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(BeaconScannerActivity.INTENT_EXTRA_TERMINATE_APP));
         } else {
@@ -287,14 +322,22 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    /*private PendingIntent getAppIntent(String extra) {
-        Intent intent = new Intent(this, GPSLoggerActivity.class);
+    private PendingIntent getAppIntent(String extra) {
+        Intent intent = new Intent(this, BeaconScannerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         if (extra != null) {
             intent.putExtra(extra, true);
         }
         return PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-    }*/
+    }
+
+    private PendingIntent getServiceIntent(String extra) {
+        Intent intent = new Intent(this, ScannerService.class);
+        if (extra != null) {
+            intent.putExtra(extra, true);
+        }
+        return PendingIntent.getService(this, intent.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     private PendingIntent getTerminateAppIntent(String extra) {
         Intent intent = new Intent(this, BeaconScannerActivity.class);
@@ -383,8 +426,24 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
         public boolean iDoReport = false;
+
+        public boolean iLockState = false;
+        private long iLastLockStateCheckTs = 0;
         private void handleResult(@NonNull ScanResult result) {
+            mScannResultsOnStart = true;
+
             long tsNow = System.currentTimeMillis();
+            if(iLastLockStateCheckTs + 5000 < tsNow){
+                iLastLockStateCheckTs = tsNow;
+                if(mKeyguardManager != null) {
+                    boolean cLockState = mKeyguardManager.isKeyguardLocked();
+                    if (iLockState) {
+                        iDoReport = !cLockState;
+                    }
+                    iLockState = cLockState;
+                }
+            }
+
             String addr = result.getDevice().getAddress();
             Covid19Beacon beacon = null;
             synchronized (mContainer) {

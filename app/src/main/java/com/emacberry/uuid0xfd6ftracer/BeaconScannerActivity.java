@@ -5,20 +5,18 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
 import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 public class BeaconScannerActivity extends AppCompatActivity {
 
@@ -33,6 +31,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
     private boolean mActivityIsCreated = false;
     private boolean mKillApp = false;
 
+    private String mOnConnectAction = null;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName paramComponentName) {
@@ -146,8 +145,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
             Intent i = getIntent();
             if (i != null) {
-                Log.d(LOG_TAG, "start intent extras: " + i.getExtras());
-                boolean wasStartFromService = i.hasExtra(INTENT_EXTRA_SERVICE_ACTION);
+                handleIntent(i);
             } else {
                 Log.d(LOG_TAG, "start intent was null");
             }
@@ -242,10 +240,18 @@ public class BeaconScannerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
 
     private void handleIntent(Intent intent) {
         boolean handleEvent = true;
         if (intent != null) {
+            Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
+            boolean wasStartFromService = intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION);
+
             /*if (handleEvent && intent.getBooleanExtra(STOP_LOGGING, false)) {
                 Log.i(LOG_TAG, "START OR STOP LOGGING");
                 if (_logger != null && _logger.isViewingMode()) {

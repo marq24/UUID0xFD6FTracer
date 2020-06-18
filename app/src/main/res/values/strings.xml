@@ -4,8 +4,11 @@
     <string name="tab_text_2">Tab 2</string>
 
     <string name="notifyChannelBase">Core Service</string>
-    <string name ="menu_exit_notify_action">EXIT</string>
     <string name="app_service_title">Background Tracer Service</string>
     <string name="app_service_msg">Scanning Environment...</string>
+
+    <string name ="menu_exit_notify_action">EXIT</string>
+    <string name ="menu_start_notify_action">Start</string>
+    <string name ="menu_stop_notify_action">Stop</string>
 
 </resources>

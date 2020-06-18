@@ -35,7 +35,7 @@ Mit der App könnt Ihr also sehen, wie viele Mitmenschen um Euch herum Verantwor
 ### Möglicher Mißbrauch
 Diese App ermöglicht die Kontrolle von Menschen, ob Sie die Corona-Warn-App aktiviert haben oder nicht (z.B. in Vereinzelungsanlagen oder bei Zugangskontrollen) - Diese Kontrolle ist jedoch technisch ebenfalls (mit anderen Mitteln) ohne Probleme möglich.
 
-Teilen erwünscht...
+---
 
 ## Corona Skeptiker
 Für die Verschwörungstheoretiker unter Euch: Für Euch ist die App auch super! Checkt, wie viel Verräter es in Euren eigenen Reihen gibt!

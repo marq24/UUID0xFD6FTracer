@@ -8,8 +8,8 @@ android {
         applicationId "com.emacberry.uuid0xfd6ftracer"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 900
-        versionName "0.9"
+        versionCode 901
+        versionName "0.9.0.1"
         //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -19,6 +19,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def version = variant.versionName
+            //def date = new Date()
+            //def formattedDate = date.format('ddMMyy')
+            //outputFileName = "GPSLogger_v${version}_${formattedDate}.apk"
+            outputFileName = "UUID0xFD6F_v${version}.apk"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

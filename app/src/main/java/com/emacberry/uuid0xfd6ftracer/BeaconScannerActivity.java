@@ -92,7 +92,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
         requestPermissions(new String[]{
                 Manifest.permission.FOREGROUND_SERVICE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
+                //Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.BLUETOOTH_ADMIN}, 99);

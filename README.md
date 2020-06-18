@@ -12,7 +12,7 @@ Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **i
 
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.
 
-Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes echtes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI läuft, dann sollte auch der Tacer laufen.
+Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes echtes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI bei Euch auf dem Gerät läuft, dann sollte auch der Tacer laufen.
 
 APK-Download hier von GitHub: [UUID0xFD6F_v0.9.0.3.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.0.3/UUID0xFD6F_v0.9.0.3.apk)
 
@@ -28,7 +28,7 @@ Da die App Bluetooth verwendet, benötigt sie das Android Recht "Eure Position z
 ### Nutzen für Euch
 Wer also in eine Traube von Menschen steht und sich fragt, ob wenigstens einer mit Eurer Corona-Warn-App (zumindest theoretisch) Daten austauschen könnte, dann könnt Ihr dies jetzt sehen!
 
-Die App ermittelt nur, wie viel Beacons in Eurer Umgebung gestartet sind (und zählt sich selbst auch mit) - ob die Corona-Warn-App ein anderes Gerät in seine interne Liste von möglichen Kontakten aufnimmt oder nicht liegt aber an vielen weiteren Faktoren!
+Die App ermittelt nur, wie viel Beacons in Eurer Umgebung gestartet sind (das eigene Telefon zählt **nicht** mit)- ob die Corona-Warn-App ein anderes Gerät in seine interne Liste von möglichen Kontakten aufnimmt oder nicht liegt aber an vielen weiteren Faktoren!
 
 Mit der App könnt Ihr also sehen, wie viele Mitmenschen um Euch herum Verantwortungsbewußt und solidarisch sind.
 

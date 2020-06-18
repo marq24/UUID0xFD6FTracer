@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -164,7 +163,8 @@ public class BeaconScannerActivity extends AppCompatActivity {
         mViewPager = findViewById(R.id.view_pager);
         mViewPager.setAdapter(sectionsPagerAdapter);
 
-        ActionBar actionBar = getSupportActionBar();
+        // MARQ24: Currently NO other TAB's implemented... (will be added)
+        /*ActionBar actionBar = getSupportActionBar();
         actionBar.removeAllTabs();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -175,29 +175,20 @@ public class BeaconScannerActivity extends AppCompatActivity {
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
             actionBar.addTab(actionBar.newTab().setTabListener(otl).setText(sectionsPagerAdapter.getPageTitle(i)));
-        }
+        }*/
 
         FloatingActionButton start = findViewById(R.id.start);
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                if (mScannerService != null) {
-                    mScannerService.startScan(true);
-                }
+        start.setOnClickListener(view -> {
+            if (mScannerService != null) {
+                mScannerService.startScan(true);
             }
         });
         FloatingActionButton stop = findViewById(R.id.stop);
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                if (mScannerService != null) {
-                    mScannerService.stopScan(true);
-                }
+        stop.setOnClickListener(view -> {
+            if (mScannerService != null) {
+                mScannerService.stopScan(true);
             }
         });
-
         mActivityIsCreated = true;
     }
 

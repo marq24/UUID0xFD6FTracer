@@ -92,8 +92,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private BluetoothAdapter mBluetoothAdapter;
+
+    private BroadcastReceiver mScreenOnOffReceiver;
     private BroadcastReceiver mBluetoothStateReceiver;
+
+    private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBluetoothLeScanner;
     private MyScanCallback mScanCallback = new ScannerService.MyScanCallback();
     private Handler mHandler = new Handler();
@@ -123,6 +126,23 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 if (Looper.myLooper() == null) {
                     Looper.prepare();
                 }
+
+                IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+                filter.addAction(Intent.ACTION_SCREEN_OFF);
+                mScreenOnOffReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        String action = intent.getAction();
+                        if(Intent.ACTION_SCREEN_ON.equals(action)) {
+                            //DO action for SCREEN_ON
+                            updateNotificationText(true);
+                        } else if(Intent.ACTION_SCREEN_OFF.equals(action)) {
+                            //Do action for SCREEN_OFF
+                        }
+                    }
+                };
+                registerReceiver(mScreenOnOffReceiver, filter);
+
                 Log.d(LOG_TAG, "initBtLE() started...");
                 if (mBluetoothAdapter == null) {
                     final BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
@@ -134,7 +154,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
                 // BT ON OFF OBSERVER...
                 startDeviceBluetoothStatusObserver();
-                //mHandler.postDelayed(() -> startScan(),5000);
             } catch (SecurityException s) {
                 Log.d(LOG_TAG, "", s);
                 // TODO: check permissions!!!!
@@ -190,6 +209,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mBluetoothStateReceiver != null) {
             try {
                 unregisterReceiver(mBluetoothStateReceiver);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+        if (mScreenOnOffReceiver != null) {
+            try {
+                unregisterReceiver(mScreenOnOffReceiver);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -258,7 +284,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private boolean mScannResultsOnStart = false;
     private boolean mScannStopedViaGui = false;
 
-    private void checkForScannStart() {
+    public void checkForScannStart() {
         if(!mScannStopedViaGui) {
             if (mScannIsRunning && !mScannResultsOnStart) {
                 Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
@@ -272,7 +298,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private CharSequence mNotifyTitle;
-    private CharSequence mNotifyText;
+    private CharSequence mNotifyTextOff;
+    private CharSequence mNotifyTextScanning;
     private String mNotifyTextAddon;
     private NotificationCompat.Builder mBuilder;
 
@@ -282,14 +309,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         // expanded notification
         if (mNotifyTitle == null) {
             mNotifyTitle = getText(R.string.app_service_title);
-            mNotifyText = getText(R.string.app_service_msg1);
-            mNotifyTextAddon  = getString(R.string.app_service_msg2);
+            mNotifyTextScanning = getText(R.string.app_service_msgScan1);
+            mNotifyTextAddon  = getString(R.string.app_service_msgScan2);
+            mNotifyTextOff = getText(R.string.app_service_msgOff);
         }
 
         String channelId = NotificationHelper.getBaseNotificationChannelId(this);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
         builder.setContentTitle(mNotifyTitle);
-        builder.setContentText(mNotifyText);
 
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -306,8 +333,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
         if(mScannIsRunning){
+            builder.setContentText(mNotifyTextScanning);
             builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
         }else{
+            builder.setContentText(mNotifyTextOff);
             builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
         }
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
@@ -377,15 +406,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private void updateNotificationText() {
+    private void updateNotificationText(boolean force) {
         if (mKeyguardManager == null) {
             mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         }
         boolean notify = false;
         if (mBuilder != null) {
             int size = mContainer.size();
-            if(size > 0) {
-                String txt = mNotifyText + " "+ String.format(mNotifyTextAddon, size);
+            if(mScannIsRunning && size > 0) {
+                String txt = mNotifyTextScanning + " "+ String.format(mNotifyTextAddon, size);
                 // in lock mode we need to split the lines...
                 /*mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(txt));
                 if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
@@ -402,13 +431,17 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 }*/
                 mBuilder.setContentTitle(mNotifyTitle);
                 mBuilder.setContentText(txt);
-                notify = !mKeyguardManager.isKeyguardLocked();
+                notify = force || !mKeyguardManager.isKeyguardLocked();
                 mNotifyCanBeReset = true;
             }else{
                 if (mNotifyCanBeReset) {
                     mNotifyCanBeReset = false;
                     mBuilder.setContentTitle(mNotifyTitle);
-                    mBuilder.setContentText(mNotifyText);
+                    if(mScannIsRunning) {
+                        mBuilder.setContentText(mNotifyTextScanning);
+                    }else{
+                        mBuilder.setContentText(mNotifyTextOff);
+                    }
                     mBuilder.setStyle(null);
                     notify = true;
                 }
@@ -510,7 +543,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 if (mGuiCallback != null) {
                     mGuiCallback.newBeconEvent(addr);
                 }
-                updateNotificationText();
+                updateNotificationText(false);
                 Log.v(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
                 iDoReport = false;
             }

@@ -4,23 +4,27 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.emacberry.uuid0xfd6ftracer.ui.main.PlaceholderFragment;
 import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
 
 public class BeaconScannerActivity extends AppCompatActivity {
 
@@ -74,6 +78,62 @@ public class BeaconScannerActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 99:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    if(mScannerService != null){
+                        mScannerService.checkForScannStart();
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                break;
+        }
+    }
+
+    private final int MENU_EXIT = 100;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        try {
+            super.onCreateOptionsMenu(menu);
+        } catch (Throwable t) {
+        }
+        menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.menu_exit_notify_action);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        try {
+            super.onCreateOptionsMenu(menu);
+        } catch (Throwable t) {
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isCheckable()) {
+            return super.onContextItemSelected(item);
+        } else {
+            switch (item.getItemId()) {
+                case MENU_EXIT:
+                    exitApp();
+                    return true;
+
+                default:
+                    return super.onContextItemSelected(item);
+            }
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent callingIntent = getIntent();
@@ -98,11 +158,25 @@ public class BeaconScannerActivity extends AppCompatActivity {
                 Manifest.permission.BLUETOOTH_ADMIN}, 99);
 
         setContentView(R.layout.activity_main);
+
+
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         mViewPager = findViewById(R.id.view_pager);
         mViewPager.setAdapter(sectionsPagerAdapter);
-        TabLayout tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(mViewPager);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.removeAllTabs();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        MyOnTabListenerAndroidX otl = new MyOnTabListenerAndroidX();
+        for (int i = 0; i < sectionsPagerAdapter.getCount(); i++) {
+            // Create a tab with text corresponding to the page title defined by
+            // the adapter. Also specify this Activity object, which implements
+            // the TabListener interface, as the callback (listener) for when
+            // this tab is selected.
+            actionBar.addTab(actionBar.newTab().setTabListener(otl).setText(sectionsPagerAdapter.getPageTitle(i)));
+        }
+
         FloatingActionButton start = findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -333,6 +407,27 @@ public class BeaconScannerActivity extends AppCompatActivity {
                     ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_beacons), size));
                 }
             }});
+        }
+    }
+
+    private class MyOnTabListenerAndroidX implements ActionBar.TabListener {
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            if (tab != null && mViewPager != null) {
+                try {
+                    mViewPager.setCurrentItem(tab.getPosition());
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "", e);
+                }
+            }
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
     }
 }

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tab_text_1">Aktive Sender</string>
+
     <string name="notifyChannelBase">Scanner Hauptdienst</string>
     <string name="app_service_title">Hintergrund Tracing Dienst</string>
-    <string name="app_service_msg1">Umgebung wird untersucht...</string>
-    <string name="app_service_msg2">[gefunden: %1$d]</string>
+    <string name="app_service_msgOff">Bitte Scan starten</string>
+    <string name="app_service_msgScan1">Umgebung wird untersucht...</string>
+    <string name="app_service_msgScan2">[gefunden: %1$d]</string>
+
     <string name="menu_exit_notify_action">Beenden</string>
     <string name="menu_start_notify_action">Start Scan</string>
     <string name="menu_stop_notify_action">Stop Scan</string>

@@ -5,8 +5,9 @@
 
     <string name="notifyChannelBase">Core Service</string>
     <string name="app_service_title">Background Tracer Service</string>
-    <string name="app_service_msg1">Scanning Environment...</string>
-    <string name="app_service_msg2">[found: %1$d]</string>
+    <string name="app_service_msgOff">Please start Scanner</string>
+    <string name="app_service_msgScan1">Scanning Environment...</string>
+    <string name="app_service_msgScan2">[found: %1$d]</string>
 
     <string name ="menu_exit_notify_action">EXIT</string>
     <string name ="menu_start_notify_action">Start Scan</string>

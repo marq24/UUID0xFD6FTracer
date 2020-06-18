@@ -8,6 +8,8 @@
     <string name="app_service_msgScan1">Umgebung wird untersucht...</string>
     <string name="app_service_msgScan2">[gefunden: %1$d]</string>
 
+    <string name="menu_finish">App Schließen</string>
+    <string name="menu_exit">Service Beenden</string>
     <string name="menu_exit_notify_action">Beenden</string>
     <string name="menu_start_notify_action">Start Scan</string>
     <string name="menu_stop_notify_action">Stop Scan</string>

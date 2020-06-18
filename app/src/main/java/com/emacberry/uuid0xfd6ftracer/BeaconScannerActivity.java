@@ -95,7 +95,9 @@ public class BeaconScannerActivity extends AppCompatActivity {
         }
     }
 
+    private final int MENU_FINISH = 80;
     private final int MENU_EXIT = 100;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,7 +105,8 @@ public class BeaconScannerActivity extends AppCompatActivity {
             super.onCreateOptionsMenu(menu);
         } catch (Throwable t) {
         }
-        menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.menu_exit_notify_action);
+        menu.add(Menu.NONE, MENU_FINISH, Menu.NONE, R.string.menu_finish);
+        menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.menu_exit);
         return true;
     }
 
@@ -122,6 +125,10 @@ public class BeaconScannerActivity extends AppCompatActivity {
             return super.onContextItemSelected(item);
         } else {
             switch (item.getItemId()) {
+                case MENU_FINISH:
+                    finish();
+                    return true;
+
                 case MENU_EXIT:
                     exitApp();
                     return true;

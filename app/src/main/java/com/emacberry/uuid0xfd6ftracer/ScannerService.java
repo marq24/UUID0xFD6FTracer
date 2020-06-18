@@ -246,6 +246,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if(viaGui){
                 mScannStopedViaGui = true;
             }
+            mScannResultsOnStart = false;
             if(mBluetoothLeScanner != null) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.stopScan() called");
                 try {

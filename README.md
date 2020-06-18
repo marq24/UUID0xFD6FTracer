@@ -8,7 +8,7 @@ Join OPEN Beta @ Google Play (open on your mobile device)
 https://play.google.com/apps/testing/com.emacberry.uuid0xfd6ftracer
 
 ## Deutsch
-Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** Aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben die Menschen um mich herum ebenfalls die App am Start?
+Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?
 
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.
 

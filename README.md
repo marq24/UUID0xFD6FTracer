@@ -5,14 +5,14 @@ Main purpose of the app is to scann your current enviroment for active devices r
 So this app will show you how many other devices are currently visible to your running Corona-App (like the Corona-Warn-App from the RKI) - So when you are at a place with some people you can judge how confident you could be concerning the possibility to be warned if anybody in this group will report to be infected later.
 
 Join OPEN Beta @ Google Play (open on your mobile device)
-https://play.google.com/apps/testing/com.emacberry.uuid0xfd6ftracer
+[__not avialable yet__](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6ftracer)
 
 ## Deutsch
 Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?
 
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.
 
-Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes echtes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI bei Euch auf dem Gerät läuft, dann sollte auch der Tacer laufen.
+Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes eigenes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI bei Euch auf dem Gerät läuft, dann sollte auch der Tracer laufen.
 
 APK-Download hier von GitHub: [UUID0xFD6F_v0.9.0.6.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.0.6/UUID0xFD6F_v0.9.0.6.apk)
 

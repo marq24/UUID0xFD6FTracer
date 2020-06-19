@@ -96,8 +96,9 @@ public class BeaconScannerActivity extends AppCompatActivity {
         }
     }
 
-    private final int MENU_FINISH = 80;
-    private final int MENU_EXIT = 100;
+    private final int MENU_START_STOP = 80;
+    private final int MENU_FINISH = 900;
+    private final int MENU_EXIT = 1000;
 
 
     @Override
@@ -106,6 +107,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
             super.onCreateOptionsMenu(menu);
         } catch (Throwable t) {
         }
+        menu.add(Menu.NONE, MENU_START_STOP, Menu.NONE, R.string.menu_start);
         menu.add(Menu.NONE, MENU_FINISH, Menu.NONE, R.string.menu_finish);
         menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.menu_exit);
         return true;
@@ -117,6 +119,15 @@ public class BeaconScannerActivity extends AppCompatActivity {
             super.onCreateOptionsMenu(menu);
         } catch (Throwable t) {
         }
+        MenuItem startService = menu.findItem(MENU_START_STOP);
+        startService.setEnabled(mScannerService != null);
+        if(mScannerService != null){
+            if(mScannerService.isScanning()){
+                startService.setTitle(R.string.menu_stop);
+            }else{
+                startService.setTitle(R.string.menu_start);
+            }
+        }
         return true;
     }
 
@@ -126,6 +137,16 @@ public class BeaconScannerActivity extends AppCompatActivity {
             return super.onContextItemSelected(item);
         } else {
             switch (item.getItemId()) {
+                case MENU_START_STOP:
+                    if(mScannerService != null){
+                        if(mScannerService.isScanning()) {
+                            mScannerService.stopScan(true);
+                        }else{
+                            mScannerService.startScan(true);
+                        }
+                    }
+                    return true;
+
                 case MENU_FINISH:
                     finish();
                     return true;

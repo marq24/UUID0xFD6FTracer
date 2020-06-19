@@ -14,7 +14,7 @@ Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos
 
 Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes echtes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI bei Euch auf dem Gerät läuft, dann sollte auch der Tacer laufen.
 
-APK-Download hier von GitHub: [UUID0xFD6F_v0.9.0.5.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.0.5/UUID0xFD6F_v0.9.0.5.apk)
+APK-Download hier von GitHub: [UUID0xFD6F_v0.9.0.6.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.0.6/UUID0xFD6F_v0.9.0.6.apk)
 
 ### Technisch
 Der gemeinsam von Google und Apple entwickelte Standard über den die möglichen Kontakt-Informationen ausgetauscht werden, basiert darauf, dass auf dem Mobiltelefon ein BluetoothLE Beacon mit der **UUID 0xFD6F** gestartet wird.

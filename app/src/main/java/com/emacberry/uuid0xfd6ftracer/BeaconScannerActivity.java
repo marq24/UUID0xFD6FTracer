@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,7 +74,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
             }
         }catch(Throwable t){
-            Log.d(LOG_TAG, ""+t.getMessage());
+            Log.e(LOG_TAG, ""+t.getMessage());
         }
     }
 
@@ -131,34 +132,51 @@ public class BeaconScannerActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.isCheckable()) {
-            return super.onContextItemSelected(item);
-        } else {
-            switch (item.getItemId()) {
-                case MENU_START_STOP:
-                    if(mScannerService != null){
-                        if(mScannerService.isScanning()) {
-                            mScannerService.stopScan(true);
-                        }else{
-                            mScannerService.startScan(true);
+    private class AsyncMenuHandler extends AsyncTask<MenuItem, Void, Void>{
+        @Override
+        protected Void doInBackground(MenuItem... menuItems) {
+            try{
+                if(menuItems.length>0){
+                    MenuItem item = menuItems[0];
+                    if (item.isCheckable()) {
+                        // do nothing
+                    } else {
+                        switch (item.getItemId()) {
+                            case MENU_START_STOP:
+                                if(mScannerService != null){
+                                    if(mScannerService.isScanning()) {
+                                        mScannerService.stopScan(true);
+                                    }else{
+                                        mScannerService.startScan(true);
+                                    }
+                                }
+                                break;
+
+                            case MENU_FINISH:
+                                finish();
+                                break;
+
+                            case MENU_EXIT:
+                                exitApp();
+                                break;
+
+                            default:
+                                break;
                         }
                     }
-                    return true;
-
-                case MENU_FINISH:
-                    finish();
-                    return true;
-
-                case MENU_EXIT:
-                    exitApp();
-                    return true;
-
-                default:
-                    return super.onContextItemSelected(item);
+                }
+            }catch(Throwable t){
+                Log.e(LOG_TAG, ""+t.getMessage());
             }
+            return null;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        new AsyncMenuHandler().execute(item);
+        // hack
+        return true;
     }
 
     @Override
@@ -166,16 +184,20 @@ public class BeaconScannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent callingIntent = getIntent();
         if (callingIntent != null && callingIntent.getBooleanExtra(INTENT_EXTRA_TERMINATE_APP, false)) {
-            Log.w(LOG_TAG, "TERMINATE_APP triggered via Service");
-            if (mHandler != null) {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        exitApp();
-                    }
-                }, 50);
+            try{
+                Log.w(LOG_TAG, "TERMINATE_APP triggered via Service");
+                if (mHandler != null) {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            exitApp();
+                        }
+                    }, 50);
+                }
+                finish();
+            }catch(Throwable t){
+                Log.e(LOG_TAG, ""+t.getMessage());
             }
-            finish();
         }
 
         requestPermissions(new String[]{
@@ -208,14 +230,22 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
         FloatingActionButton start = findViewById(R.id.start);
         start.setOnClickListener(view -> {
-            if (mScannerService != null) {
-                mScannerService.startScan(true);
+            try{
+                if (mScannerService != null) {
+                    mScannerService.startScan(true);
+                }
+            }catch(Throwable t){
+                Log.e(LOG_TAG, ""+t.getMessage());
             }
         });
         FloatingActionButton stop = findViewById(R.id.stop);
         stop.setOnClickListener(view -> {
-            if (mScannerService != null) {
-                mScannerService.stopScan(true);
+            try{
+                if (mScannerService != null) {
+                    mScannerService.stopScan(true);
+                }
+            }catch(Throwable t){
+                Log.e(LOG_TAG, ""+t.getMessage());
             }
         });
         mActivityIsCreated = true;
@@ -246,7 +276,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
                         startService(loggerIntent);
                     }
                 } catch (Throwable t) {
-                    Log.d(LOG_TAG, "" + t.getMessage());
+                    Log.e(LOG_TAG, "" + t.getMessage());
                 }
             }
 
@@ -276,8 +306,8 @@ public class BeaconScannerActivity extends AppCompatActivity {
             if (mConnection != null) {
                 unbindService(mConnection);
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            Log.e(LOG_TAG, ""+t.getMessage());
         }
         try {
             super.onStop();
@@ -312,19 +342,23 @@ public class BeaconScannerActivity extends AppCompatActivity {
     }
 
     protected void exitApp() {
-        stopService(new Intent(this, ScannerService.class));
-        if (mHandler != null) {
-            mHandler.postDelayed(() -> {
-                mKillApp = true;
-                if (mActivityIsCreated) {
-                    // if the activity is visible we simply call 'finish' -> that will then
-                    // trigger the kill...
-                    finish();
-                } else {
-                    killApp();
-                }
+        try {
+            stopService(new Intent(this, ScannerService.class));
+            if (mHandler != null) {
+                mHandler.postDelayed(() -> {
+                    mKillApp = true;
+                    if (mActivityIsCreated) {
+                        // if the activity is visible we simply call 'finish' -> that will then
+                        // trigger the kill...
+                        finish();
+                    } else {
+                        killApp();
+                    }
 
-            }, 250);
+                }, 250);
+            }
+        }catch(Throwable t){
+            Log.e(LOG_TAG, ""+t.getMessage());
         }
     }
 

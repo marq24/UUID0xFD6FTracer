@@ -84,9 +84,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     public void setGuiCallback(BeaconScannerActivity mainActivity) {
         mGuiCallback = mainActivity;
         mScanCallback.mDoReport = true;
-        if(mainActivity != null){
+        if (mainActivity != null) {
             // activity connected...
-            if(!mScannIsRunning && !mScannStopedViaGui){
+            if (!mScannIsRunning && !mScannStopedViaGui) {
                 startScan(true);
             }
         }
@@ -112,10 +112,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(isRunning && intent !=null){
+        if (isRunning && intent != null) {
             handleIntentInt(intent);
             return START_STICKY;
-        }else {
+        } else {
             super.onStartCommand(intent, flags, startId);
             Log.w(LOG_TAG, "onStartCommand() start");
             if (intent != null) {
@@ -203,14 +203,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    public boolean isScanning(){
+    public boolean isScanning() {
         return mScannIsRunning;
     }
 
-    private void ensureAdapterAndScannerClosed(){
+    private void ensureAdapterAndScannerClosed() {
         try {
             if (mBluetoothAdapter != null) {
-                if(mBluetoothLeScanner != null && mScanCallback != null){
+                if (mBluetoothLeScanner != null && mScanCallback != null) {
                     mBluetoothLeScanner.stopScan(mScanCallback);
                 }
                 try {
@@ -226,7 +226,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private void ensureAdapterAndScannerInit(){
+    private void ensureAdapterAndScannerInit() {
         if (mBluetoothAdapter == null) {
             final BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
@@ -237,24 +237,24 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     public void stopScan(boolean viaGui) {
-        if(mScannIsRunning){
-            if(viaGui){
+        if (mScannIsRunning) {
+            if (viaGui) {
                 mScannStopedViaGui = true;
             }
             mScannResultsOnStart = false;
             mContainer = new HashMap<>();
-            if(mBluetoothLeScanner != null) {
+            if (mBluetoothLeScanner != null) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.stopScan() called");
                 try {
                     mBluetoothLeScanner.flushPendingScanResults(mScanCallback);
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                try{
+                try {
                     mBluetoothLeScanner.stopScan(mScanCallback);
                     mScannIsRunning = false;
                     updateNotification();
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -262,11 +262,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private boolean mScannIsRunning = false;
-    public void  startScan(boolean viaGui){
-        if(viaGui){
+
+    public void startScan(boolean viaGui) {
+        if (viaGui) {
             mScannStopedViaGui = false;
         }
-        if(mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
+        if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
             Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
             ArrayList<ScanFilter> f = new ArrayList<>();
             f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
@@ -275,14 +276,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             mScannIsRunning = true;
             updateNotification();
         }
-        mHandler.postDelayed(() -> checkForScannStart(),30000);
+        mHandler.postDelayed(() -> checkForScannStart(), 30000);
     }
 
     private boolean mScannResultsOnStart = false;
     private boolean mScannStopedViaGui = false;
 
     public void checkForScannStart() {
-        if(!mScannStopedViaGui) {
+        if (!mScannStopedViaGui) {
             if (mScannIsRunning && !mScannResultsOnStart) {
                 Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
                 mHandler.postDelayed(() -> stopScan(false), 500);
@@ -305,7 +306,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mNotifyTitle == null) {
             mNotifyTitle = getText(R.string.app_service_title);
             mNotifyTextScanning = getText(R.string.app_service_msgScan1);
-            mNotifyTextAddon  = getString(R.string.app_service_msgScan2);
+            mNotifyTextAddon = getString(R.string.app_service_msgScan2);
             mNotifyTextOff = getText(R.string.app_service_msgOff);
         }
 
@@ -327,12 +328,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         intent.putExtra(BeaconScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
-        if(mScannIsRunning){
+        if (mScannIsRunning) {
             builder.setContentText(mNotifyTextScanning);
             builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
-        }else{
+        } else {
             builder.setContentText(mNotifyTextOff);
-            // TODO: Check start scan can cause issues when comming from lockedScreen?!
+            // TODO: Check 'start scan' from notification action can cause no scan results after
+            //  the start / this will not happen, if scan is triggered via Activity (no clue yet why)
             //builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
         }
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
@@ -399,8 +401,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             mBuilder.setShowWhen(true);
             mBuilder.setWhen(System.currentTimeMillis());
             mNotificationManager.notify(R.id.notify_backservive, mBuilder.build());
-        }catch(Throwable t){
-            Log.d(LOG_TAG, ""+t.getMessage());
+        } catch (Throwable t) {
+            Log.d(LOG_TAG, "" + t.getMessage());
         }
     }
 
@@ -411,19 +413,19 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         boolean notify = false;
         if (mBuilder != null) {
             int size = mContainer.size();
-            if(mScannIsRunning && size > 0) {
-                String txt = mNotifyTextScanning + " "+ String.format(mNotifyTextAddon, size);
+            if (mScannIsRunning && size > 0) {
+                String txt = mNotifyTextScanning + " " + String.format(mNotifyTextAddon, size);
                 mBuilder.setContentTitle(mNotifyTitle);
                 mBuilder.setContentText(txt);
                 notify = true;//force || !mKeyguardManager.isKeyguardLocked();
                 mNotifyCanBeReset = true;
-            }else{
+            } else {
                 if (mNotifyCanBeReset) {
                     mNotifyCanBeReset = false;
                     mBuilder.setContentTitle(mNotifyTitle);
-                    if(mScannIsRunning) {
+                    if (mScannIsRunning) {
                         mBuilder.setContentText(mNotifyTextScanning);
-                    }else{
+                    } else {
                         mBuilder.setContentText(mNotifyTextOff);
                     }
                     mBuilder.setStyle(null);
@@ -458,47 +460,54 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private long iLastContainerCheckTs = 0;
         public boolean mDoReport = false;
         public boolean mDisplayIsOn;
+        private long iLastTs = 0;
+
         private void handleResult(@NonNull ScanResult result) {
             mScannResultsOnStart = true;
-
             long tsNow = System.currentTimeMillis();
+            if (BuildConfig.DEBUG) {
+                if (iLastTs + 2000 < tsNow) {
+                    Log.v(LOG_TAG, "Process scan result...");
+                }
+                iLastTs = tsNow;
+            }
 
             String addr = result.getDevice().getAddress();
             Covid19Beacon beacon = null;
             int prevContainerSize = mContainer.size();
             synchronized (mContainer) {
-                // check every minute my default for outdated beacon
+                // check every 30sec by default for outdated beacon
                 // data...
-                long delay = 60000;
+                long delay = 30000;
 
                 beacon = mContainer.get(addr);
                 if (beacon == null) {
                     beacon = new Covid19Beacon(addr, tsNow);
                     mContainer.put(addr, beacon);
-                    // if we just add a new beacon, we throw away everything
-                    // that is older then 20sec...
-                    delay = 20000;
-                    if(BuildConfig.DEBUG) {
+                    // if we add an new id, we instantly check for
+                    // possible expired ones...
+                    delay = 0;
+                    if (BuildConfig.DEBUG) {
                         mDoReport = true;
                     }
                 }
 
                 // check every x sec if there are expired Beacons in our store?
-                if(iLastContainerCheckTs + delay < tsNow){
+                if (iLastContainerCheckTs + delay < tsNow) {
                     iLastContainerCheckTs = tsNow;
                     ArrayList<String> addrsToRemove = new ArrayList<>();
-                    for(Covid19Beacon otherBeacon: mContainer.values()){
+                    for (Covid19Beacon otherBeacon : mContainer.values()) {
                         // if beacon not returned in any scan of the last 15sec
-                        // we going to remove it again from the store
-                        if(otherBeacon.mLastTs + 15000 < tsNow){
+                        // we going to remove it...
+                        if (otherBeacon.mLastTs + 15000 < tsNow) {
                             addrsToRemove.add(otherBeacon.addr);
                         }
                     }
-                    if(addrsToRemove.size()>0){
-                        for(String aOtherAddr: addrsToRemove){
+                    if (addrsToRemove.size() > 0) {
+                        for (String aOtherAddr : addrsToRemove) {
                             mContainer.remove(aOtherAddr);
                         }
-                        if(BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG) {
                             mDoReport = true;
                         }
                     }
@@ -519,16 +528,16 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
             // finally letting the GUI know, that we have new data...
             // have in mind, that this will be triggered quite often
-            if(mDoReport) {
+            if (mDoReport) {
                 if (mGuiCallback != null) {
                     mGuiCallback.newBeconEvent(addr);
                 }
                 // only IF the display is active we will update the notification
                 // -> we have to check what is with the amoled display devices?!
-                if(mDisplayIsOn) {
+                if (mDisplayIsOn) {
                     updateNotificationText(false);
                 }
-                Log.v(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
+                Log.d(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
                 mDoReport = false;
             }
         }
@@ -558,7 +567,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private class NotificationUpdateTask extends AsyncTask<Void, Void, Void>{
+    private class NotificationUpdateTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             updateNotificationText(true);
@@ -566,7 +575,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private void startScreenStateObserver(){
+    private void startScreenStateObserver() {
         if (mScreenOnOffReceiver == null) {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);

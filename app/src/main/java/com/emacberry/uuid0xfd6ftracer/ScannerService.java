@@ -1,5 +1,6 @@
 package com.emacberry.uuid0xfd6ftracer;
 
+import android.app.AppOpsManager;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
@@ -254,6 +256,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     mBluetoothLeScanner.stopScan(mScanCallback);
                     mScannIsRunning = false;
                     updateNotification();
+                    if(mGuiCallback!=null){
+                        mGuiCallback.updateButtonImg();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -262,21 +267,53 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private boolean mScannIsRunning = false;
-
+    private boolean mHasScanPermission = false;
     public void startScan(boolean viaGui) {
         if (viaGui) {
             mScannStopedViaGui = false;
         }
-        if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
-            Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
-            ArrayList<ScanFilter> f = new ArrayList<>();
-            f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
-            mContainer = new HashMap<>();
-            mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
-            mScannIsRunning = true;
+        if(checkScanPermissions()) {
+            if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
+                Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
+                ArrayList<ScanFilter> f = new ArrayList<>();
+                f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
+                mContainer = new HashMap<>();
+                mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
+                mScannIsRunning = true;
+                updateNotification();
+                if(mGuiCallback!=null){
+                    mGuiCallback.updateButtonImg();
+                }
+            }
+            mHandler.postDelayed(() -> checkForScannStart(), 30000);
+        }else{
+            // no permission...? start activity and request START again
             updateNotification();
         }
-        mHandler.postDelayed(() -> checkForScannStart(), 30000);
+    }
+
+    private AppOpsManager mAppOps;
+    private boolean checkScanPermissions() {
+        if(mAppOps==null){
+            mAppOps = getSystemService(AppOpsManager.class);
+        }
+        if (checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && isAppOppAllowed(mAppOps, AppOpsManager.OPSTR_FINE_LOCATION, BuildConfig.APPLICATION_ID)) {
+            mHasScanPermission = true;
+            return true;
+        }else {
+            // https://android.googlesource.com/platform/packages/apps/Bluetooth/+/master/src/com/android/bluetooth/Utils.java
+            // sometimes the isAppOppAllowed(...) (copied from the com.android.bluetooth.Utils)
+            // will return false, cause it will return 'AppOpsManager.MODE_IGNORED'
+            // -> in this case we should not call the scanner start we have to find a way
+            // to launch the activity and request 'scanStart' from there... (I love Android!)
+            mAppOps = null;
+            mHasScanPermission = false;
+            return false;
+        }
+    }
+
+    private static boolean isAppOppAllowed(AppOpsManager appOps, String op, String callingPackage) {
+        return appOps.noteOp(op, Binder.getCallingUid(), callingPackage) == AppOpsManager.MODE_ALLOWED;
     }
 
     private boolean mScannResultsOnStart = false;
@@ -295,24 +332,20 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private CharSequence mNotifyTitle;
-    private CharSequence mNotifyTextOff;
     private CharSequence mNotifyTextScanning;
     private String mNotifyTextAddon;
     private NotificationCompat.Builder mBuilder;
 
     private NotificationCompat.Builder getNotificationBuilder() {
         // http://developer.android.com/guide/topics/ui/notifiers/notifications.html
-        if (mNotifyTitle == null) {
-            mNotifyTitle = getText(R.string.app_service_title);
+        if (mNotifyTextScanning == null) {
             mNotifyTextScanning = getText(R.string.app_service_msgScan1);
             mNotifyTextAddon = getString(R.string.app_service_msgScan2);
-            mNotifyTextOff = getText(R.string.app_service_msgOff);
         }
 
         String channelId = NotificationHelper.getBaseNotificationChannelId(this);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
-        builder.setContentTitle(mNotifyTitle);
+        builder.setContentTitle(getText(R.string.app_service_title));
 
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -332,10 +365,18 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             builder.setContentText(mNotifyTextScanning);
             builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
         } else {
-            builder.setContentText(mNotifyTextOff);
-            // TODO: Check 'start scan' from notification action can cause no scan results after
-            //  the start / this will not happen, if scan is triggered via Activity (no clue yet why)
-            //builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
+            if(checkScanPermissions() && mHasScanPermission) {
+                builder.setContentText(getString(R.string.app_service_msgOff));
+                // Check 'start scan' from notification action can cause no scan results after
+                //  the start / this will not happen, if scan is triggered via Activity (no clue yet why)
+                // logcat reports:
+                // E/BluetoothUtils: Permission denial: Need ACCESS_FINE_LOCATION permission to get scan results
+                //
+                // wtf?!
+                builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
+            }else{
+                builder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
+            }
         }
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(BeaconScannerActivity.INTENT_EXTRA_TERMINATE_APP));
@@ -415,18 +456,20 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             int size = mContainer.size();
             if (mScannIsRunning && size > 0) {
                 String txt = mNotifyTextScanning + " " + String.format(mNotifyTextAddon, size);
-                mBuilder.setContentTitle(mNotifyTitle);
                 mBuilder.setContentText(txt);
                 notify = true;//force || !mKeyguardManager.isKeyguardLocked();
                 mNotifyCanBeReset = true;
             } else {
                 if (mNotifyCanBeReset) {
                     mNotifyCanBeReset = false;
-                    mBuilder.setContentTitle(mNotifyTitle);
                     if (mScannIsRunning) {
                         mBuilder.setContentText(mNotifyTextScanning);
                     } else {
-                        mBuilder.setContentText(mNotifyTextOff);
+                        if(mHasScanPermission) {
+                            mBuilder.setContentText(getText(R.string.app_service_msgOff));
+                        }else{
+                            mBuilder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
+                        }
                     }
                     mBuilder.setStyle(null);
                     notify = true;

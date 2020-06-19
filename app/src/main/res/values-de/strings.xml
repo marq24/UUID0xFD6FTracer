@@ -5,6 +5,7 @@
     <string name="notifyChannelBase">Scanner Hauptdienst</string>
     <string name="app_service_title">Hintergrund Tracing Dienst</string>
     <string name="app_service_msgOff">Bitte Scan starten</string>
+    <string name="app_service_msgOffNoPermissions">Bitte Apps starten, um den Scan zu starten</string>
     <string name="app_service_msgScan1">Umgebung wird untersucht...</string>
     <string name="app_service_msgScan2">[gefunden: %1$d]</string>
 

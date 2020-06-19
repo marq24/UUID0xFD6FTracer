@@ -36,6 +36,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private ScannerService mScannerService;
     private ViewPager mViewPager;
+    private FloatingActionButton mFab;
 
     private boolean mActivityIsCreated = false;
     private boolean mKillApp = false;
@@ -228,21 +229,15 @@ public class BeaconScannerActivity extends AppCompatActivity {
             actionBar.addTab(actionBar.newTab().setTabListener(otl).setText(sectionsPagerAdapter.getPageTitle(i)));
         }*/
 
-        FloatingActionButton start = findViewById(R.id.start);
-        start.setOnClickListener(view -> {
+        mFab = findViewById(R.id.startstop);
+        mFab.setOnClickListener(view -> {
             try{
                 if (mScannerService != null) {
-                    mScannerService.startScan(true);
-                }
-            }catch(Throwable t){
-                Log.e(LOG_TAG, ""+t.getMessage());
-            }
-        });
-        FloatingActionButton stop = findViewById(R.id.stop);
-        stop.setOnClickListener(view -> {
-            try{
-                if (mScannerService != null) {
-                    mScannerService.stopScan(true);
+                    if(mScannerService.isScanning()){
+                        mScannerService.stopScan(true);
+                    }else{
+                        mScannerService.startScan(true);
+                    }
                 }
             }catch(Throwable t){
                 Log.e(LOG_TAG, ""+t.getMessage());
@@ -448,6 +443,20 @@ public class BeaconScannerActivity extends AppCompatActivity {
             if (handleEvent && intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION)) {
                 //System.out.println("A");
             }
+        }
+    }
+
+    public void updateButtonImg(){
+        if(mScannerService != null) {
+            runOnUiThread(() -> {
+                if(mFab != null) {
+                    if (mScannerService.isScanning()) {
+                        mFab.setImageResource(android.R.drawable.ic_media_pause);
+                    }else{
+                        mFab.setImageResource(android.R.drawable.ic_media_play);
+                    }
+                }
+            });
         }
     }
 

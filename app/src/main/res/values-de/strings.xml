@@ -17,5 +17,5 @@
 
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
     <string name="menu_start">Scanner Dienst starten</string>
-    <string name="menu_stop">Scanner Dienst beenden</string>
+    <string name="menu_stop">Scanner Dienst stoppen</string>
 </resources>

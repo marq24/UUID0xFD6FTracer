@@ -245,6 +245,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
         });
         mActivityIsCreated = true;
         setActiveBeaconCount(0);
+        mHandler.postDelayed(()->updateButtonImg(), 500);
     }
 
     @Override

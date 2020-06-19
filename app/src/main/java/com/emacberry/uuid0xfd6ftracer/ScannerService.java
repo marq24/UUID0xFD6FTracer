@@ -502,7 +502,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
         public boolean mDoReport = false;
-        public boolean mDisplayIsOn;
+        public boolean mDisplayIsOn = true;
         private long iLastTs = 0;
 
         private void handleResult(@NonNull ScanResult result) {

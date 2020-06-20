@@ -37,7 +37,7 @@ Mit der App könnt Ihr also sehen, wie viele Mitmenschen um Euch herum den Expos
 ### Möglicher Missbrauch
 Diese App ermöglicht in Theorie die Kontrolle von Menschen, ob Sie ein 'Exposurenotification Dienst' Signal (wie von Corona-Warn-App verwendet) senden z.B. in Vereinzelungsanlagen oder bei Zugangskontrollen.
 
-_Wenn_ ich z.B. als Arbeitgeber eine solche __unzulässige Kontrolle__ meiner Mitarbeiter anstrebe, dann würde ich direkt BluetoothLE Beacon Scanner Hardware verbauen und den Zugang meinen Vorstellungen nach steuern, anstatt einen Mitarbeiter mit der **UUID 0xFD6F Tracer App** in der Hand vor die Eingangstür zu stellen (Und schon wieder habe ich einen potentiellen Arbeitsplatz in Deutschland vernichtet).
+_Wenn_ ich z.B. als Arbeitgeber eine solche __unzulässige Kontrolle__ meiner Mitarbeiter anstrebe, dann würde ich direkt BluetoothLE-Beacon Scanner Hardware (mit einer viel höheren inernen Scan-Frequenz) verbauen und den Zugang meinen Vorstellungen nach steuern, anstatt einen Mitarbeiter mit der **UUID 0xFD6F Tracer App** in der Hand vor die Eingangstür zu stellen (Und schon wieder habe ich einen potentiellen Arbeitsplatz in Deutschland vernichtet).
 
 ### Moral & Ethik
 Das ExposureNotification Framework von Apple & Google in der Welt - So wie Krebs, Waffen, und Donald Trump - Für einige Dinge hat sich die Gesellschaft auf Regeln geeinigt (regional unterschiedlich), wie damit im allgemeinen umzugehen ist. Diese App schafft Transparenz - nicht mehr und nicht weniger. _I didn't pull the trigger_

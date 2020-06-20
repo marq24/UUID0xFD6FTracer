@@ -1,6 +1,6 @@
 # UUID 0xFD6F Tracer ![AppLogo](/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
 ## English
-Main purpose of the app is to scann your current enviroment for active devices running an application that make use of Google's & Apple's exposurenotification Framework - this Framework ist use by some Corona App's in order to exchange information between mobile phones.
+Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework - this Framework ist use by some Corona App's in order to exchange information between mobile phones.
 
 So this app will show you how many other devices are currently visible to your running Corona-App (like the Corona-Warn-App from the RKI) - So when you are at a place with some people you can judge how confident you could be concerning the possibility to be warned if anybody in this group will report to be infected later.
 
@@ -35,8 +35,16 @@ Die App ermittelt nur, wie viel Beacons in Eurer Umgebung gestartet sind (das ei
 Mit der App könnt Ihr also sehen, wie viele Mitmenschen um Euch herum den ExposureNotification Dienst ihres Mobiltelefones aktiviert haben (meiner _ganz persönlichen Meinung nach_ also Verantwortungsbewußt und solidarisch sind). Dies geht natürlich auch mit jeder anderen BluetoothLE Scanner App wie z.B. [RaMBLE](https://play.google.com/store/apps/details?id=com.contextis.android.BLEScanner&hl=en) und dem Filtern auf die UUID 0xFD6F.
 
 ### Möglicher Mißbrauch
-Diese App ermöglicht die Kontrolle von Menschen, ob Sie die Corona-Warn-App aktiviert haben oder nicht (z.B. in Vereinzelungsanlagen oder bei Zugangskontrollen) - Diese Kontrolle ist jedoch technisch ebenfalls (mit anderen Mitteln) ohne Probleme möglich.
+Diese App ermöglicht in Theorie die Kontrolle von Menschen, ob Sie ein 'Exposurenotification Dienst' Signal (wie von Corona-Warn-App verwendet) senden z.B. in Vereinzelungsanlagen oder bei Zugangskontrollen.
+_Wenn_ ich z.B. als Arbeitgeber eine solche __unzulässige Kontrolle__ meiner Mitarbeiter anstrebe, dann würde ich direkt BluetoothLE Beacon Scanner Hardware verbauen und den Zugang meinen Vorstellungen nach steuern, anstatt einen Mitarbeiter mit der **UUID 0xFD6F Tracer App** in der Hand vor die Eingangstür zu stellen (Und schon wieder habe ich einen potentiellen Arbeitsplatz in Deutschland vernichtet).
 
+###Moral & Ethik
+Das ExposureNotification Framework von Apple & Google in der Welt - So wie Krebs, Waffen, und Donald Trump - Für einige Dinge hat sich die Gesellschaft auf Regeln geeinigt (regional unterschiedlich), wie damit im allgemeinen umzugehen ist. Diese App schaft Transparenz - nicht mehr und nicht wenigier.
+
+[//]: # (Vorab - Natürlich birgt ein _nicht vorhandener_ 'Exposurenotification Dienst' **keine** potentielle Gefahr einer Körperverletzung!)
+[//]: # (Wenn mir jemand heute in Gütersloh einen Baseballschläger swingend entgegenkommt, dann treffe ich ganz alleine die Entscheidung [basierend auf meiner persönlichen Einstellung] ob und wie ich diesem Mitmenschen offen und unvoreingenommen begegne [oder es ggf. doch vermeide]. Wenn mir jemand mit einem Stiletto in der Hand entgegen kommt, habe ich weniger Möglichkeiten mein eigenes Verhalten der aktuellen Situation anzupassen [weshalb es mir durchaus Sinn ergibt, das solche Messer hierzulande Verboten sind].)
+[//]: # ("_Ja - aber das ist doch was völlig anders_" - I don't think so!)    
+   
 ---
 
 ## Corona Skeptiker

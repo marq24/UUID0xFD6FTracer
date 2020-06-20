@@ -52,4 +52,8 @@ Für die Verschwörungstheoretiker unter Euch: Für Euch ist die App auch super!
 
 ---
 #### Meine ganz persönliche Meinung
-Ich habe jetzt so einiges lesen dürfen... Menschen die zu wissen glauben was ich mir möglicherweise Wünschte oder gar was ich Denke - bzw. die darüber spekulieren was ich reflektiere, impliziere und möglicherweise in Kauf nehme... Schon so einige male habe ich mich in den letzten Monaten dabei ertappt, dass ich Denke, dass ich mit wünschte "_Corona mache doch bitte Unfruchtbar/Impotent_"
+Ich habe jetzt so einiges lesen dürfen... Menschen die zu wissen glauben was ich mir möglicherweise Wünschte oder gar was ich Denke - bzw. die darüber spekulieren was ich reflektiere, impliziere und möglicherweise in Kauf nehme.
+
+Für mich ganz persönlich überwiegen die Vorteile des Exposurenotification Frameworks die potentiellen möglichen Nachteile - dort wo es die Gesellschaft nicht schafft sinnvolle (und der Mehrheit vermittelbare) Regeln für den Umgang mit einer Technologie zu finden, ist die Politik gefodert entsprechende Gesetze zu verabschieden.
+  
+[//]: # (Schon so einige male habe ich mich in den letzten Monaten dabei ertappt, dass ich Denke, dass ich mit wünschte "_Corona mache doch bitte Unfruchtbar/Impotent_")

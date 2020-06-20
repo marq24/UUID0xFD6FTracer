@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<androidx.preference.SwitchPreferenceCompat
+		app:key="@string/PKEY_AUTOSTART"
+		app:defaultValue="@string/DVAL_AUTOSTART"
+		app:title="@string/pref01_AUTOSTART_TITLE"
+		app:summaryOff="@string/pref01_AUTOSTART_OFF"
+		app:summaryOn="@string/pref01_AUTOSTART_ON" />
+
+	<!--androidx.preference.SwitchPreference
+		android:key="@string/PKEY_STOREDATA"
+		android:defaultValue="@string/DVAL_STOREDATA"
+		android:title="@string/pref01_STOREDATA_TITLE"
+		android:summaryOff="@string/pref01_STOREDATA_OFF"
+		android:summaryOn="@string/pref01_STOREDATA_ON" /-->
+
+</androidx.preference.PreferenceScreen>

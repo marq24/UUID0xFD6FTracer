@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,12 +27,13 @@ import com.emacberry.uuid0xfd6ftracer.ui.main.PlaceholderFragment;
 import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class BeaconScannerActivity extends AppCompatActivity {
+public class ScannerActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = "ACTIVITY";
 
-    protected static final String INTENT_EXTRA_TERMINATE_APP = "TERMINATE";
-    protected static final String INTENT_EXTRA_SERVICE_ACTION = "SERVICE-ACTON";
+    protected static final String INTENT_EXTRA_TERMINATE_APP    = "TERMINATE";
+    protected static final String INTENT_EXTRA_SERVICE_ACTION   = "SERVICE-ACTON";
+    protected static final String INTENT_EXTRA_AUTOSTART        = "AUTOSTART";
 
     private Handler mHandler = new Handler();
     private ScannerService mScannerService;
@@ -60,7 +62,7 @@ public class BeaconScannerActivity extends AppCompatActivity {
                 if (service instanceof ScannerService.LocalBinder) {
                     ScannerService.LocalBinder b = (ScannerService.LocalBinder) service;
                     mScannerService = b.getServerInstance();
-                    mScannerService.setGuiCallback(BeaconScannerActivity.this);
+                    mScannerService.setGuiCallback(ScannerActivity.this);
                     final int size = mScannerService.mContainer.size();
                     runOnUiThread(()-> setActiveBeaconCount(size));
                 }
@@ -88,7 +90,11 @@ public class BeaconScannerActivity extends AppCompatActivity {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     if(mScannerService != null){
-                        mScannerService.checkForScannStart();
+                        if(mScannerService.isScanning()){
+                            mScannerService.checkForScannStart();
+                        }else{
+                            mScannerService.startScan(true);
+                        }
                     }
                 } else {
                     // permission denied, boo! Disable the
@@ -99,16 +105,16 @@ public class BeaconScannerActivity extends AppCompatActivity {
     }
 
     private final int MENU_START_STOP = 80;
+    private final int MENU_SETTING = 90;
     private final int MENU_FINISH = 900;
     private final int MENU_EXIT = 1000;
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         try {
             super.onCreateOptionsMenu(menu);
         } catch (Throwable t) {
         }
+        menu.add(Menu.NONE, MENU_SETTING, Menu.NONE, R.string.menu_settings);
         menu.add(Menu.NONE, MENU_START_STOP, Menu.NONE, R.string.menu_start);
         menu.add(Menu.NONE, MENU_FINISH, Menu.NONE, R.string.menu_finish);
         menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.menu_exit);
@@ -143,6 +149,11 @@ public class BeaconScannerActivity extends AppCompatActivity {
                         // do nothing
                     } else {
                         switch (item.getItemId()) {
+                            case MENU_SETTING:
+                                Intent intent = new Intent(ScannerActivity.this, SettingsActivity.class);
+                                startActivity(intent);
+                                break;
+
                             case MENU_START_STOP:
                                 if(mScannerService != null){
                                     if(mScannerService.isScanning()) {
@@ -210,7 +221,6 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         mViewPager = findViewById(R.id.view_pager);
         mViewPager.setAdapter(sectionsPagerAdapter);
@@ -243,6 +253,8 @@ public class BeaconScannerActivity extends AppCompatActivity {
                 Log.e(LOG_TAG, ""+t.getMessage());
             }
         });
+        Preferences.getInstance(this).registerOnSharedPreferenceChangeListener(this);
+
         mActivityIsCreated = true;
         setActiveBeaconCount(0);
         mHandler.postDelayed(()->updateButtonImg(), 500);
@@ -253,6 +265,13 @@ public class BeaconScannerActivity extends AppCompatActivity {
         Log.w(LOG_TAG, "onStart() called");
         try {
             super.onStart();
+            Intent i = getIntent();
+            if (i != null) {
+                handleIntent(i);
+            } else {
+                Log.d(LOG_TAG, "start intent was null");
+            }
+
             try {
                 if (mConnection != null) {
                     bindService(new Intent(this, ScannerService.class), mConnection, BIND_IMPORTANT | BIND_ALLOW_OOM_MANAGEMENT | BIND_ABOVE_CLIENT);
@@ -264,23 +283,16 @@ public class BeaconScannerActivity extends AppCompatActivity {
 
             // make sure the scanning service is running...
             if (!ScannerService.isRunning) {
-                Intent loggerIntent = new Intent(this, ScannerService.class);
+                Intent scannerIntent = new Intent(this, ScannerService.class);
                 try {
                     if (android.os.Build.VERSION.SDK_INT >= 26) {
-                        startForegroundService(loggerIntent);
+                        startForegroundService(scannerIntent);
                     } else {
-                        startService(loggerIntent);
+                        startService(scannerIntent);
                     }
                 } catch (Throwable t) {
                     Log.e(LOG_TAG, "" + t.getMessage());
                 }
-            }
-
-            Intent i = getIntent();
-            if (i != null) {
-                handleIntent(i);
-            } else {
-                Log.d(LOG_TAG, "start intent was null");
             }
 
         } catch (Exception e) {
@@ -313,13 +325,13 @@ public class BeaconScannerActivity extends AppCompatActivity {
         Log.w(LOG_TAG, "onStop() called");
     }
 
-
     @Override
     protected void onDestroy() {
         Log.w(LOG_TAG, "onDestroy called");
         if(mScannerService != null){
             mScannerService.setGuiCallback(null);
         }
+        Preferences.getInstance(this).unregisterOnSharedPreferenceChangeListener(this);
         mActivityIsCreated = false;
         if (mKillApp) {
             killApp();
@@ -384,7 +396,6 @@ public class BeaconScannerActivity extends AppCompatActivity {
     }
 
     private void handleIntent(Intent intent) {
-        boolean handleEvent = true;
         if (intent != null) {
             Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
             boolean wasStartFromService = intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION);
@@ -440,10 +451,6 @@ public class BeaconScannerActivity extends AppCompatActivity {
                 }
                 handleEvent = false;
             }*/
-
-            if (handleEvent && intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION)) {
-                //System.out.println("A");
-            }
         }
     }
 
@@ -498,5 +505,11 @@ public class BeaconScannerActivity extends AppCompatActivity {
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // DO NOTHING RIGHT NOW
+        //Log.d(LOG_TAG, "onSharedPreferenceChanged "+key);
     }
 }

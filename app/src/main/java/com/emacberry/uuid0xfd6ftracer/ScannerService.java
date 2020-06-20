@@ -59,6 +59,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // DO NOTHING RIGHT NOW...
+        //Log.d(LOG_TAG, "onSharedPreferenceChanged "+key);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    public void setGuiCallback(BeaconScannerActivity mainActivity) {
+    public void setGuiCallback(ScannerActivity mainActivity) {
         mGuiCallback = mainActivity;
         mScanCallback.mDoReport = true;
         if (mainActivity != null) {
@@ -101,7 +103,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private BluetoothLeScanner mBluetoothLeScanner;
     private MyScanCallback mScanCallback = new ScannerService.MyScanCallback();
     private Handler mHandler = new Handler();
-    private BeaconScannerActivity mGuiCallback = null;
+    private ScannerActivity mGuiCallback = null;
 
     private boolean isAirplaneMode() {
         try {
@@ -121,7 +123,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             super.onStartCommand(intent, flags, startId);
             Log.w(LOG_TAG, "onStartCommand() start");
             if (intent != null) {
-
+                if(intent.getBooleanExtra(ScannerActivity.INTENT_EXTRA_AUTOSTART, false)){
+                    Log.d(LOG_TAG, "Launched by AUTOSTART");
+                }
             }
             try {
                 if (Looper.myLooper() == null) {
@@ -152,6 +156,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             isRunning = true;
             showNotification();
             Log.w(LOG_TAG, "onStartCommand() completed");
+
+            // when the service is started we should check if the
+            // scanner is running
+            mHandler.postDelayed(()->checkForScannStart(), 5000);
             return START_STICKY;
         }
     }
@@ -160,6 +168,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     public void onCreate() {
         try {
             super.onCreate();
+            Preferences.getInstance(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -186,9 +195,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
         mHandler = null;
 
-        // un-register for PrefChanges...
-        //_prefs.unregisterOnSharedPreferenceChangeListener(this);
-
+        Preferences.getInstance(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
         isRunning = false;
         stopForeground(true);
         super.onDestroy();
@@ -356,9 +363,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         } else {
             builder.setSmallIcon(R.mipmap.ic_launcher);
         }
-        Intent intent = new Intent(this, BeaconScannerActivity.class);
+        Intent intent = new Intent(this, ScannerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra(BeaconScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
+        intent.putExtra(ScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
         if (mScannIsRunning) {
@@ -379,13 +386,31 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             }
         }
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(BeaconScannerActivity.INTENT_EXTRA_TERMINATE_APP));
+            builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(ScannerActivity.INTENT_EXTRA_TERMINATE_APP));
         } else {
-            builder.addAction(R.drawable.ic_outline_exit_to_app_24px_api20, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(BeaconScannerActivity.INTENT_EXTRA_TERMINATE_APP));
+            builder.addAction(R.drawable.ic_outline_exit_to_app_24px_api20, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(ScannerActivity.INTENT_EXTRA_TERMINATE_APP));
         }
         builder.setColor(ContextCompat.getColor(this, R.color.notification_action));
         return builder;
     }
+
+    /*private void showLaunchNotification(){
+        Intent fullScreenIntent = new Intent(this, ScannerActivity.class);
+        // For the activity opening when notification cliced
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 2022, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new NotificationCompat.Builder(this, NotificationHelper.getBaseNotificationChannelId(this))
+                .setSmallIcon(R.drawable.ic_app_notify72)
+                .setContentTitle("Notification title")
+                .setContentText("Notification Text")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                //.setFullScreenIntent(fullScreenPendingIntent, true)
+                .setContentIntent(fullScreenPendingIntent)
+                .build();
+
+        startForeground(R.id.notify_backservive, notification);
+    }*/
 
     private void showNotification() {
         try {
@@ -403,7 +428,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private PendingIntent getAppIntent(String extra) {
-        Intent intent = new Intent(this, BeaconScannerActivity.class);
+        Intent intent = new Intent(this, ScannerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         if (extra != null) {
             intent.putExtra(extra, true);
@@ -420,7 +445,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private PendingIntent getTerminateAppIntent(String extra) {
-        Intent intent = new Intent(this, BeaconScannerActivity.class);
+        Intent intent = new Intent(this, ScannerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (extra != null) {
             intent.putExtra(extra, true);

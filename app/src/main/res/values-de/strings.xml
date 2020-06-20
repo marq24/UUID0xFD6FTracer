@@ -6,7 +6,7 @@
     <string name="app_service_title">Hintergrund Tracing Dienst</string>
     <string name="app_service_msgOff">Bitte Scan starten</string>
     <string name="app_service_msgOffNoPermissions">Bitte Apps starten, um den Scan zu starten</string>
-    <string name="app_service_msgScan1">Umgebung wird untersucht...</string>
+    <string name="app_service_msgScan1">Umgebung wird untersucht&#8230;</string>
     <string name="app_service_msgScan2">[gefunden: %1$d]</string>
 
     <string name="menu_finish">App Schließen</string>
@@ -18,4 +18,14 @@
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
     <string name="menu_start">Scanner Dienst starten</string>
     <string name="menu_stop">Scanner Dienst stoppen</string>
+
+    <string name="menu_settings">Einstellungen&#8230;</string>
+    <string name="pref01_TITLE">Einstellungen&#8230;</string>
+    <string name="pref01_AUTOSTART_TITLE">Autostart on Reboot</string>
+    <string name="pref01_AUTOSTART_OFF">OFF</string>
+    <string name="pref01_AUTOSTART_ON">ON</string>
+    <string name="pref01_STOREDATA_TITLE">sss</string>
+    <string name="pref01_STOREDATA_OFF">OFF</string>
+    <string name="pref01_STOREDATA_ON">ON</string>
+
 </resources>

@@ -8,7 +8,7 @@
     <string name="app_service_msgOff">Please start Scanner</string>
     <string name="app_service_msgOffNoPermissions">Please start the App in order to start the Scanner</string>
 
-    <string name="app_service_msgScan1">Scanning Environment...</string>
+    <string name="app_service_msgScan1">Scanning Environment&#8230;</string>
     <string name="app_service_msgScan2">[found: %1$d]</string>
 
     <string name="menu_finish">Close App</string>
@@ -20,5 +20,21 @@
     <string name ="act_active_beacons">Active Beacons: %1$d</string>
     <string name="menu_start">Start Scan Service</string>
     <string name="menu_stop">Stop Scan Service</string>
+
+    <string name="menu_settings">Settings&#8230;</string>
+
+    <string name="pref01_KEY" translatable="false">SETTINGS_01</string>
+    <string name="PKEY_AUTOSTART" translatable="false">AUTOSTART</string>
+    <string name="DVAL_AUTOSTART" translatable="false">false</string>
+    <string name="PKEY_STOREDATA" translatable="false">STOREDATA</string>
+    <string name="DVAL_STOREDATA" translatable="false">false</string>
+
+    <string name="pref01_TITLE">Settings</string>
+    <string name="pref01_AUTOSTART_TITLE">Autostart on Reboot</string>
+    <string name="pref01_AUTOSTART_OFF">OFF</string>
+    <string name="pref01_AUTOSTART_ON">ON</string>
+    <string name="pref01_STOREDATA_TITLE">sss</string>
+    <string name="pref01_STOREDATA_OFF">OFF</string>
+    <string name="pref01_STOREDATA_ON">ON</string>
 
 </resources>

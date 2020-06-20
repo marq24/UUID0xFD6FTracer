@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.util.UUID;
-
 public class Preferences {
 
     private static Preferences pref = null;
@@ -33,14 +31,6 @@ public class Preferences {
         }catch(Throwable t){
             Log.e("PREFS", ""+t.getMessage());
         }
-    }
-
-    private String generateDID() {
-        return UUID.randomUUID().toString().toUpperCase();
-    }
-
-    public String getDID() {
-        return prefData.getString("DID", generateDID());
     }
 
     public void registerOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener ocpl){

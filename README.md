@@ -4,10 +4,13 @@ Main purpose of the app is to scan your current environment for active devices r
 
 So this app will show you how many other devices are currently visible to your running Corona-App (like the Corona-Warn-App from the RKI) - So when you are at a place with some people you can judge how confident you could be concerning the possibility to be warned if anybody in this group will report to be infected later.
 
-APK-Download directly here from GitHub: [UUID0xFD6F_v0.9.1.0.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.0/UUID0xFD6F_v0.9.1.0.apk)
+Install from Google Play
+[UUID 0xFD6F Tracer @GoogelPlay](https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6ftracer)
 
 Join OPEN Beta @ Google Play (open on your mobile device)
-[__not avialable yet__](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6ftracer)
+[Join BETA of UUID 0xFD6F Tracer @GoogelPlay](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6ftracer)
+
+alternative APK-Download directly here from GitHub: [LatestRelease](https://github.com/marq24/UUID0xFD6FTracer/releases/)
 
 ## Deutsch
 Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?
@@ -16,7 +19,13 @@ Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos
 
 Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes eigenes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI bei Euch auf dem Gerät läuft, dann sollte auch der Tracer laufen.
 
-APK-Download hier von GitHub: [UUID0xFD6F_v0.9.1.0.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.0/UUID0xFD6F_v0.9.1.0.apk)
+Install über Google Play
+[UUID 0xFD6F Tracer @GoogelPlay](https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6ftracer)
+
+OPEN Beta @ Google Play beitreten (link direkt auf dem Mobiltelefon öffnen)
+[BETA-Program von UUID 0xFD6F Tracer @GoogelPlay](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6ftracer)
+
+Oder alternativer APK-Download hier von GitHub: [Aktuellste APK](https://github.com/marq24/UUID0xFD6FTracer/releases/)
 
 ### Technisch
 Der gemeinsam von Google und Apple entwickelte Standard über den die möglichen Kontakt-Informationen ausgetauscht werden, basiert darauf, dass auf dem Mobiltelefon ein BluetoothLE Beacon mit der **UUID 0xFD6F** gestartet wird.

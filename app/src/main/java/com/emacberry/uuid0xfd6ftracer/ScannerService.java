@@ -66,6 +66,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(LOG_TAG, "onBind called " + intent);
+        if(mBinder == null){
+            mBinder = new LocalBinder();
+        }
         return mBinder;//
     }
 
@@ -116,6 +119,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(mHandler == null){
+            mHandler = new Handler();
+        }
         if (isRunning && intent != null) {
             handleIntentInt(intent);
             return START_STICKY;
@@ -159,7 +165,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
             // when the service is started we should check if the
             // scanner is running
-            mHandler.postDelayed(()->checkForScannStart(), 5000);
+            if(mHandler != null) {
+                mHandler.postDelayed(() -> checkForScannStart(), 5000);
+            }
             return START_STICKY;
         }
     }
@@ -169,6 +177,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         try {
             super.onCreate();
             Preferences.getInstance(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
+            if(mHandler == null){
+                mHandler = new Handler();
+            }
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -292,7 +303,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     mGuiCallback.updateButtonImg();
                 }
             }
-            mHandler.postDelayed(() -> checkForScannStart(), 30000);
+            if(mHandler != null) {
+                mHandler.postDelayed(() -> checkForScannStart(), 30000);
+            }
         }else{
             // no permission...? start activity and request START again
             updateNotification();
@@ -328,13 +341,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     public void checkForScannStart() {
         if (!mScannStopedViaGui) {
-            if (mScannIsRunning && !mScannResultsOnStart) {
-                Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
-                mHandler.postDelayed(() -> stopScan(false), 500);
-                mHandler.postDelayed(() -> startScan(false), 5000);
-            } else if (!mScannIsRunning) {
-                Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
-                mHandler.postDelayed(() -> startScan(false), 500);
+            if(mHandler != null) {
+                if (mScannIsRunning && !mScannResultsOnStart) {
+                    Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
+                    mHandler.postDelayed(() -> stopScan(false), 500);
+                    mHandler.postDelayed(() -> startScan(false), 5000);
+                } else if (!mScannIsRunning) {
+                    Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
+                    mHandler.postDelayed(() -> startScan(false), 500);
+                }
             }
         }
     }

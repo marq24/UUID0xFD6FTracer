@@ -17,7 +17,7 @@ Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **i
 
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.
 
-Bis das ganze über den GooglePlayStore verfügbar ist, dauert leider noch ein paar Tage (ich warte auf die Freigabe), könnt Ihr Euch das APK einfach direkt von GitHub holen (mein erstes eigenes OpenSourceProjekt) und als SideLoad auf Eurem Android Telefon installieren. wenn Die Corona-Warn-App vom RKI bei Euch auf dem Gerät läuft, dann sollte auch der Tracer laufen.
+Die App ist über den GooglePlayStore verfügbar - das APK kann aber auch hier direkt von GitHub heruntergeladen und als SideLoad installiert werden.
 
 [![Google Play](/misc/playstore/google-play-badge_de.png)](https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6ftracer)
 

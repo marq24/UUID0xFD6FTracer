@@ -12,19 +12,21 @@ Um Ihr System nicht unnötig zu belasten, sollten der 'UUID GPSLogger II Scann D
 
 Sobald der Scenner in den Einstellunge aktiviert wurde, kann die Aufzeichnung über den 'REC' Button in der Hauptleiste gestartet werden... Nach einer kurzen Zeit sollten alle Beacons der Umgebung angezeigt werden. Bitte beachten, dass die Beacons regelmäßig Ihrer Addresse ändern und deswegen als neuer Beacon erkannt werden.
 
-Wichtig ist noch das man die Vektor-Karten Darstellung bei der Karte verwendet - Dies kann man in den Einstellungen wie folgt Prüfen:
-* Menu: Einstellungen...
-* Darstellung & Applikationsstart
-* Karten & Strecken Ansichtseinstellungen...
-* Option 'Vektor Karten Darstellung' aktivieren
+![Sample](/misc/docs/gpsl-uuid.png)
 
-Wenn diese option nicht aktiviert wird, werden derzeit keine Beacons angezeigt (ist noch auf der TODO-List) wenn man diese Option aktiviert muss der GPSLogger neu gestartet werden.
+Wichtig ist noch das man die Vektor-Karten Darstellung bei der Karte verwendet - Dies kann man in den Einstellungen wie folgt Prüfen:
+1. Menu: Einstellungen...
+1. Darstellung & Applikationsstart
+1. Karten & Strecken Ansichtseinstellungen...
+1. Option 'Vektor Karten Darstellung' aktivieren
+
+Wenn diese option nicht aktiviert ist, werden derzeit keine Beacons angezeigt (ist noch auf der TODO-List).
+
+Wenn man diese Option aktiviert muss der GPSLogger neu gestartet werden.
 
 ## Zählweise
 Lore Ipsum - Hallo Ralph 
 
-
-![Sample](/misc/docs/gpsl-uuid.png)
 
 ## Download
 Die App ist kostenlos & ohne Werbung im GoolePlayStore verfügbar - https://play.google.com/store/apps/details?id=com.emacberry.gpslogger

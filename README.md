@@ -47,7 +47,7 @@ Das ExposureNotification Framework von Apple & Google in der Welt - So wie Krebs
 [//]: # ("_Ja - aber das ist doch was völlig anders_" - I don't think so!)    
    
 ---
-## Corona Skeptiker
+## Alluhutträger & Skeptiker
 Für die Verschwörungstheoretiker unter Euch: Für Euch ist die App auch super! Checkt, wie viel Verräter es in Euren eigenen Reihen gibt!
 
 ---

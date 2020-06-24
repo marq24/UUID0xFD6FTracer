@@ -15,7 +15,7 @@ Zunächst muss man in den Einstellungen der App das Aufzeichnen der BluetoothLE 
 
 Um Ihr System nicht unnötig zu belasten, sollten der 'UUID GPSLogger II Scann Dienst' und der 'UUID 0xFD6F Tracer' nicht gleichzeitig laufen - es schadet aber auch nicht wirklich.
 
-Sobald der Scenner in den Einstellunge aktiviert wurde, kann die Aufzeichnung über den 'REC' Button in der Hauptleiste gestartet werden... Nach einer kurzen Zeit sollten alle Beacons der Umgebung angezeigt werden. Bitte beachten, dass die Beacons regelmäßig Ihrer Addresse ändern und deswegen als neuer Beacon erkannt werden.
+Sobald der Scanner in den Einstellunge aktiviert wurde, kann die Aufzeichnung über den 'REC' Button in der Hauptleiste gestartet werden... Nach einer kurzen Zeit sollten alle Beacons der Umgebung angezeigt werden. Bitte beachten, dass die Beacons regelmäßig Ihrer Addresse ändern und deswegen als neuer Beacon erkannt werden.
 
 ![Sample](/misc/docs/gpsl-uuid.png)
 
@@ -30,4 +30,12 @@ Wenn diese option nicht aktiviert ist, werden derzeit keine Beacons angezeigt (i
 Wenn man diese Option aktiviert muss der GPSLogger neu gestartet werden.
 
 ## Zählweise
-Lore Ipsum - Hallo Ralph 
+Im Gegensatz zum 'UUID 0xFD6D Tracer' zählt der GPSLogger aktuell nicht die "aktiven" Beacons in der Umgebung - sondern zählt die eindeutigen IDs. Man stelle sich das folgende Scenario vor:
+
+Man selbst steht an einem festen Ort und es man begegnet immer wieder einer Person die ein Beacon gestartet hat. In diesem Fall zeit der UUID 0xFD6D Tracer einem immer wieder Null oder Eins an. Der GPSLogger II hingegen zählt jeden einzeln Beacon dem man begegnet ist - also wenn 10 Beacons an einem vorbei gehen, dann wird in der GPSLogger II App auch die Ziffer 10 angezeigt (an diesem Ort sind einem in Summe 10 Beacon ID's begegnet).
+
+Ist man Stationär und es begegnen einem 10 unterschiedliche Beacons zur gleichen Zeit, zeigt der 'UUID 0xFD6D Tracer' 10 Active Sender und auch der GPSLogger wird einem die Zahl 10 anzeigen.
+
+Nun ist das besondere Merkmal des Exposure Notification Frameworks, dass sich die Addrese des Beacons regelmäßig ändert (meiner bisherigen Erfahrung nach so alle 2min) - Diese Address-Änderung kann von keinem System von einem neuen Beacon unterschieden werden - es ist als nicht feststellbar, dass diese Neue-ID von dem gleichen Mobiltelefon aus gesendet wird oder aber sich ein neues Mobiltelefon in die Empfangsweite eingedrungen ist (dies ist ein echtes Privacy-Feature). 
+
+Dem UUID 0xFD6D Tracer ist dieser Umstand "egal" - ein Beacon ist verschwunden - ein neues ist hinzugekommen - die Summe der Sender bleibt gleich. Anders in der Anzeige im GPSLogger - hier wird je neuer Address/Beacon der Zähler erhöht.

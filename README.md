@@ -22,8 +22,8 @@ Den Scann kann von Hand angehalten oder neu starten- allerdings bin ich selbst v
 
 Da die App Bluetooth verwendet, benötigt sie das Android Recht "Eure Position zu ermitteln" (*seuftz*) - natürlich macht sie das nicht - aber da theoretisch die Möglichkeit bestünde, gibt es diese Warnung vom Betriebssystem.
 
-### Aufzeichnen?
-Auf eine Möglichkeit zur Aufzeichnung der Beacon Signale habe ich zur Reduktion der Komplexität in dieser App verzichtet und diese Funktionalität statdessen in meinen über lange Jahre entwickleten GPSLogger II integriert.
+### Aufzeichnen? ![GPSLoggerII](/misc/docs/gpsl-icon.png)
+Auf eine Möglichkeit zur Aufzeichnung der Beacon Signale habe ich zur Reduktion der Komplexität in dieser App verzichtet und diese Funktionalität statdessen in den über lange Jahre entwickleten GPSLogger II integriert.
 
 [Details & Download zum GPSLogger II (kostenfrei & ohne Werbung)](/LOGGING.md)
 

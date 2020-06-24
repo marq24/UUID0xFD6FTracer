@@ -5,6 +5,11 @@ Mit der aktuellsten Version der App GPSLogger (v2.0.0.116) ist es möglich die e
 
 Der GPSLogger II ist natürlich auch kostenfrei und enthält keine Werbung
 
+## Download
+Die App ist kostenlos & ohne Werbung im GoolePlayStore verfügbar - https://play.google.com/store/apps/details?id=com.emacberry.gpslogger
+
+[![Google Play](/misc/playstore/google-play-badge_de.png)](https://play.google.com/store/apps/details?id=com.emacberry.gpslogger)
+
 ## Logging verwenden
 Zunächst muss man in den Einstellungen der App das Aufzeichnen der BluetoothLE Beacons mit der UUID 0xFD6F aktivieren. Hierzu startet man die app, öffnet das Menu und wächlt den Menüpunkt 'Einstellungen'. Aus der Liste von Optionen wählt man den obersten Punkt 'Allgemeine Einstellungen...'. Zuletzt muss der Schalter 'UUID 0xFD6F Beacon Scanner' aktiviert werden. (Diese Einstellung muss natürlich nur einmal erfolgen.)
 
@@ -26,9 +31,3 @@ Wenn man diese Option aktiviert muss der GPSLogger neu gestartet werden.
 
 ## Zählweise
 Lore Ipsum - Hallo Ralph 
-
-
-## Download
-Die App ist kostenlos & ohne Werbung im GoolePlayStore verfügbar - https://play.google.com/store/apps/details?id=com.emacberry.gpslogger
-
-[![Google Play](/misc/playstore/google-play-badge_de.png)](https://play.google.com/store/apps/details?id=com.emacberry.gpslogger)

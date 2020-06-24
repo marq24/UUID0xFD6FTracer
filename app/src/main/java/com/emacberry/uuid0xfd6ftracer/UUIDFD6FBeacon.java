@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.TreeMap;
 
-public class Covid19Beacon {
+public class UUIDFD6FBeacon {
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
@@ -15,7 +15,7 @@ public class Covid19Beacon {
     public TreeMap<Long, Integer> sigHistory = new TreeMap<>();
     public HashSet<String> data = new HashSet<>();
 
-    public Covid19Beacon(String addr, long ts) {
+    public UUIDFD6FBeacon(String addr, long ts) {
         this.addr = addr;
         this.mLastTs = ts;
     }

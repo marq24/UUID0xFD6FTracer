@@ -537,7 +537,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }*/
 
-    protected HashMap<String, Covid19Beacon> mContainer = new HashMap<>();
+    protected HashMap<String, UUIDFD6FBeacon> mContainer = new HashMap<>();
 
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
@@ -556,7 +556,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             }
 
             String addr = result.getDevice().getAddress();
-            Covid19Beacon beacon = null;
+            UUIDFD6FBeacon beacon = null;
             int prevContainerSize = mContainer.size();
             synchronized (mContainer) {
                 // check every 30sec by default for outdated beacon
@@ -565,7 +565,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
                 beacon = mContainer.get(addr);
                 if (beacon == null) {
-                    beacon = new Covid19Beacon(addr, tsNow);
+                    beacon = new UUIDFD6FBeacon(addr, tsNow);
                     mContainer.put(addr, beacon);
                     // if we add an new id, we instantly check for
                     // possible expired ones...
@@ -579,7 +579,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 if (iLastContainerCheckTs + delay < tsNow) {
                     iLastContainerCheckTs = tsNow;
                     ArrayList<String> addrsToRemove = new ArrayList<>();
-                    for (Covid19Beacon otherBeacon : mContainer.values()) {
+                    for (UUIDFD6FBeacon otherBeacon : mContainer.values()) {
                         // if beacon not returned in any scan of the last 15sec
                         // we going to remove it...
                         if (otherBeacon.mLastTs + 15000 < tsNow) {

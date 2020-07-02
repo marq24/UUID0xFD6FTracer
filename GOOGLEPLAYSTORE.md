@@ -1,4 +1,4 @@
-# to be in GooglePlayStore or not be be in GooglePlayStore ![Google Play](/misc/playstore/google-play-badge_en.png)
+# To be in GooglePlayStore or not to be in GooglePlayStore ![Google Play](/misc/playstore/google-play-badge_en.png)
 ## Frustration
 I made the big mistake to upload UUID 0xFD6F Tracer app to GooglePlay and made the even bigger mistake to provide in the English app description some technical background information. In that section I have mentioned the 'ExposureNotification Framework'. This keywords triggered an instant ban of the app via GooglePlay (initially only the German app description was available - which was probably fine - or simply not understood by the scan-algorithm).
 
@@ -58,7 +58,7 @@ _Where do I claim, that "**my app  will warned (you) if anybody in this group wi
 
 _"...Google's & Apple's ExposureNotification Framework - **this Framework** is use by some Corona App's in order to exchange information between mobile phones."_
 
-_'**This Framework**" is obviously **your** Framework... It would be no deal to remove that last section from the app description "this Framework is use by some Corona App's in order to exchange information between mobile phones." - on order to avoid any misunderstandings (and do not get FALSE positive hits when users search for Corona-App's) - Do you have difficulties to get the app description removed from your Search index - is this the root cause of the ban - at least that would be an explanation (even not really understandable)..._ 
+_'**This Framework**" is obviously **your** Framework... It would be no deal to remove that last section from the app description "this Framework is use by some Corona App's in order to exchange information between mobile phones." - on order to avoid any misunderstandings (and do not get FALSE positive hits when users search for Corona-App's) - Do you have difficulties to get the app description removed from your search index - is this the root cause of the ban - at least that would be an explanation (even not really understandable)..._ 
 
 _it's true that english is not my mother though - but I am sorry - this is going totally the wrong way. You want to help people to get correct/valid information about COVID-19 - totally fair. But I really don't understand why you misinterpret the app description drastically while you have all options to verify that the App does not make any use of  ExposureNotification Framework. App Description "could" be altered in 3min._
 

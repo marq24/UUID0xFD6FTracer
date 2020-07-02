@@ -52,7 +52,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private static final String LOG_TAG = "SCANNER";
     public static boolean isRunning = false;
 
-    public static final ParcelUuid COVID19_UUID = ParcelUuid.fromString("0000fd6f-0000-1000-8000-00805f9b34fb");
+    public static final ParcelUuid FD6F_UUID = ParcelUuid.fromString("0000fd6f-0000-1000-8000-00805f9b34fb");
 
     // /* SERVICES */
     IBinder mBinder = new LocalBinder();
@@ -294,7 +294,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
                 ArrayList<ScanFilter> f = new ArrayList<>();
-                f.add(new ScanFilter.Builder().setServiceUuid(COVID19_UUID).build());
+                f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
                 mContainer = new HashMap<>();
                 mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
                 mScannIsRunning = true;
@@ -606,7 +606,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             ScanRecord rec = result.getScanRecord();
             if (rec != null) {
                 beacon.mTxPowerLevel = rec.getTxPowerLevel();
-                beacon.addData(rec.getServiceData(COVID19_UUID));
+                beacon.addData(rec.getServiceData(FD6F_UUID));
             }
 
             // finally letting the GUI know, that we have new data...
@@ -646,7 +646,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
         @Override
         public int hashCode() {
-            return COVID19_UUID.hashCode();
+            return FD6F_UUID.hashCode();
         }
     }
 

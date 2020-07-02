@@ -1,4 +1,10 @@
 # UUID 0xFD6F Tracer ![AppLogo](/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
+
+## Why not available in Google PlayStore?
+To be honest - only Google knows - since more then a week I try to get this solved with the Google support - but looks like I am just doomed...
+
+[If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
+
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
 

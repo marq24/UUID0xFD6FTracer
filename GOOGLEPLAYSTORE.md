@@ -2,7 +2,7 @@
 ## Frustration
 I made the big mistake to upload UUID 0xFD6F Tracer app to GooglePlay and made the even bigger mistake to provide in the English app description some technical background information. In that section I have mentioned the 'ExposureNotification Framework'. This keywords triggered an instant ban of the app via GooglePlay (initially only the German app description was available - which was probably fine - or simply not understood by the scan-algorithm).
 
-So the app was locked in Google'S PlayStore - which implies that I as developer can not even access the app any longer in the backend of the so called Google Play Console (in order to alter anything) - so one your app is locked there is no way for you as developer to alter e.g. the app description. With other words: Google decide that you have no access right any longer to things you have created. This implies that you even does not have a single chance the read your initial given app description to get an idea, what might have lead to the ban.
+So the app was locked in Google's PlayStore - which implies that I as developer can not even access the app any longer in the backend of the so called Google Play Console (in order to alter anything) - so once your app is locked there is no way for you as developer to alter e.g. the app description. With other words: Google decide that you have no access right any longer to things you have created. This implies that you even does not have a single chance the read your initial given app description to get an idea, what might have lead to the ban.
 
 ## Chronology
 ### 24.06.2020, 05:52 [Google]

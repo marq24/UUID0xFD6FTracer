@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name" translatable="false">UUID 0xFD6F Tracer</string>
+    <string name="app_name" translatable="false">UUID 0xFD6F Scanner</string>
     <string name="tab_text_1">Active Beacons</string>
     <string name="tab_text_2" translatable="false">Tab 2</string>
 
     <string name="notifyChannelBase">Core Service</string>
     <string name="app_service_title">Background Tracer Service</string>
     <string name="app_service_msgOff">Please start Scanner</string>
-    <string name="app_service_msgOffNoPermissions">Please start the App in order to start the Scanner</string>
+    <string name="app_service_msgOffNoPermissions">Please start the App in order to restart the Scanner</string>
 
     <string name="app_service_msgScan1">Scanning Environment&#8230;</string>
     <string name="app_service_msgScan2">[found: %1$d]</string>
@@ -33,8 +33,5 @@
     <string name="pref01_AUTOSTART_TITLE">Service Autostart</string>
     <string name="pref01_AUTOSTART_OFF">OFF</string>
     <string name="pref01_AUTOSTART_ON">ON - The \'Background Tracer Service\' will be automatically started after a device reboot (after successful login)</string>
-    <string name="pref01_STOREDATA_TITLE">sss</string>
-    <string name="pref01_STOREDATA_OFF">OFF</string>
-    <string name="pref01_STOREDATA_ON">ON</string>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.emacberry.uuid0xfd6ftracer;
+package com.emacberry.uuid0xfd6fscan;
 
 import android.app.AppOpsManager;
 import android.app.KeyguardManager;

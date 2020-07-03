@@ -1,15 +1,17 @@
 # UUID 0xFD6F Tracer ![AppLogo](/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
 
-## Why not available in Google PlayStore?
-To be honest - only Google knows - since more then a week I try to get this solved with the Google support - but looks like I am just doomed...
-
-[If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
-
+---
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
 
 [Download Latest UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1/UUID0xFD6F_v0.9.1.1.apk)
 
+#### Why the app is not available in Google PlayStore yet?
+To be honest - only Google knows - since more then a week I try to get this solved with the Google support - but looks like I am just doomed...
+
+[If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
+
+---
 ## Deutsch
 [//]: # (Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?)
 Ich habe eine Funktion in der Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?

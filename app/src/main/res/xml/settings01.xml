@@ -8,11 +8,4 @@
 		app:summaryOff="@string/pref01_AUTOSTART_OFF"
 		app:summaryOn="@string/pref01_AUTOSTART_ON" />
 
-	<!--androidx.preference.SwitchPreference
-		android:key="@string/PKEY_STOREDATA"
-		android:defaultValue="@string/DVAL_STOREDATA"
-		android:title="@string/pref01_STOREDATA_TITLE"
-		android:summaryOff="@string/pref01_STOREDATA_OFF"
-		android:summaryOn="@string/pref01_STOREDATA_ON" /-->
-
 </androidx.preference.PreferenceScreen>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.emacberry.uuid0xfd6ftracer">
+    package="com.emacberry.uuid0xfd6fscan">
 
     <uses-feature android:name="android.hardware.bluetooth" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme">
 
         <receiver
-            android:name="com.emacberry.uuid0xfd6ftracer.BootUpReceiver"
+            android:name="com.emacberry.uuid0xfd6fscan.BootUpReceiver"
             android:enabled="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
@@ -32,28 +32,28 @@
         </receiver>
 
         <service
-            android:name="com.emacberry.uuid0xfd6ftracer.ScannerService"
+            android:name="com.emacberry.uuid0xfd6fscan.ScannerService"
             android:enabled="true"
             android:exported="false"
             android:directBootAware="true"
             android:foregroundServiceType="location"
             android:label="UUID0xFD6FTracer Service">
             <intent-filter>
-                <action android:name="com.emacberry.uuid0xfd6ftracer.CORESERVICE" />
+                <action android:name="com.emacberry.uuid0xfd6fscan.CORESERVICE" />
             </intent-filter>
         </service>
 
         <activity
-            android:name="com.emacberry.uuid0xfd6ftracer.SettingsActivity"
+            android:name="com.emacberry.uuid0xfd6fscan.SettingsActivity"
             android:configChanges="uiMode|orientation|keyboard|keyboardHidden|screenSize|screenLayout"
-            android:parentActivityName="com.emacberry.uuid0xfd6ftracer.ScannerActivity">
+            android:parentActivityName="com.emacberry.uuid0xfd6fscan.ScannerActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.emacberry.uuid0xfd6ftracer.ScannerActivity" />
+                android:value="com.emacberry.uuid0xfd6fscan.ScannerActivity" />
         </activity>
 
         <activity
-            android:name=".ScannerActivity"
+            android:name="com.emacberry.uuid0xfd6fscan.ScannerActivity"
             android:configChanges="uiMode|orientation|keyboard|keyboardHidden|screenSize|screenLayout"
             android:label="@string/app_name"
             android:launchMode="singleTask"

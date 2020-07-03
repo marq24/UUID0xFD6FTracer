@@ -1,4 +1,4 @@
-package com.emacberry.uuid0xfd6ftracer;
+package com.emacberry.uuid0xfd6fscan;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

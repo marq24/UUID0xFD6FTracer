@@ -1,4 +1,4 @@
-package com.emacberry.uuid0xfd6ftracer.settings;
+package com.emacberry.uuid0xfd6fscan.settings;
 
 import android.Manifest;
 import android.content.SharedPreferences;
@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.emacberry.uuid0xfd6ftracer.R;
+import com.emacberry.uuid0xfd6fscan.R;
 
 public class Settings01 extends PreferenceFragmentCompat {
 

@@ -1,4 +1,4 @@
-package com.emacberry.uuid0xfd6ftracer.ui.main;
+package com.emacberry.uuid0xfd6fscan.ui.main;
 
 import android.content.Context;
 
@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.emacberry.uuid0xfd6ftracer.R;
+import com.emacberry.uuid0xfd6fscan.R;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to

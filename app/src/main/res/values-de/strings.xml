@@ -5,7 +5,7 @@
     <string name="notifyChannelBase">Scanner Hauptdienst</string>
     <string name="app_service_title">Hintergrund Tracing Dienst</string>
     <string name="app_service_msgOff">Bitte Scan starten</string>
-    <string name="app_service_msgOffNoPermissions">Bitte Apps starten, um den Scan zu starten</string>
+    <string name="app_service_msgOffNoPermissions">Bitte Apps starten, um den Scan erneut zu starten</string>
     <string name="app_service_msgScan1">Umgebung wird untersucht&#8230;</string>
     <string name="app_service_msgScan2">[gefunden: %1$d]</string>
 
@@ -24,8 +24,5 @@
     <string name="pref01_AUTOSTART_TITLE">Autostart des Dienstes</string>
     <string name="pref01_AUTOSTART_OFF">AUS</string>
     <string name="pref01_AUTOSTART_ON">EIN - Der \'Hintergrund Tracing Dienst\' wir nach einem Neustart des Gerätes automatisch nach erfolgreichem Login gestartet</string>
-    <string name="pref01_STOREDATA_TITLE">sss</string>
-    <string name="pref01_STOREDATA_OFF">OFF</string>
-    <string name="pref01_STOREDATA_ON">ON</string>
 
 </resources>

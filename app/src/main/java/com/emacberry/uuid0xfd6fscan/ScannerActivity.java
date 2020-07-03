@@ -1,4 +1,4 @@
-package com.emacberry.uuid0xfd6ftracer;
+package com.emacberry.uuid0xfd6fscan;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -23,8 +23,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
-import com.emacberry.uuid0xfd6ftracer.ui.main.PlaceholderFragment;
-import com.emacberry.uuid0xfd6ftracer.ui.main.SectionsPagerAdapter;
+import com.emacberry.uuid0xfd6fscan.ui.main.PlaceholderFragment;
+import com.emacberry.uuid0xfd6fscan.ui.main.SectionsPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ScannerActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -49,7 +49,7 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
             Log.w(LOG_TAG, "onServiceDisconnected() called... " + paramComponentName);
             if (paramComponentName != null) {
                 String cName = paramComponentName.getClassName();
-                if (cName.equalsIgnoreCase("com.emacberry.uuid0xfd6ftracer.ScannerService")) {
+                if (cName.equalsIgnoreCase("com.emacberry.uuid0xfd6fscan.ScannerService")) {
                     mScannerService = null;
                 }
             }

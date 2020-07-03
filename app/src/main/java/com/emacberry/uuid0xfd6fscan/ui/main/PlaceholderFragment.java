@@ -1,4 +1,4 @@
-package com.emacberry.uuid0xfd6ftracer.ui.main;
+package com.emacberry.uuid0xfd6fscan.ui.main;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.emacberry.uuid0xfd6ftracer.R;
+import com.emacberry.uuid0xfd6fscan.R;
 
 import java.util.HashMap;
 

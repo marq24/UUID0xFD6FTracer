@@ -1,17 +1,29 @@
 # UUID 0xFD6F Tracer ![AppLogo](/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
 
----
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
 
-[Download Latest UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1/UUID0xFD6F_v0.9.1.1.apk)
+### Download via GooglePlay
+[![Google Play](/misc/playstore/google-play-badge_en.png)](https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6fscan)
 
-#### Why the app is not available in Google PlayStore yet?
+https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6fscan
+
+#### Join OPEN Beta @ Google Play (open on your mobile device)
+[Join BETA of UUID 0xFD6F Tracer @GoogelPlay](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6fscan)
+
+#### Some *funny* stuff about Google's PlayStore... developer frustration
 To be honest - only Google knows - since more then a week I try to get this solved with the Google support - but looks like I am just doomed...
 
 [If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
 
----
+### Sideload
+[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1.scan/UUID0xFD6F_v0.9.1.1.apk)
+
+### Recording ![GPSLoggerII](/misc/docs/gpsl-icon.png)
+I have kept this application as simple & lightweight as possible - when you like to record beacons and see them over a timeline you can install the free available GPSLogger II app from Google PlayStore
+
+[Details & Download about GPSLogger II (free, no adds)](/LOGGING.md)
+
 ## Deutsch
 [//]: # (Ich habe eine Funktion in der Corona-Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?)
 Ich habe eine Funktion in der Warn-App des RKI's vermisst. Ich weiß, **ich habe sie installiert & aktiviert** - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?
@@ -19,7 +31,16 @@ Ich habe eine Funktion in der Warn-App des RKI's vermisst. Ich weiß, **ich habe
 [//]: # (Für Android habe ich deswegen eine kleine App geschrieben -natürlich kostenlos und ohne Werbung-, mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.)
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein "Begegnungs-Erkennungs-Signal" senden.
 
-[Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1/UUID0xFD6F_v0.9.1.1.apk)
+### Download von GooglePlay
+[![Google Play](/misc/playstore/google-play-badge_de.png)](https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6fscan)
+
+https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6fscan
+
+#### OPEN Beta @ Google Play beitreten (diesen link direkt auf dem telefon öffnen)
+[BETA von UUID 0xFD6F Tracer @GoogelPlay beitreten](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6fscan)
+
+### Sideload (erfordert 'Installation von unsicheren Quellen zulassen')
+[Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1.scan/UUID0xFD6F_v0.9.1.1.apk)
 
 ### Technisch
 Der gemeinsam von Google und Apple entwickelte Standard über den die möglichen Kontakt-Informationen ausgetauscht werden, basiert darauf, dass auf dem Mobiltelefon ein BluetoothLE Beacon mit der **UUID 0xFD6F** gestartet wird.

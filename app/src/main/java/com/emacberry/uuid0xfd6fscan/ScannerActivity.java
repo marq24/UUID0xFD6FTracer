@@ -470,7 +470,11 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
 
     public void newBeconEvent(String addr) {
         if(mScannerService != null){
-            Log.v(LOG_TAG, "newBeconEvent: "+mScannerService.mContainer.get(addr));
+            if(addr !=null) {
+                Log.v(LOG_TAG, "newBeconEvent: " + mScannerService.mContainer.get(addr));
+            }else{
+                Log.v(LOG_TAG, "newBeconEvent: NO SCAN RESULTS");
+            }
             final int size = mScannerService.mContainer.size();
             runOnUiThread(()-> setActiveBeaconCount(size));
         }

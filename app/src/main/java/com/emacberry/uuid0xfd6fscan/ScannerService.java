@@ -539,15 +539,51 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     protected HashMap<String, UUIDFD6FBeacon> mContainer = new HashMap<>();
 
+    private class MySimpleTimer extends Thread{
+        private volatile long iLastScanEvent = 0;
+        private volatile boolean iIsRunning = false;
+        private MyScanCallback iCallback = null;
+
+        public MySimpleTimer(MyScanCallback myScanCallback){
+            super("MySimpleTimer");
+            this.iCallback = myScanCallback;
+        }
+
+        public void run(){
+            while(isRunning){
+                try {
+                    sleep(30000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                long tsNow = System.currentTimeMillis();
+                if(iLastScanEvent + 35000 < tsNow){
+                    // we have not received since 30 seconds a new scan
+                    // result, then we need to invalidate our content...
+                    // (BeaconsInRange = 0)
+                    iCallback.checkForOutdatedBeaconsAfterTimeout(tsNow);
+                    isRunning = false;
+                }
+            }
+        }
+    }
+
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
         public boolean mDoReport = false;
         public boolean mDisplayIsOn = true;
         private long iLastTs = 0;
+        private MySimpleTimer iTimoutTimer = new MySimpleTimer(MyScanCallback.this);
 
         private void handleResult(@NonNull ScanResult result) {
             mScannResultsOnStart = true;
             long tsNow = System.currentTimeMillis();
+            iTimoutTimer.iLastScanEvent = tsNow;
+            if(!iTimoutTimer.iIsRunning){
+                iTimoutTimer.iIsRunning = true;
+                iTimoutTimer.start();
+            }
+
             if (BuildConfig.DEBUG) {
                 if (iLastTs + 2000 < tsNow) {
                     Log.v(LOG_TAG, "Process scan result...");
@@ -562,7 +598,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 // check every 30sec by default for outdated beacon
                 // data...
                 long delay = 30000;
-
                 beacon = mContainer.get(addr);
                 if (beacon == null) {
                     beacon = new UUIDFD6FBeacon(addr, tsNow);
@@ -577,23 +612,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
                 // check every x sec if there are expired Beacons in our store?
                 if (iLastContainerCheckTs + delay < tsNow) {
-                    iLastContainerCheckTs = tsNow;
-                    ArrayList<String> addrsToRemove = new ArrayList<>();
-                    for (UUIDFD6FBeacon otherBeacon : mContainer.values()) {
-                        // if beacon not returned in any scan of the last 15sec
-                        // we going to remove it...
-                        if (otherBeacon.mLastTs + 15000 < tsNow) {
-                            addrsToRemove.add(otherBeacon.addr);
-                        }
-                    }
-                    if (addrsToRemove.size() > 0) {
-                        for (String aOtherAddr : addrsToRemove) {
-                            mContainer.remove(aOtherAddr);
-                        }
-                        if (BuildConfig.DEBUG) {
-                            mDoReport = true;
-                        }
-                    }
+                    checkForOutdatedBeaconsInt(tsNow);
                 }
             }
             mDoReport = mContainer.size() != prevContainerSize;
@@ -612,16 +631,48 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             // finally letting the GUI know, that we have new data...
             // have in mind, that this will be triggered quite often
             if (mDoReport) {
-                if (mGuiCallback != null) {
-                    mGuiCallback.newBeconEvent(addr);
+                shouldRefreshGui(addr);
+            }
+        }
+
+        private void shouldRefreshGui(String addr){
+            if (mGuiCallback != null) {
+                mGuiCallback.newBeconEvent(addr);
+            }
+            // only IF the display is active we will update the notification
+            // -> we have to check what is with the amoled display devices?!
+            if (mDisplayIsOn) {
+                updateNotificationText(false);
+            }
+            Log.d(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
+            mDoReport = false;
+        }
+
+        protected void checkForOutdatedBeaconsAfterTimeout(long tsNow) {
+            int prevSize = mContainer.size();
+            checkForOutdatedBeaconsInt(tsNow);
+            if(prevSize != mContainer.size()){
+                shouldRefreshGui(null);
+            }
+        }
+
+        protected void checkForOutdatedBeaconsInt(long tsNow){
+            iLastContainerCheckTs = tsNow;
+            ArrayList<String> addrsToRemove = new ArrayList<>();
+            for (UUIDFD6FBeacon otherBeacon : mContainer.values()) {
+                // if beacon not returned in any scan of the last 15sec
+                // we going to remove it...
+                if (otherBeacon.mLastTs + 15000 < tsNow) {
+                    addrsToRemove.add(otherBeacon.addr);
                 }
-                // only IF the display is active we will update the notification
-                // -> we have to check what is with the amoled display devices?!
-                if (mDisplayIsOn) {
-                    updateNotificationText(false);
+            }
+            if (addrsToRemove.size() > 0) {
+                for (String aOtherAddr : addrsToRemove) {
+                    mContainer.remove(aOtherAddr);
                 }
-                Log.d(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
-                mDoReport = false;
+                if (BuildConfig.DEBUG) {
+                    mDoReport = true;
+                }
             }
         }
 

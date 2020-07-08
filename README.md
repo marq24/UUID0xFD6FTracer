@@ -12,7 +12,7 @@ https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6fscan
 [Join BETA of UUID 0xFD6F Tracer @GoogelPlay](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6fscan)
 
 #### Some *funny* stuff about Google's PlayStore... developer frustration
-To be honest - only Google knows - since more then a week I try to get this solved with the Google support - but looks like I am just doomed...
+After the first version of the app was available in PlayStore it was removed by Google after few days - I have tried to summarize here the communication with the *support* team - at the end the **only** solution was to release the app with a different name & package.id (which is quite a shame). This is for sure not easier for end users who have installed the previous app - since for them there is no working update path - they need to deinstall the old app and reinstall the new from PlayStore - Thanks for NOTHING Google!
 
 [If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
 

@@ -541,7 +541,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     private class MySimpleTimer extends Thread{
         private volatile long iLastScanEvent = 0;
-        private volatile boolean iIsRunning = false;
+        private volatile boolean iIsTimeoutCheckerRunning = false;
         private MyScanCallback iCallback = null;
 
         public MySimpleTimer(MyScanCallback myScanCallback){
@@ -550,20 +550,43 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
 
         public void run(){
-            while(isRunning){
+            while(iIsTimeoutCheckerRunning){
                 try {
-                    sleep(30000L);
+                    long delay = 35000L;
+                    if(iLastScanEvent > 0){
+                        delay = (iLastScanEvent + delay) - System.currentTimeMillis();
+                        if(delay < 0){
+                            delay = 35000L;
+                        }
+                    }
+                    if(BuildConfig.DEBUG) {
+                        Log.v(LOG_TAG, "MySimpleTimer sleep "+(delay/1000)+"s");
+                    }
+                    sleep(delay);
+                    if(BuildConfig.DEBUG) {
+                        Log.v(LOG_TAG, "MySimpleTimer wake up");
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 long tsNow = System.currentTimeMillis();
-                if(iLastScanEvent + 35000 < tsNow){
+                if(iLastScanEvent + 31000 < tsNow){
+                    if(BuildConfig.DEBUG){
+                        Log.v(LOG_TAG, "last scan event longer then 31sec ago...");
+                    }
                     // we have not received since 30 seconds a new scan
                     // result, then we need to invalidate our content...
                     // (BeaconsInRange = 0)
                     iCallback.checkForOutdatedBeaconsAfterTimeout(tsNow);
-                    isRunning = false;
+                    iIsTimeoutCheckerRunning = false;
+                }else{
+                    if(BuildConfig.DEBUG){
+                        Log.v(LOG_TAG, "last scan event shorter then 31sec ago all fine");
+                    }
                 }
+            }
+            if(BuildConfig.DEBUG){
+                Log.v(LOG_TAG, "MySimpleTimer ended");
             }
         }
     }
@@ -573,16 +596,17 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         public boolean mDoReport = false;
         public boolean mDisplayIsOn = true;
         private long iLastTs = 0;
-        private MySimpleTimer iTimoutTimer = new MySimpleTimer(MyScanCallback.this);
+        private MySimpleTimer iTimoutTimer = null;
 
         private void handleResult(@NonNull ScanResult result) {
             mScannResultsOnStart = true;
             long tsNow = System.currentTimeMillis();
-            iTimoutTimer.iLastScanEvent = tsNow;
-            if(!iTimoutTimer.iIsRunning){
-                iTimoutTimer.iIsRunning = true;
+            if(iTimoutTimer == null || !iTimoutTimer.iIsTimeoutCheckerRunning){
+                iTimoutTimer = new MySimpleTimer(MyScanCallback.this);
+                iTimoutTimer.iIsTimeoutCheckerRunning = true;
                 iTimoutTimer.start();
             }
+            iTimoutTimer.iLastScanEvent = tsNow;
 
             if (BuildConfig.DEBUG) {
                 if (iLastTs + 2000 < tsNow) {

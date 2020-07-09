@@ -17,7 +17,7 @@ After the first version of the app was available in PlayStore it was removed by 
 [If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
 
 ### Sideload
-[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1.scan/UUID0xFD6F_v0.9.1.1.apk)
+[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.2/UUID0xFD6F_v0.9.1.2.apk)
 
 ### Recording ![GPSLoggerII](/misc/docs/gpsl-icon.png)
 I have kept this application as simple & lightweight as possible - when you like to record beacons and see them over a timeline you can install the free available GPSLogger II app from Google PlayStore
@@ -40,7 +40,7 @@ https://play.google.com/store/apps/details?id=com.emacberry.uuid0xfd6fscan
 [BETA von UUID 0xFD6F Tracer @GoogelPlay beitreten](https://play.google.com/apps/testing/com.emacberry.uuid0xfd6fscan)
 
 ### Sideload (erfordert 'Installation von unsicheren Quellen zulassen')
-[Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.1.scan/UUID0xFD6F_v0.9.1.1.apk)
+[Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.2/UUID0xFD6F_v0.9.1.2.apk)
 
 ### Technisch
 Der gemeinsam von Google und Apple entwickelte Standard über den die möglichen Kontakt-Informationen ausgetauscht werden, basiert darauf, dass auf dem Mobiltelefon ein BluetoothLE Beacon mit der **UUID 0xFD6F** gestartet wird.

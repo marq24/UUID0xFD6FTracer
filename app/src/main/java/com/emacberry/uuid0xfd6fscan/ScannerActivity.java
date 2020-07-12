@@ -194,8 +194,59 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent callingIntent = getIntent();
-        if (callingIntent != null && callingIntent.getBooleanExtra(INTENT_EXTRA_TERMINATE_APP, false)) {
+        if(checkTerninate(getIntent())) {
+
+            requestPermissions(new String[]{
+                    Manifest.permission.FOREGROUND_SERVICE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN}, 99);
+
+            setContentView(R.layout.activity_main);
+
+            SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+            mViewPager = findViewById(R.id.view_pager);
+            mViewPager.setAdapter(sectionsPagerAdapter);
+
+            // MARQ24: Currently NO other TAB's implemented... (will be added)
+            /*ActionBar actionBar = getSupportActionBar();
+            actionBar.removeAllTabs();
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            MyOnTabListenerAndroidX otl = new MyOnTabListenerAndroidX();
+            for (int i = 0; i < sectionsPagerAdapter.getCount(); i++) {
+                // Create a tab with text corresponding to the page title defined by
+                // the adapter. Also specify this Activity object, which implements
+                // the TabListener interface, as the callback (listener) for when
+                // this tab is selected.
+                actionBar.addTab(actionBar.newTab().setTabListener(otl).setText(sectionsPagerAdapter.getPageTitle(i)));
+            }*/
+
+            mFab = findViewById(R.id.startstop);
+            mFab.setOnClickListener(view -> {
+                try {
+                    if (mScannerService != null) {
+                        if (mScannerService.isScanning()) {
+                            mScannerService.stopScan(true);
+                        } else {
+                            mScannerService.startScan(true);
+                        }
+                    }
+                } catch (Throwable t) {
+                    Log.e(LOG_TAG, "" + t.getMessage());
+                }
+            });
+            Preferences.getInstance(this).registerOnSharedPreferenceChangeListener(this);
+
+            mActivityIsCreated = true;
+            setActiveBeaconCount(0);
+            mHandler.postDelayed(() -> updateButtonImg(), 500);
+        }
+    }
+
+    private boolean checkTerninate(Intent intent) {
+        if (intent != null && intent.getBooleanExtra(INTENT_EXTRA_TERMINATE_APP, false)) {
             try{
                 Log.w(LOG_TAG, "TERMINATE_APP triggered via Service");
                 if (mHandler != null) {
@@ -207,57 +258,12 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                     }, 50);
                 }
                 finish();
+                return false;
             }catch(Throwable t){
                 Log.e(LOG_TAG, ""+t.getMessage());
             }
         }
-
-        requestPermissions(new String[]{
-                Manifest.permission.FOREGROUND_SERVICE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN}, 99);
-
-        setContentView(R.layout.activity_main);
-
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        mViewPager = findViewById(R.id.view_pager);
-        mViewPager.setAdapter(sectionsPagerAdapter);
-
-        // MARQ24: Currently NO other TAB's implemented... (will be added)
-        /*ActionBar actionBar = getSupportActionBar();
-        actionBar.removeAllTabs();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        MyOnTabListenerAndroidX otl = new MyOnTabListenerAndroidX();
-        for (int i = 0; i < sectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(actionBar.newTab().setTabListener(otl).setText(sectionsPagerAdapter.getPageTitle(i)));
-        }*/
-
-        mFab = findViewById(R.id.startstop);
-        mFab.setOnClickListener(view -> {
-            try{
-                if (mScannerService != null) {
-                    if(mScannerService.isScanning()){
-                        mScannerService.stopScan(true);
-                    }else{
-                        mScannerService.startScan(true);
-                    }
-                }
-            }catch(Throwable t){
-                Log.e(LOG_TAG, ""+t.getMessage());
-            }
-        });
-        Preferences.getInstance(this).registerOnSharedPreferenceChangeListener(this);
-
-        mActivityIsCreated = true;
-        setActiveBeaconCount(0);
-        mHandler.postDelayed(()->updateButtonImg(), 500);
+        return true;
     }
 
     @Override
@@ -398,59 +404,60 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
     private void handleIntent(Intent intent) {
         if (intent != null) {
             Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
-            boolean wasStartFromService = intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION);
-
-            /*if (handleEvent && intent.getBooleanExtra(STOP_LOGGING, false)) {
-                Log.i(LOG_TAG, "START OR STOP LOGGING");
-                if (_logger != null && _logger.isViewingMode()) {
-                    resetViewMode();
+            if(checkTerninate(intent)) {
+                boolean wasStartFromService = intent.hasExtra(INTENT_EXTRA_SERVICE_ACTION);
+                /*if (handleEvent && intent.getBooleanExtra(STOP_LOGGING, false)) {
+                    Log.i(LOG_TAG, "START OR STOP LOGGING");
+                    if (_logger != null && _logger.isViewingMode()) {
+                        resetViewMode();
+                    }
+                    startOrStopLoggingService();
+                    handleEvent = false;
                 }
-                startOrStopLoggingService();
-                handleEvent = false;
+
+                if (handleEvent && intent.getBooleanExtra(TTS_SHUTUP, false)) {
+                    Log.i(LOG_TAG, "TTS SHUT UP!");
+                    if (_logger != null) {
+                        _logger.dFlyCancelAnyTTS();
+                    }
+                    handleEvent = false;
+                }
+
+                // launched via ShortCut
+                if (handleEvent && "intent.action.STARTREC".equals(intent.getAction())) {
+                    if (mHandler != null) {
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startLoggingService(true);
+                            }
+                        }, 1500);
+                    }
+                    handleEvent = false;
+                } else if (handleEvent && "intent.action.OPENPATHMAN".equals(intent.getAction())) {
+                    Log.i(LOG_TAG, "intent.action.OPENPATHMAN");
+                    if (mHandler != null) {
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                openPathManager();
+                            }
+                        }, 100);
+                    }
+                    handleEvent = false;
+                } else if (handleEvent && "intent.action.OPENSETTINGS".equals(intent.getAction())) {
+                    Log.i(LOG_TAG, "intent.action.OPENSETTINGS");
+                    if (mHandler != null) {
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                openSettings();
+                            }
+                        }, 100);
+                    }
+                    handleEvent = false;
+                }*/
             }
-
-            if (handleEvent && intent.getBooleanExtra(TTS_SHUTUP, false)) {
-                Log.i(LOG_TAG, "TTS SHUT UP!");
-                if (_logger != null) {
-                    _logger.dFlyCancelAnyTTS();
-                }
-                handleEvent = false;
-            }
-
-            // launched via ShortCut
-            if (handleEvent && "intent.action.STARTREC".equals(intent.getAction())) {
-                if (mHandler != null) {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            startLoggingService(true);
-                        }
-                    }, 1500);
-                }
-                handleEvent = false;
-            } else if (handleEvent && "intent.action.OPENPATHMAN".equals(intent.getAction())) {
-                Log.i(LOG_TAG, "intent.action.OPENPATHMAN");
-                if (mHandler != null) {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            openPathManager();
-                        }
-                    }, 100);
-                }
-                handleEvent = false;
-            } else if (handleEvent && "intent.action.OPENSETTINGS".equals(intent.getAction())) {
-                Log.i(LOG_TAG, "intent.action.OPENSETTINGS");
-                if (mHandler != null) {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            openSettings();
-                        }
-                    }, 100);
-                }
-                handleEvent = false;
-            }*/
         }
     }
 

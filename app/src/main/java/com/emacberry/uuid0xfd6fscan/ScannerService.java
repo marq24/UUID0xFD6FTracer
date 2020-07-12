@@ -495,7 +495,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mBuilder != null) {
             int size = mContainer.size();
             if (mScannIsRunning && size > 0) {
-                String txt = mNotifyTextScanning + " " + String.format(mNotifyTextAddon, size);
+                String txt = String.format(mNotifyTextAddon, size) + " " + mNotifyTextScanning;
                 mBuilder.setContentText(txt);
                 notify = true;//force || !mKeyguardManager.isKeyguardLocked();
                 mNotifyCanBeReset = true;

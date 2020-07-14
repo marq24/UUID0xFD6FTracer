@@ -3,8 +3,9 @@
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
 
-### Get via Amazon App Store
-[![Amazon App Store](/misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)
+### Get via amazon appstore
+[![amazon appstore](/misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)
+
 https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### You can also Sideload the APK
@@ -31,8 +32,9 @@ Ich habe eine Funktion in der Warn-App des RKI's vermisst. Ich weiß, **ich habe
 [//]: # (Für Android habe ich deswegen eine kleine App geschrieben -natürlich kostenlos und ohne Werbung-, mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.)
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein "Begegnungs-Erkennungs-Signal" senden.
 
-### Über den Amazon App Store verfügbar
-[![Amazon App Store](/misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
+### Über den amazon appstore verfügbar
+[![amazon appstore](/misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
+
 https://www.amazon.de/gp/product/B08CY7JY1P
 
 ### Installation auch als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')

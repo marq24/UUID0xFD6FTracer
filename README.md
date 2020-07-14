@@ -4,9 +4,9 @@
 Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
 
 ### This app will not be available via Google's PlayStore
-Also the second attempt failed after a few days - Google have found that the App Title __Beacon UUID 0xFD6F Scanner__ is violating their's Developer Program Policies (8.3).
+Also the second attempt failed after a few days - Google have decided that the App Title __Beacon UUID 0xFD6F Scanner__ is violating their's Developer Program Policies (8.3.).
 
-I will give up here - it does not make any sense to me to try to argue with bot's and low payed support stuff - It am just pissed!
+I will give up here - it does not make any sense to me to try to argue with bot's and low payed support stuff - It am just pissed that they did not provided this information earlier.
 
 Have in mind this is not the first time - After the first version of the app was available in PlayStore it was removed by Google after few days - I have tried to summarize here the communication with the *support* team - at the end the **only** solution was to release the app with a different name & package.id (which is quite a shame). This is for sure not easier for end users who have installed the previous app - since for them there is no working update path - they need to deinstall the old app and reinstall the new from PlayStore - Thanks for NOTHING Google!
 
@@ -30,7 +30,7 @@ Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos
 ### Download via GooglePlay?
 Google hat ein zweites Mal entschieden die App aus dem Store zu entfernen, diesmal mit dem Hinweis darauf, dass der App Title nicht ihren Richtlinien entspricht. Ich bin es leid zu versuchen mit den Bot's und unterbezahlten Support Mitarbeitern zu diskutieren. Ich werde keinen dritten Versuch starten.
 
-### Installation als Sideload (erfordert 'Installation von unsicheren Quellen zulassen')
+### Installation nur als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')
 [Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.3/UUID0xFD6F_v0.9.1.3.apk)
 
 ### Technisch

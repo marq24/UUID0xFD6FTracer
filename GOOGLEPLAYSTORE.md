@@ -71,5 +71,5 @@ _You should be able to find more about your issue here: **The requirements for c
 
 _Thanks for your understanding and continued support of Google Play._
 
-## Conclution
+## Conclusion
 So what should I do? - it seams to be impossible to get out of this endless loop - and this explains why there is no UUID 0xFD6F Tracer in GooglePlay

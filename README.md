@@ -3,6 +3,14 @@
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
 
+### Get via Amazon App Store
+[![Amazon App Store](/misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)
+
+https://www.amazon.com/gp/product/B08CY7JY1P
+
+### You can Sideload the APK too
+[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.3/UUID0xFD6F_v0.9.1.3.apk)
+
 ### This app will not be available via Google's PlayStore
 Also the second attempt failed after a few days - Google have decided that the App Title __Beacon UUID 0xFD6F Scanner__ is violating their's Developer Program Policies (8.3.).
 
@@ -11,9 +19,6 @@ I will give up here - it does not make any sense to me to try to argue with bot'
 Have in mind this is not the first time - After the first version of the app was available in PlayStore it was removed by Google after few days - I have tried to summarize here the communication with the *support* team - at the end the **only** solution was to release the app with a different name & package.id (which is quite a shame). This is for sure not easier for end users who have installed the previous app - since for them there is no working update path - they need to deinstall the old app and reinstall the new from PlayStore - Thanks for NOTHING Google!
 
 [If you like to read the details - just read here](/GOOGLEPLAYSTORE.md) 
-
-### You need to Sideload the APK
-[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.3/UUID0xFD6F_v0.9.1.3.apk)
 
 ### Recording ![GPSLoggerII](/misc/docs/gpsl-icon.png)
 I have kept this application as simple & lightweight as possible - when you like to record beacons and see them over a timeline you can install the free available GPSLogger II app from Google PlayStore
@@ -27,7 +32,12 @@ Ich habe eine Funktion in der Warn-App des RKI's vermisst. Ich weiß, **ich habe
 [//]: # (Für Android habe ich deswegen eine kleine App geschrieben -natürlich kostenlos und ohne Werbung-, mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.)
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein "Begegnungs-Erkennungs-Signal" senden.
 
-### Download via GooglePlay?
+### Über den Amazon App Store verfügbar
+[![Amazon App Store](/misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
+
+https://www.amazon.de/gp/product/B08CY7JY1P
+
+### Kein Download via GooglePlay?
 Google hat ein zweites Mal entschieden die App aus dem Store zu entfernen, diesmal mit dem Hinweis darauf, dass der App Title nicht ihren Richtlinien entspricht. Ich bin es leid zu versuchen mit den Bot's und unterbezahlten Support Mitarbeitern zu diskutieren. Ich werde keinen dritten Versuch starten.
 
 ### Installation nur als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')

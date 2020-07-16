@@ -1,0 +1,5 @@
+The purpose of the app is to scan your current environment for devices running an application that make use of Google's & Apple's ExposureNotification Framework and display the found number as sticky notification (and in the main activity).
+
+This Application creates transparency what is happening around you. If in your country a warn-app is in place that makes use of the Framework you can see how many devices around you have the potential to exchange randomised & anonymous contract tracing information that can help to follow possible infection chains.
+
+Please note that this app does not make use of the ExposureNotification Framework itself - nor it creates any BluetoothLE Beacon - the app also does not store any information about you or other devices that will be detected.

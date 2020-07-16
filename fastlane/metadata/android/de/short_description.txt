@@ -1,0 +1,1 @@
+ Scannt nach BluetoothLE Beacons mit der UUID 0xFD6F

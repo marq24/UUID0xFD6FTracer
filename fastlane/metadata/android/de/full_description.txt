@@ -1,0 +1,12 @@
+Ich habe eine Funktion in der Warn-App des RKI's vermisst. Ich weiß, ich habe sie installiert & aktiviert - aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich herum ebenfalls die App am Start?
+
+Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt bekommt wie viele unterschiedliche Geräte um Euch herum ein "Begegnungs-Erkennungs-Signal" senden.
+
+Technische Hintergrundinformationen
+Der gemeinsam von Google und Apple entwickelte Standard über den die möglichen Kontakt-Informationen ausgetauscht werden, basiert darauf, dass auf dem Mobiltelefon ein BluetoothLE Beacon mit der UUID 0xFD6F gestartet wird.
+
+Die App scannt die Umgebung permanent nach Beacons mit dieser UUID und zeigt Euch die Summe der gefunden "Sender" sowohl als System-Benachrichtigung
+
+Den Scann kann von Hand angehalten oder neu starten- allerdings bin ich selbst von dem sehr geringen Akku-Verbrauch des Dienstes überrascht! Ich habe die App über Nacht laufen lassen und noch nicht mal 3% Akku benötigt.
+
+Da die App Bluetooth verwendet, benötigt sie das Android Recht "Eure Position zu ermitteln" (seuftz) - natürlich macht sie das nicht - aber da theoretisch die Möglichkeit bestünde, gibt es diese Warnung vom Betriebssystem.

@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -52,15 +53,28 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private static final String LOG_TAG = "SCANNER";
     public static boolean isRunning = false;
 
-    public static final ParcelUuid FD6F_UUID = ParcelUuid.fromString("0000fd6f-0000-1000-8000-00805f9b34fb");
+    public static final ParcelUuid FD6F_UUID = ParcelUuid.fromString("0000fd6f-0000-1000-8000-00805f9b34fb"); // ExposureNotificationFramework (like Germany)
+    public static final ParcelUuid FD64_UUID = ParcelUuid.fromString("0000fd64-0000-1000-8000-00805f9b34fb"); // FRANCE
+
+    public static final ParcelUuid FD6X_UUID = ParcelUuid.fromString("0000fd60-0000-1000-8000-00805f9b34fb");
+    public static final ParcelUuid FD6X_MASK = ParcelUuid.fromString("11111110-1111-1111-1111-111111111111");
 
     // /* SERVICES */
     IBinder mBinder = new LocalBinder();
+
+    private String mScanMode = Preferences.getInstance(getBaseContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // DO NOTHING RIGHT NOW...
         //Log.d(LOG_TAG, "onSharedPreferenceChanged "+key);
+        if(key.equals(getString(R.string.PKEY_SCANMODE))){
+            String newScanMode = sharedPreferences.getString(getString(R.string.PKEY_SCANMODE), null);
+            if(!mScanMode.equals(newScanMode)){
+                mScanMode = newScanMode;
+                restartScan();
+            }
+        }
     }
 
     @Override
@@ -293,8 +307,25 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if(checkScanPermissions()) {
             if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
+
                 ArrayList<ScanFilter> f = new ArrayList<>();
-                f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
+                switch (mScanMode){
+                    case "ENF_FRA":
+                        f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
+                        mScanCallback.mScanUUID = null;
+                        break;
+
+                    case "FRA":
+                        f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
+                        mScanCallback.mScanUUID = FD64_UUID;
+                        break;
+
+                    default:
+                    case "ENF":
+                        f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
+                        mScanCallback.mScanUUID = FD6F_UUID;
+                        break;
+                }
                 mContainer = new HashMap<>();
                 mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
                 mScannIsRunning = true;
@@ -348,6 +379,21 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     mHandler.postDelayed(() -> startScan(false), 5000);
                 } else if (!mScannIsRunning) {
                     Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
+                    mHandler.postDelayed(() -> startScan(false), 500);
+                }
+            }
+        }
+    }
+
+    public void restartScan() {
+        if (!mScannStopedViaGui) {
+            if(mHandler != null) {
+                if (mScannIsRunning && mScannResultsOnStart) {
+                    Log.w(LOG_TAG, "restartScan() triggered - mScannIsRunning: TRUE");
+                    mHandler.postDelayed(() -> stopScan(false), 500);
+                    mHandler.postDelayed(() -> startScan(false), 5000);
+                } else if(!mScannIsRunning){
+                    Log.w(LOG_TAG, "restartScan() triggered - mScannIsRunning: FALSE");
                     mHandler.postDelayed(() -> startScan(false), 500);
                 }
             }
@@ -597,6 +643,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         public boolean mDisplayIsOn = true;
         private long iLastTs = 0;
         private MySimpleTimer iTimoutTimer = null;
+        private ParcelUuid mScanUUID = FD6F_UUID;
 
         private void handleResult(@NonNull ScanResult result) {
             mScannResultsOnStart = true;
@@ -615,7 +662,43 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 iLastTs = tsNow;
             }
 
-            String addr = result.getDevice().getAddress();
+            BluetoothDevice btDevice = result.getDevice();
+            if(mScanUUID == null) {
+                if (btDevice != null) {
+                    ParcelUuid[] uuids = btDevice.getUuids();
+                    if (uuids != null) {
+                        for (int i = 0; i < uuids.length; i++) {
+                            if (uuids[i].equals(FD6F_UUID) || uuids[i].equals(FD64_UUID)) {
+                                processDevice(btDevice, result, result.getScanRecord(), tsNow, uuids[i], null);
+                                break;
+                            }
+                        }
+                    } else {
+                        // to bad no UUID-Info can be provided...
+                        ScanRecord rec = result.getScanRecord();
+                        if (rec != null) {
+                            byte[] d6F = rec.getServiceData(FD6F_UUID);
+                            if (d6F != null && d6F.length > 0) {
+                                processDevice(btDevice, result, rec, tsNow, FD6F_UUID, d6F);
+                            } else {
+                                byte[] d64 = rec.getServiceData(FD64_UUID);
+                                if (d64 != null && d64.length > 0) {
+                                    processDevice(btDevice, result, rec, tsNow, FD64_UUID, d64);
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{
+                // single UUID-Mode...
+                processDevice(btDevice, result, result.getScanRecord(), tsNow, mScanUUID, null);
+            }
+        }
+
+        private void processDevice(final BluetoothDevice btDevice, final ScanResult result,
+                                   final ScanRecord rec, final long tsNow,
+                                   final ParcelUuid uuid, byte[] data){
+            String addr = btDevice.getAddress();
             UUIDFD6FBeacon beacon = null;
             int prevContainerSize = mContainer.size();
             synchronized (mContainer) {
@@ -646,10 +729,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 beacon.mTxPower = result.getTxPower();
             }
             beacon.addRssi(result.getTimestampNanos(), result.getRssi(), tsNow);
-            ScanRecord rec = result.getScanRecord();
             if (rec != null) {
                 beacon.mTxPowerLevel = rec.getTxPowerLevel();
-                beacon.addData(rec.getServiceData(FD6F_UUID));
+                if(data != null) {
+                    beacon.addData(data);
+                }else{
+                    beacon.addData(rec.getServiceData(uuid));
+                }
             }
 
             // finally letting the GUI know, that we have new data...

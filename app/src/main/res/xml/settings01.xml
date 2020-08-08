@@ -8,4 +8,13 @@
 		app:summaryOff="@string/pref01_AUTOSTART_OFF"
 		app:summaryOn="@string/pref01_AUTOSTART_ON" />
 
+	<androidx.preference.ListPreference
+		app:key="@string/PKEY_SCANMODE"
+		app:defaultValue="@string/DVAL_SCANMODE"
+		app:title="@string/pref01_SCANMODE_TITLE"
+		app:entries="@array/pref01_SCANMODE_ENTRIES"
+		app:entryValues="@array/pref01_SCANMODE_VALUES"
+		app:summary="%s"
+	/>
+
 </androidx.preference.PreferenceScreen>

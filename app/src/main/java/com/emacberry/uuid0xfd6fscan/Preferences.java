@@ -24,9 +24,17 @@ public class Preferences {
         this.c = c;
         try {
             if (prefData.getAll().size() == 0) {
-                PreferenceManager.setDefaultValues(c, R.xml.settings01, true);
-            } else {
-                PreferenceManager.setDefaultValues(c, R.xml.settings01, false);
+                // WE SHOULD INIT the SCAN-MODE depending on the USER_LANGUAGE/COUNTRY
+                // In France/French we can set the default value to 'FRA'
+                try {
+                    String x = c.getResources().getConfiguration().locale.getCountry();
+                    if (x.equalsIgnoreCase("fr")) {
+                        SharedPreferences.Editor e = prefData.edit();
+                        e.putString(c.getString(R.string.PKEY_SCANMODE), "FRA");
+                        e.commit();
+                    }
+                }catch(Throwable t){}
+
             }
         }catch(Throwable t){
             Log.e("PREFS", ""+t.getMessage());
@@ -46,6 +54,13 @@ public class Preferences {
             return prefData.getBoolean(c.getString(pkey), Boolean.parseBoolean(c.getString(dval)));
         }
         return false;
+    }
+
+    public String getString(int pkey, int dval) {
+        if(prefData != null){
+            return prefData.getString(c.getString(pkey), c.getString(dval));
+        }
+        return null;
     }
 
     public void setBoolean(int pkey, boolean b) {

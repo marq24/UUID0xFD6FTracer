@@ -26,12 +26,23 @@
     <string name="pref01_KEY" translatable="false">SETTINGS_01</string>
     <string name="PKEY_AUTOSTART" translatable="false">AUTOSTART</string>
     <string name="DVAL_AUTOSTART" translatable="false">false</string>
-    <string name="PKEY_STOREDATA" translatable="false">STOREDATA</string>
-    <string name="DVAL_STOREDATA" translatable="false">false</string>
+    <string name="PKEY_SCANMODE" translatable="false">SCANMODE</string>
+    <string name="DVAL_SCANMODE" translatable="false">ENF</string>
 
     <string name="pref01_TITLE">Settings</string>
     <string name="pref01_AUTOSTART_TITLE">Service Autostart</string>
     <string name="pref01_AUTOSTART_OFF">OFF</string>
     <string name="pref01_AUTOSTART_ON">ON - The \'Background Tracer Service\' will be automatically started after a device reboot (after successful login)</string>
 
+    <string name="pref01_SCANMODE_TITLE">Country\'s</string>
+    <string-array name="pref01_SCANMODE_VALUES" translatable="false">
+        <item name="01">ENF</item>
+        <item name="02">FRA</item>
+        <item name="03">ENF_FRA</item>
+    </string-array>
+    <string-array name="pref01_SCANMODE_ENTRIES">
+        <item name="01">All Countries make use of the Exposure Notification Framework like the German CoronaWarnApp</item>
+        <item name="02">France (StopCovid)</item>
+        <item name="03">France (StopCovid) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
+    </string-array>
 </resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_text_1">Appareils actifs</string>
+    <string name="notifyChannelBase">Service de base</string>
+    <string name="app_service_title">Service Traceur d\'arrière-plan</string>
+    <string name="app_service_msgOff">Veuillez démarrer le scanner</string>
+    <string name="app_service_msgOffNoPermissions">Veuillez démarrer l\'application pour redémarrer le scanner</string>
+    <string name="app_service_msgScan1">Environnement de numérisation&#8230;</string>
+    <string name="app_service_msgScan2">[a trouvé: %1$d]</string>
+    <string name="menu_finish">Fermer l\'application</string>
+    <string name="menu_exit">Mettre fin au service</string>
+    <string name="menu_exit_notify_action">Sortie</string>
+    <string name="menu_start_notify_action">Lancer l\'analyse</string>
+    <string name="menu_stop_notify_action">Arrêter l\'analyse</string>
+    <string name="act_active_beacons">Appareils actives: %1$d</string>
+    <string name="menu_start">Démarrer le service de scan</string>
+    <string name="menu_stop">Arrêter le service de scan</string>
+    <string name="menu_settings">Paramètres&#8230;</string>
+    <string name="pref01_TITLE">Paramètres</string>
+    <string name="pref01_AUTOSTART_TITLE">Démarrage automatique du service</string>
+    <string name="pref01_AUTOSTART_OFF">DÉSACTIVÉ</string>
+    <string name="pref01_AUTOSTART_ON">ALLUMÉ - Le \'Service Traceur d\'arrière-plan\' sera automatiquement démarré après un redémarrage de l\'appareil (après une connexion réussie)</string>
+    <string name="pref01_SCANMODE_TITLE">Pays</string>
+    <string-array name="pref01_SCANMODE_ENTRIES">
+        <item name="01">Tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
+        <item name="02">France (StopCovid)</item>
+        <item name="03">France (StopCovid) et tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
+    </string-array>
+</resources>

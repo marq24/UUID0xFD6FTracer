@@ -20,9 +20,15 @@
     <string name="menu_stop">Scanner Dienst stoppen</string>
 
     <string name="menu_settings">Einstellungen&#8230;</string>
-    <string name="pref01_TITLE">Einstellungen&#8230;</string>
+    <string name="pref01_TITLE">Einstellungen</string>
     <string name="pref01_AUTOSTART_TITLE">Autostart des Dienstes</string>
     <string name="pref01_AUTOSTART_OFF">AUS</string>
     <string name="pref01_AUTOSTART_ON">EIN - Der \'Hintergrund Tracing Dienst\' wir nach einem Neustart des Gerätes automatisch nach erfolgreichem Login gestartet</string>
 
+    <string name="pref01_SCANMODE_TITLE">Länder</string>
+    <string-array name="pref01_SCANMODE_ENTRIES">
+        <item name="01">Alle Länder deren App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
+        <item name="02">Frankreich (StopCovid)</item>
+        <item name="03">Frankreich (StopCovid) und Alle Länder dessen App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
+    </string-array>
 </resources>

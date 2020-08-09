@@ -28,7 +28,7 @@
     <string name="pref01_SCANMODE_TITLE">Länder</string>
     <string-array name="pref01_SCANMODE_ENTRIES">
         <item name="01">Alle Länder deren App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
-        <item name="02">Frankreich (StopCovid)</item>
-        <item name="03">Frankreich (StopCovid) und Alle Länder dessen App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
+        <item name="02">Frankreich (StopCovid France)</item>
+        <item name="03">Frankreich (StopCovid France) und Alle Länder dessen App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
     </string-array>
 </resources>

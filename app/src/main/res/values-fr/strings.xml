@@ -23,7 +23,7 @@
     <string name="pref01_SCANMODE_TITLE">Pays</string>
     <string-array name="pref01_SCANMODE_ENTRIES">
         <item name="01">Tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
-        <item name="02">France (StopCovid)</item>
-        <item name="03">France (StopCovid) et tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
+        <item name="02">France (StopCovid France)</item>
+        <item name="03">France (StopCovid France) et tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
     </string-array>
 </resources>

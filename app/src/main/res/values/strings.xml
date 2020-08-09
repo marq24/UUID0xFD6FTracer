@@ -42,7 +42,7 @@
     </string-array>
     <string-array name="pref01_SCANMODE_ENTRIES">
         <item name="01">All Countries make use of the Exposure Notification Framework like the German CoronaWarnApp</item>
-        <item name="02">France (StopCovid)</item>
-        <item name="03">France (StopCovid) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
+        <item name="02">France (StopCovid France)</item>
+        <item name="03">France (StopCovid France) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
     </string-array>
 </resources>

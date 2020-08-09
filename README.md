@@ -1,7 +1,7 @@
 # UUID 0xFD6F Tracer ![AppLogo](/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
 
 ## English
-Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework.
+Main purpose of the app is to scan your current environment for active devices running an application that make use of Google's & Apple's ExposureNotification Framework and (since 0.9.1.5 also the StopCovid France App)
 
 ### Get via amazon appstore
 [![amazon appstore](/misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)
@@ -9,7 +9,7 @@ Main purpose of the app is to scan your current environment for active devices r
 https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### You can also Sideload the APK
-[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.3/UUID0xFD6F_v0.9.1.3.apk)
+[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.5/UUID0xFD6F_v0.9.1.5.apk)
 
 #### This app will not be available via Google's PlayStore
 Also the second attempt failed after a few days - Google have decided that the App Title __Beacon UUID 0xFD6F Scanner__ is violating their's Developer Program Policies (8.3.).
@@ -38,7 +38,7 @@ Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos
 https://www.amazon.de/gp/product/B08CY7JY1P
 
 ### Installation auch als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')
-[Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.3/UUID0xFD6F_v0.9.1.3.apk)
+[Download des aktuellen UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.5/UUID0xFD6F_v0.9.1.5.apk)
 
 #### Kein Download via GooglePlay?
 Google hat ein zweites Mal entschieden die App aus dem Store zu entfernen, diesmal mit dem Hinweis darauf, dass der App Title nicht ihren Richtlinien entspricht. Ich bin es leid zu versuchen mit den Bot's und unterbezahlten Support Mitarbeitern zu diskutieren. Ich werde keinen dritten Versuch starten.

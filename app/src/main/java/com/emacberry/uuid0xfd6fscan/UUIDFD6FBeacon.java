@@ -14,10 +14,12 @@ public class UUIDFD6FBeacon {
     public long mLastTs;
     public TreeMap<Long, Integer> sigHistory = new TreeMap<>();
     public HashSet<String> data = new HashSet<>();
+    public boolean isENF;
 
-    public UUIDFD6FBeacon(String addr, long ts) {
+    public UUIDFD6FBeacon(String addr, long ts, boolean isENF) {
         this.addr = addr;
         this.mLastTs = ts;
+        this.isENF = isENF;
     }
 
     public void addRssi(long ts, int rssi, long tsNow) {

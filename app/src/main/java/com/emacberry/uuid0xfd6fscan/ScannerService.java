@@ -312,18 +312,18 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 switch (mScanMode){
                     case "ENF_FRA":
                         f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
-                        mScanCallback.mScanUUID = null;
+                        mScanCallback.setScanUUID(null);
                         break;
 
                     case "FRA":
                         f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
-                        mScanCallback.mScanUUID = FD64_UUID;
+                        mScanCallback.setScanUUID(FD64_UUID);
                         break;
 
                     default:
                     case "ENF":
                         f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
-                        mScanCallback.mScanUUID = FD6F_UUID;
+                        mScanCallback.setScanUUID(FD6F_UUID);
                         break;
                 }
                 mContainer = new HashMap<>();
@@ -644,6 +644,16 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private long iLastTs = 0;
         private MySimpleTimer iTimoutTimer = null;
         private ParcelUuid mScanUUID = FD6F_UUID;
+        private boolean mIsDF6F = true;
+
+        protected void setScanUUID(ParcelUuid uuid) {
+            mScanUUID = uuid;
+            if(uuid != null){
+                mIsDF6F = uuid.equals(FD6F_UUID);
+            }else{
+                mIsDF6F = false;
+            }
+        }
 
         private void handleResult(@NonNull ScanResult result) {
             mScannResultsOnStart = true;
@@ -663,13 +673,19 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             }
 
             BluetoothDevice btDevice = result.getDevice();
-            if(mScanUUID == null) {
+            if(mScanUUID == null) /* MULTI SCAN MODE */ {
                 if (btDevice != null) {
                     ParcelUuid[] uuids = btDevice.getUuids();
                     if (uuids != null) {
                         for (int i = 0; i < uuids.length; i++) {
-                            if (uuids[i].equals(FD6F_UUID) || uuids[i].equals(FD64_UUID)) {
-                                processDevice(btDevice, result, result.getScanRecord(), tsNow, uuids[i], null);
+                            boolean isDF6F = uuids[i].equals(FD6F_UUID);
+                            if (isDF6F || uuids[i].equals(FD64_UUID)) {
+                                ScanRecord rec = result.getScanRecord();
+                                if(rec != null) {
+                                    processDevice(btDevice, result, rec, tsNow, isDF6F, rec.getServiceData(uuids[i]));
+                                }else{
+                                    processDevice(btDevice, result, null, tsNow, isDF6F,null);
+                                }
                                 break;
                             }
                         }
@@ -679,11 +695,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         if (rec != null) {
                             byte[] d6F = rec.getServiceData(FD6F_UUID);
                             if (d6F != null && d6F.length > 0) {
-                                processDevice(btDevice, result, rec, tsNow, FD6F_UUID, d6F);
+                                processDevice(btDevice, result, rec, tsNow, true, d6F);
                             } else {
                                 byte[] d64 = rec.getServiceData(FD64_UUID);
                                 if (d64 != null && d64.length > 0) {
-                                    processDevice(btDevice, result, rec, tsNow, FD64_UUID, d64);
+                                    processDevice(btDevice, result, rec, tsNow, false, d64);
                                 }
                             }
                         }
@@ -691,13 +707,18 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 }
             }else{
                 // single UUID-Mode...
-                processDevice(btDevice, result, result.getScanRecord(), tsNow, mScanUUID, null);
+                ScanRecord rec = result.getScanRecord();
+                if (rec != null) {
+                    processDevice(btDevice, result, rec, tsNow, mIsDF6F, rec.getServiceData(mScanUUID));
+                }else{
+                    processDevice(btDevice, result, null, tsNow, mIsDF6F, null);
+                }
             }
         }
 
         private void processDevice(final BluetoothDevice btDevice, final ScanResult result,
                                    final ScanRecord rec, final long tsNow,
-                                   final ParcelUuid uuid, byte[] data){
+                                   boolean isDF6F, byte[] data){
             String addr = btDevice.getAddress();
             UUIDFD6FBeacon beacon = null;
             int prevContainerSize = mContainer.size();
@@ -707,7 +728,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 long delay = 30000;
                 beacon = mContainer.get(addr);
                 if (beacon == null) {
-                    beacon = new UUIDFD6FBeacon(addr, tsNow);
+                    beacon = new UUIDFD6FBeacon(addr, tsNow, isDF6F);
                     mContainer.put(addr, beacon);
                     // if we add an new id, we instantly check for
                     // possible expired ones...
@@ -731,11 +752,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             beacon.addRssi(result.getTimestampNanos(), result.getRssi(), tsNow);
             if (rec != null) {
                 beacon.mTxPowerLevel = rec.getTxPowerLevel();
-                if(data != null) {
-                    beacon.addData(data);
-                }else{
-                    beacon.addData(rec.getServiceData(uuid));
-                }
+            }
+            if(data != null) {
+                beacon.addData(data);
             }
 
             // finally letting the GUI know, that we have new data...

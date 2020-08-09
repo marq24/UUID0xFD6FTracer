@@ -56,8 +56,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     public static final ParcelUuid FD6F_UUID = ParcelUuid.fromString("0000fd6f-0000-1000-8000-00805f9b34fb"); // ExposureNotificationFramework (like Germany)
     public static final ParcelUuid FD64_UUID = ParcelUuid.fromString("0000fd64-0000-1000-8000-00805f9b34fb"); // FRANCE
 
-    public static final ParcelUuid FD6X_UUID = ParcelUuid.fromString("0000fd60-0000-1000-8000-00805f9b34fb");
-    public static final ParcelUuid FD6X_MASK = ParcelUuid.fromString("11111110-1111-1111-1111-111111111111");
+    //public static final ParcelUuid FD6X_UUID = ParcelUuid.fromString("0000fd60-0000-1000-8000-00805f9b34fb");
+    //public static final ParcelUuid FD6X_MASK = ParcelUuid.fromString("11111110-1111-1111-1111-111111111111");
 
     // /* SERVICES */
     IBinder mBinder = new LocalBinder();
@@ -311,7 +311,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 ArrayList<ScanFilter> f = new ArrayList<>();
                 switch (mScanMode){
                     case "ENF_FRA":
-                        f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
+                        //f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
+                        f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
+                        f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
                         mScanCallback.setScanUUID(null);
                         break;
 

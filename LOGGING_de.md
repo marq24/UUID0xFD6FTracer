@@ -30,17 +30,6 @@ Beacons regelmäßig Ihrer Adresse ändern und deswegen als neuer Beacon erkannt
 
 ![Sample](./misc/docs/gpsl-uuid.png)
 
-Wichtig ist noch das man die Vektor-Karten Darstellung bei der Karte verwendet - Dies kann man in den Einstellungen wie
-folgt Prüfen:
-1. Menu: Einstellungen...
-1. Darstellung & Applikationsstart
-1. Karten & Strecken Ansichtseinstellungen...
-1. Option 'Vektor Karten Darstellung' aktivieren
-
-Wenn diese option nicht aktiviert ist, werden derzeit keine Beacons angezeigt (ist noch auf der TODO-List).
-
-Wenn man diese Option aktiviert muss der GPSLogger neu gestartet werden.
-
 ## Zählweise
 Im Gegensatz zum 'UUID 0xFD6D Tracer' zählt der GPSLogger aktuell nicht die "aktiven" Beacons in der Umgebung - sondern
 zählt die eindeutigen IDs. Man stelle sich das folgende Scenario vor:

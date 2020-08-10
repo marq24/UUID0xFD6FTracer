@@ -7,7 +7,6 @@ Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos
 bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.
 
 ## Installation
-
 #### Über den amazon appstore verfügbar
 [![amazon appstore](./misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
 
@@ -43,10 +42,12 @@ sie das nicht - aber da theoretisch die Möglichkeit bestünde, gibt es diese Wa
 
 
 ## Aufzeichnen? ![GPSLoggerII](./misc/docs/gpsl-icon.png)
-Auf eine Möglichkeit zur Aufzeichnung der Beacon Signale habe ich zur Reduktion der Komplexität in dieser App verzichtet
-und diese Funktionalität statdessen in den über lange Jahre entwickleten GPSLogger II integriert.
+Auf eine Möglichkeit zur Aufzeichnung der Beacon Signale habe ich zur Reduktion der Komplexität in dieser App
+verzichtet. Der über lange Jahre entwickelte GPSLogger II bietet die Funktionalität BluetoothLE Beacons, wie sie vom
+_Exposure Notification_ Framework verwendet werden, aufzuzeichen.
 
-[Details & Download zum GPSLogger II (kostenfrei & ohne Werbung)](/LOGGING_de.md)
+[Details & Download vom GPSLogger II (kostenfrei & ohne Werbung)](/LOGGING_de.md)
+
 
 ## Nutzen für Euch
 Wer also in eine Traube von Menschen steht und sich fragt, ob wenigstens einer mit Eurer Warn-App (zumindest

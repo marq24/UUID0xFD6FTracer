@@ -17,7 +17,9 @@
     <string name ="menu_start_notify_action">Start Scan</string>
     <string name ="menu_stop_notify_action">Stop Scan</string>
 
-    <string name ="act_active_beacons">Active Beacons: %1$d</string>
+    <string name="act_active_beacons">Active Beacons: %1$d</string>
+    <string name ="act_active_enf_beacons">ExpNotif. Beacons: %1$d</string>
+    <string name ="act_active_scf_beacons">StopCovid Beacons: %1$d</string>
     <string name="menu_start">Start Scan Service</string>
     <string name="menu_stop">Stop Scan Service</string>
 

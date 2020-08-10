@@ -63,8 +63,8 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                     ScannerService.LocalBinder b = (ScannerService.LocalBinder) service;
                     mScannerService = b.getServerInstance();
                     mScannerService.setGuiCallback(ScannerActivity.this);
-                    final int size = mScannerService.mContainer.size();
-                    runOnUiThread(()-> setActiveBeaconCount(size));
+                    final int[] sizes = mScannerService.getBeaconCountByType();
+                    runOnUiThread(()-> setActiveBeaconCount(sizes[0], sizes[1]));
                 }
             }
         }
@@ -240,7 +240,20 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
             Preferences.getInstance(this).registerOnSharedPreferenceChangeListener(this);
 
             mActivityIsCreated = true;
-            setActiveBeaconCount(0);
+            switch (Preferences.getInstance(this).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE)){
+                case "ENF_FRA":
+                    setActiveBeaconCount(0, 0);
+                    break;
+
+                case "FRA":
+                    setActiveBeaconCount(-1, 0);
+                    break;
+
+                default:
+                case "ENF":
+                    setActiveBeaconCount(0, -1);
+                    break;
+            }
             mHandler.postDelayed(() -> updateButtonImg(), 500);
         }
     }
@@ -475,24 +488,32 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
         }
     }
 
-    public void newBeconEvent(String addr) {
+    public void newBeconEvent(String addr, final int sizeENF, final int sizeSCF) {
         if(mScannerService != null){
             if(addr !=null) {
                 Log.v(LOG_TAG, "newBeconEvent: " + mScannerService.mContainer.get(addr));
             }else{
                 Log.v(LOG_TAG, "newBeconEvent: NO SCAN RESULTS");
             }
-            final int size = mScannerService.mContainer.size();
-            runOnUiThread(()-> setActiveBeaconCount(size));
+            runOnUiThread(()-> setActiveBeaconCount(sizeENF, sizeSCF));
         }
     }
 
-    private void setActiveBeaconCount(int size){
+    private void setActiveBeaconCount(final int sizeENF, final int sizeSCF){
         // setting the initial TEXT..
         if(mViewPager != null) {
             Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
             if (info instanceof PlaceholderFragment) {
-                ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_beacons), size));
+                if(sizeENF > -1 && sizeSCF > -1){
+                    // dual mode...
+                    ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_enf_beacons), sizeENF), String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                }else if(sizeENF > -1){
+                    // default ExposureNotificationFramework mode
+                    ((PlaceholderFragment) info).setText(String.format(getString(R.string.act_active_beacons), sizeENF), null);
+                }else{
+                    // StopCovid France mode
+                    ((PlaceholderFragment) info).setText(null, String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                }
             }
         };
     }

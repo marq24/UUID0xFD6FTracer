@@ -16,6 +16,9 @@
     <string name="menu_stop_notify_action">Stop Scan</string>
 
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
+    <string name ="act_active_enf_beacons">ExpNotif. Sender: %1$d</string>
+    <string name ="act_active_scf_beacons">StopCovid Sender: %1$d</string>
+
     <string name="menu_start">Scanner Dienst starten</string>
     <string name="menu_stop">Scanner Dienst stoppen</string>
 

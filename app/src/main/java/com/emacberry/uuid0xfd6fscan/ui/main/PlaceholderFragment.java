@@ -19,8 +19,10 @@ import java.util.HashMap;
 public class PlaceholderFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private TextView mTextView;
-    private String iTextOnBind;
+    private TextView mENFTextView;
+    private TextView mSCFTextView;
+    private String iENFTextOnBind;
+    private String iSCFTextOnBind;
 
     private static HashMap<Integer, PlaceholderFragment> map = new HashMap<>();
     public static PlaceholderFragment newInstance(int index) {
@@ -47,9 +49,17 @@ public class PlaceholderFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-        mTextView = root.findViewById(R.id.section_label);
-        if(iTextOnBind != null){
-            mTextView.setText(iTextOnBind);
+        mENFTextView = root.findViewById(R.id.enf_txt);
+        if(iENFTextOnBind != null){
+            mENFTextView.setText(iENFTextOnBind);
+        }else{
+            mENFTextView.setVisibility(View.GONE);
+        }
+        mSCFTextView = root.findViewById(R.id.scf_txt);
+        if(iSCFTextOnBind != null){
+            mSCFTextView.setText(iSCFTextOnBind);
+        }else{
+            mSCFTextView.setVisibility(View.GONE);
         }
         return root;
     }
@@ -57,13 +67,36 @@ public class PlaceholderFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mTextView = null;
+        mENFTextView = null;
+        mSCFTextView = null;
     }
 
-    public void setText(String txt) {
-        if(mTextView != null) {
-            mTextView.setText(txt);
+    public void setText(String txtENF, String txtSCF) {
+        if(txtENF != null) {
+            if (mENFTextView != null) {
+                if(mENFTextView.getVisibility() != View.VISIBLE) {
+                    mENFTextView.setVisibility(View.VISIBLE);
+                }
+                mENFTextView.setText(txtENF);
+            }
+            iENFTextOnBind = txtENF;
+        }else{
+            if (mENFTextView != null && mENFTextView.getVisibility() != View.GONE) {
+                mENFTextView.setVisibility(View.GONE);
+            }
         }
-        iTextOnBind = txt;
+        if(txtSCF != null) {
+            if (mSCFTextView != null) {
+                if(mSCFTextView.getVisibility() != View.VISIBLE) {
+                    mSCFTextView.setVisibility(View.VISIBLE);
+                }
+                mSCFTextView.setText(txtSCF);
+            }
+            iSCFTextOnBind = txtSCF;
+        }else{
+            if (mSCFTextView != null && mSCFTextView.getVisibility() != View.GONE) {
+                mSCFTextView.setVisibility(View.GONE);
+            }
+        }
     }
 }

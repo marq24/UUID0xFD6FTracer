@@ -639,6 +639,36 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
+    public int[] getBeaconCountByType() {
+        switch (mScanMode){
+            default:
+            case "ENF":
+                return new int[]{mContainer.size(), -1};
+
+            case "FRA":
+                return new int[]{-1, mContainer.size()};
+
+            case "ENF_FRA":
+                return getBeaconCountSplitByType();
+        }
+    }
+
+    private int[] getBeaconCountSplitByType() {
+        int sizeENF = 0;
+        int sizeSCF = 0;
+        synchronized (mContainer){
+            for(UUIDFD6FBeacon b : mContainer.values()){
+                //int neededToBeValidStatement = b.isENF ? sizeENF++ : sizeSCF++;
+                if(b.isENF){
+                    sizeENF++;
+                }else{
+                    sizeSCF++;
+                }
+            }
+        }
+        return new int[]{sizeENF, sizeSCF};
+    }
+
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
         public boolean mDoReport = false;
@@ -647,13 +677,20 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private MySimpleTimer iTimoutTimer = null;
         private ParcelUuid mScanUUID = FD6F_UUID;
         private boolean mIsDF6F = true;
+        private int iScanModeInt = 0;
 
         protected void setScanUUID(ParcelUuid uuid) {
             mScanUUID = uuid;
             if(uuid != null){
                 mIsDF6F = uuid.equals(FD6F_UUID);
+                if(mIsDF6F){
+                    iScanModeInt = 0;
+                }else{
+                    iScanModeInt = 1;
+                }
             }else{
                 mIsDF6F = false;
+                iScanModeInt = 2;
             }
         }
 
@@ -695,13 +732,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         // to bad no UUID-Info can be provided...
                         ScanRecord rec = result.getScanRecord();
                         if (rec != null) {
-                            byte[] d6F = rec.getServiceData(FD6F_UUID);
-                            if (d6F != null && d6F.length > 0) {
-                                processDevice(btDevice, result, rec, tsNow, true, d6F);
+                            byte[] d6Fdata = rec.getServiceData(FD6F_UUID);
+                            if (d6Fdata != null && d6Fdata.length > 0) {
+                                processDevice(btDevice, result, rec, tsNow, true, d6Fdata);
                             } else {
-                                byte[] d64 = rec.getServiceData(FD64_UUID);
-                                if (d64 != null && d64.length > 0) {
-                                    processDevice(btDevice, result, rec, tsNow, false, d64);
+                                byte[] d64data = rec.getServiceData(FD64_UUID);
+                                if (d64data != null && d64data.length > 0) {
+                                    processDevice(btDevice, result, rec, tsNow, false, d64data);
                                 }
                             }
                         }
@@ -745,7 +782,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     checkForOutdatedBeaconsInt(tsNow);
                 }
             }
-            mDoReport = mContainer.size() != prevContainerSize;
+            int newContainerSize = mContainer.size();
+            mDoReport = newContainerSize != prevContainerSize;
 
             // after mContainer sync is left we can do the rest...
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -762,13 +800,30 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             // finally letting the GUI know, that we have new data...
             // have in mind, that this will be triggered quite often
             if (mDoReport) {
-                shouldRefreshGui(addr);
+                shouldRefreshGui(addr, newContainerSize);
             }
         }
 
-        private void shouldRefreshGui(String addr){
+        private void shouldRefreshGui(String addr, int size){
             if (mGuiCallback != null) {
-                mGuiCallback.newBeconEvent(addr);
+                switch (iScanModeInt){
+                    case 2:
+                        // dual mode
+                        int[] sizes = getBeaconCountSplitByType();
+                        mGuiCallback.newBeconEvent(addr, sizes[0], sizes[1]);
+                        break;
+
+                    case 1:
+                        // StopCovid France mode
+                        mGuiCallback.newBeconEvent(addr, -1, size);
+                        break;
+
+                    default:
+                    case 0:
+                        // ExposureNotificationFramework Mode
+                        mGuiCallback.newBeconEvent(addr, size, -1);
+                        break;
+                }
             }
             // only IF the display is active we will update the notification
             // -> we have to check what is with the amoled display devices?!
@@ -782,8 +837,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         protected void checkForOutdatedBeaconsAfterTimeout(long tsNow) {
             int prevSize = mContainer.size();
             checkForOutdatedBeaconsInt(tsNow);
-            if(prevSize != mContainer.size()){
-                shouldRefreshGui(null);
+            int newSize = mContainer.size();
+            if(prevSize != newSize){
+                shouldRefreshGui(null, newSize);
             }
         }
 

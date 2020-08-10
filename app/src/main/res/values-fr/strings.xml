@@ -12,7 +12,11 @@
     <string name="menu_exit_notify_action">Sortie</string>
     <string name="menu_start_notify_action">Lancer l\'analyse</string>
     <string name="menu_stop_notify_action">Arrêter l\'analyse</string>
+
     <string name="act_active_beacons">Appareils actives: %1$d</string>
+    <string name="act_active_enf_beacons">ExpNotif. actives: %1$d</string>
+    <string name="act_active_scf_beacons">StopCovid actives: %1$d</string>
+
     <string name="menu_start">Démarrer le service de scan</string>
     <string name="menu_stop">Arrêter le service de scan</string>
     <string name="menu_settings">Paramètres&#8230;</string>

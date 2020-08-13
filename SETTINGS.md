@@ -5,6 +5,7 @@
 
 ## Countries
 ![Sample](./misc/docs/settings02.png)
+
 Countries might not be the best description here - since you can configure basically on which beacon UUIDs the App is
 listening.
 

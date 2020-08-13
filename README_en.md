@@ -11,7 +11,7 @@ is not based on the framework - but use a similar technology to trace randomized
 https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### Sideload the APK (requires 'allow insecure apps' setting)
-[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.5/UUID0xFD6F_v0.9.1.5.apk)
+[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.6/UUID0xFD6F_v0.9.1.6.apk)
 
 ## Recording ![GPSLoggerII](./misc/docs/gpsl-icon.png)
 I have kept this application as simple & lightweight as possible - when you like to record beacons and see them over a

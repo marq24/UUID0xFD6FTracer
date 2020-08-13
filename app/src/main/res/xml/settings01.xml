@@ -16,5 +16,9 @@
 		app:entryValues="@array/pref01_SCANMODE_VALUES"
 		app:summary="%s"
 	/>
+	<Preference
+		app:title="@string/pref01_country"
+		app:summary="@string/pref01_countrylist"
+	/>
 
 </androidx.preference.PreferenceScreen>

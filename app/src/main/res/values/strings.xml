@@ -36,15 +36,18 @@
     <string name="pref01_AUTOSTART_OFF">OFF</string>
     <string name="pref01_AUTOSTART_ON">ON - The \'Background Tracer Service\' will be automatically started after a device reboot (after successful login)</string>
 
-    <string name="pref01_SCANMODE_TITLE">Country\'s</string>
+    <string name="pref01_SCANMODE_TITLE">Country\'s (UUIDs)</string>
     <string-array name="pref01_SCANMODE_VALUES" translatable="false">
         <item name="01">ENF</item>
         <item name="02">FRA</item>
         <item name="03">ENF_FRA</item>
     </string-array>
     <string-array name="pref01_SCANMODE_ENTRIES">
-        <item name="01">All Countries make use of the Exposure Notification Framework like the German CoronaWarnApp</item>
-        <item name="02">France (StopCovid France)</item>
-        <item name="03">France (StopCovid France) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
+        <item name="01">UUID 0xDF6F: All Countries make use of the Exposure Notification Framework like the German CoronaWarnApp</item>
+        <item name="02">UUID 0xDF64: France (StopCovid France)</item>
+        <item name="03">UUID 0xDF6F &amp; 0xDF64: France (StopCovid France) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
     </string-array>
+
+    <string name="pref01_country">Countries that make use of the Exposure Notification Framework (UUID 0xFD6F)</string>
+    <string translatable="false" name="pref01_countrylist">Australia, Austria, Belgium, Brazil, Brunei, Canada, Croatia, Denmark, Ecuador, Estonia, Finland, Germany, Gibraltar, Ireland, Italy, Japan, Kenya, Latvia, Malta, Mexico, Netherlands, Northern Ireland, Philippines, Poland, Portugal, Saudi Arabia, Slovenia, South Africa, Spain, Switzerland, United Kingdom, Uruguay, USA [Alabama, Arizona, Nevada, New York, North Dakota, South Carolina, Virginia]</string>
 </resources>

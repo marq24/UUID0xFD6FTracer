@@ -16,7 +16,7 @@ https://www.amazon.de/gp/product/B08CY7JY1P
 Derzeit warte ich noch auf die finale Aufnahme - https://gitlab.com/fdroid/rfp/-/issues/1423#note_380266525
 
 #### Installation auch als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')
-[Download des aktuellen UUID0xFD6FTracer.apk direkt hier von GitHub](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.5/UUID0xFD6F_v0.9.1.5.apk)
+[Download des aktuellen UUID0xFD6FTracer.apk direkt hier von GitHub](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.6/UUID0xFD6F_v0.9.1.6.apk)
 
 ##### Kein Download via GooglePlay?
 Google hat ein zweites Mal entschieden die App aus dem Store zu entfernen, diesmal mit dem Hinweis darauf, dass der App

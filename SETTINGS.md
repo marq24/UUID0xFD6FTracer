@@ -9,8 +9,12 @@ Countries might not be the best description here - since you can configure basic
 listening.
 
 - UUID 0xDF6F: Countries in which Apps are in place that make use of the ExposureNotification Framework developed by
-Apple & Google. Currently I am aware of
+Apple & Google. Please find a list below
+- UUID 0xDF64: StopCovid France
+- UUID 0xDF6F **and** 0xDF64: So a combination of both UUIDs - where the app is going to display for each UUID a
+separate counter (in the App - not in the system notification)
 
+# Apps that make use of the ExposureNotification Framework
 | Country | AppName | Status |
 |-|-|-|
 | Australia | COVIDTrace | In-Development |
@@ -24,7 +28,7 @@ Apple & Google. Currently I am aware of
 | Ecuador | ASI | Released |
 | Estonia? | – | In-Development |
 | Finland | Koronavilkku | In-Development |
-| Germany | Corona-Warn-App | Released |
+| **Germany** | **Corona-Warn-App** | Released |
 | Gibraltar | Beat Covid Gibraltar | Released |
 | Ireland | Covid Tracker | Released |
 | Italy | Immuni | Released |

@@ -6,6 +6,9 @@ aber wie sieht es denn in meinem aktuellen Umfeld aus? Haben Menschen um mich he
 Für Android habe ich deswegen eine kleine App geschrieben (natürlich kostenlos und ohne Werbung), mit der man angezeigt
 bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Begegnungs-Erkennungs-Signal" senden.
 
+[Liste von Länderen deren Corona-App ebenfalls auf dem _Exposure Notification Framework_ (UUID 0xFD6F Beacaons) basiert
+ und der UUID 0xFD6F Tracer ebenfalls funktioniert](./COUNTRIES.md)
+
 ## Installation
 #### Über den amazon appstore verfügbar
 [![amazon appstore](./misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
@@ -24,6 +27,8 @@ Title nicht ihren Richtlinien entspricht. Ich bin es leid zu versuchen mit den B
 Mitarbeitern zu diskutieren. Ich werde keinen dritten Versuch starten.
 [Details kann man hier (in Englisch) nachlesen](/GOOGLEPLAYSTORE.md)
 
+## Einstellungen / Einrichtung
+Erläuterungen zu den Einstellungen und Optionen sind unter [SETTINGS.md](./SETTINGS.md) zu finden (auf Englisch).
 
 ## Technische Hintergrundinformationen
 Der gemeinsam von Google und Apple entwickelte Standard [_Exposure Notification_] über den die möglichen

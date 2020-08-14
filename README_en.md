@@ -2,7 +2,9 @@
 
 Main purpose of the app is to scan your current environment for active devices running an application that make use of
 Google's & Apple's _Exposure Notification Framework_ (like the German CoronaWarnApp) or the StopCovid France App (which
-is not based on the framework - but use a similar technology to trace randomized anonymous contact information). 
+is not based on the framework - but use a similar technology to trace randomized anonymous contact information).
+
+[List of countries that make use of the _Exposure Notification Framework_ (UUID 0xFD6F Beacaons)](./COUNTRIES.md)
 
 ## Installation
 ### Get via amazon appstore
@@ -12,6 +14,9 @@ https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### Sideload the APK (requires 'allow insecure apps' setting)
 [Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.6/UUID0xFD6F_v0.9.1.6.apk)
+
+## Settings & Configuration
+Additional information about the settings and options can be found on the separate [SETTINGS.md](./SETTINGS.md).
 
 ## Recording ![GPSLoggerII](./misc/docs/gpsl-icon.png)
 I have kept this application as simple & lightweight as possible - when you like to record beacons and see them over a

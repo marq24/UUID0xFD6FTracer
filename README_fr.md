@@ -13,7 +13,7 @@ Beacon est **0xFD64** (au lieu de 0xFD6F).
 https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### Charger le fichier APK (nécessite le paramètre "Autoriser les applications non sécurisées")
-[Télécharger la dernière à partir de UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.6/UUID0xFD6F_v0.9.1.6.apk)
+[Télécharger la dernière à partir de UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.7/UUID0xFD6F_v0.9.1.7.apk)
 
 ---
 #### Cette application ne sera pas disponible via le PlayStore de Google

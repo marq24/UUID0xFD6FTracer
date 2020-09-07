@@ -13,7 +13,7 @@ is not based on the framework - but use a similar technology to trace randomized
 https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### Sideload the APK (requires 'allow insecure apps' setting)
-[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.6/UUID0xFD6F_v0.9.1.6.apk)
+[Download Latest from UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.7/UUID0xFD6F_v0.9.1.7.apk)
 
 ## Settings & Configuration
 Additional information about the settings and options can be found on the separate [SETTINGS.md](./SETTINGS.md).

@@ -10,6 +10,9 @@ public class Preferences {
     private static Preferences pref = null;
     public static Preferences getInstance(Context c) {
         if (pref != null) {
+            if(pref.prefData == null){
+                pref = new Preferences(c);
+            }
             return pref;
         } else {
             pref = new Preferences(c);
@@ -20,9 +23,9 @@ public class Preferences {
     private Context c;
 
     private Preferences(Context c) {
-        prefData = PreferenceManager.getDefaultSharedPreferences(c);
-        this.c = c;
         try {
+            prefData = PreferenceManager.getDefaultSharedPreferences(c);
+            this.c = c;
             if (prefData.getAll().size() == 0) {
                 // WE SHOULD INIT the SCAN-MODE depending on the USER_LANGUAGE/COUNTRY
                 // In France/French we can set the default value to 'FRA'
@@ -42,11 +45,15 @@ public class Preferences {
     }
 
     public void registerOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener ocpl){
-        prefData.registerOnSharedPreferenceChangeListener(ocpl);
+        if(prefData != null) {
+            prefData.registerOnSharedPreferenceChangeListener(ocpl);
+        }
     }
 
     public void unregisterOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener ocpl){
-        prefData.unregisterOnSharedPreferenceChangeListener(ocpl);
+        if(prefData != null) {
+            prefData.unregisterOnSharedPreferenceChangeListener(ocpl);
+        }
     }
 
     public boolean getBoolean(int pkey, int dval) {

@@ -7,6 +7,9 @@ is not based on the framework - but use a similar technology to trace randomized
 [List of countries that make use of the _Exposure Notification Framework_ (UUID 0xFD6F Beacaons)](./COUNTRIES.md)
 
 ## Installation
+### Get via F-Droid
+[![F-Droid appstore](./misc/fdroid/320px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/app/com.emacberry.uuid0xfd6fscan)
+
 ### Get via amazon appstore
 [![amazon appstore](./misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)
 

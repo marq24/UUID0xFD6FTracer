@@ -10,6 +10,9 @@ bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Be
  und der UUID 0xFD6F Tracer ebenfalls funktioniert](./COUNTRIES.md)
 
 ## Installation
+### Über F-Droid
+[![F-Droid appstore](./misc/fdroid/320px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/app/com.emacberry.uuid0xfd6fscan)
+
 #### Über den amazon appstore verfügbar
 [![amazon appstore](./misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
 

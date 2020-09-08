@@ -7,6 +7,9 @@ StopCovid France n'utilise pas le cadre de _Exposure Notification Framework_ dé
 Beacon est **0xFD64** (au lieu de 0xFD6F).
 
 ## Installation
+### Obtenir via F-Droid
+[![F-Droid appstore](./misc/fdroid/320px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/app/com.emacberry.uuid0xfd6fscan)
+
 ### Obtenir via Amazon Appstore
 [![amazon appstore](./misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)
 

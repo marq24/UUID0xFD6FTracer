@@ -10,16 +10,15 @@ bekommt wie viele unterschiedliche Geräte um Euch herum ein Corona-Warn-App "Be
  und der UUID 0xFD6F Tracer ebenfalls funktioniert](./COUNTRIES.md)
 
 ## Installation
-### Über F-Droid
+#### Über F-Droid
 [![F-Droid appstore](./misc/fdroid/320px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/app/com.emacberry.uuid0xfd6fscan)
+
+https://f-droid.org/app/com.emacberry.uuid0xfd6fscan
 
 #### Über den amazon appstore verfügbar
 [![amazon appstore](./misc/amazon/amazon-appstore-badge-de-black.png)](https://www.amazon.de/gp/product/B08CY7JY1P)
 
 https://www.amazon.de/gp/product/B08CY7JY1P
-
-#### F-Droid (noch nicht verfügbar)
-Derzeit warte ich noch auf die finale Aufnahme - https://gitlab.com/fdroid/rfp/-/issues/1423#note_380266525
 
 #### Installation auch als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')
 [Download des aktuellen UUID0xFD6FTracer.apk direkt hier von GitHub](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.7/UUID0xFD6F_v0.9.1.7.apk)

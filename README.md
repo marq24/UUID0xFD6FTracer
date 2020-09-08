@@ -4,6 +4,8 @@
 |Get via F-Droid|Get via amazon appstore|
 |:---:|:---:|
 |[![F-Droid appstore](./misc/fdroid/320px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/app/com.emacberry.uuid0xfd6fscan)|[![amazon appstore](./misc/amazon/amazon-appstore-badge-en-black.png)](https://www.amazon.com/gp/product/B08CY7JY1P)|
+|https://f-droid.org/app/com.emacberry.uuid0xfd6fscan|https://www.amazon.com/gp/product/B08CY7JY1P|
+
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of
 Google's & Apple's _Exposure Notification Framework_ (like the German CoronaWarnApp) or the StopCovid France App (which

@@ -1,0 +1,1 @@
+Fix wenn Einstellungen/Preferences nicht gelesen werden können

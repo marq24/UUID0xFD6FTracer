@@ -70,7 +70,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         //Log.d(LOG_TAG, "onSharedPreferenceChanged "+key);
         if(key.equals(getString(R.string.PKEY_SCANMODE))){
             String newScanMode = sharedPreferences.getString(getString(R.string.PKEY_SCANMODE), null);
-            if(!mScanMode.equals(newScanMode)){
+            if(mScanMode== null || !mScanMode.equals(newScanMode)){
                 mScanMode = newScanMode;
                 restartScan();
             }
@@ -307,7 +307,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if(checkScanPermissions()) {
             if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
                 Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
-
+                ensureScanModeSet();
                 ArrayList<ScanFilter> f = new ArrayList<>();
                 switch (mScanMode){
                     case "ENF_FRA":
@@ -342,6 +342,21 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }else{
             // no permission...? start activity and request START again
             updateNotification();
+        }
+    }
+
+    private void ensureScanModeSet() {
+        // for what ever reason the init of the Prefs was not successful?!
+        if(mScanMode == null){
+            try {
+                mScanMode = Preferences.getInstance(getBaseContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+            }catch(Throwable t){
+                Log.d(LOG_TAG, ""+t.getMessage());
+            } finally {
+                if(mScanMode == null){
+                    mScanMode = "ENF";
+                }
+            }
         }
     }
 
@@ -640,6 +655,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     public int[] getBeaconCountByType() {
+        ensureScanModeSet();
         switch (mScanMode){
             default:
             case "ENF":

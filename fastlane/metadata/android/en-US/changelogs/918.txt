@@ -1,0 +1,1 @@
+Fix if Preferences could not be read and the scan-mode is null

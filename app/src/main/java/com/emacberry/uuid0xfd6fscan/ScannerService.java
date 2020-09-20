@@ -601,6 +601,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }*/
 
     protected HashMap<String, UUIDFD6FBeacon> mContainer = new HashMap<>();
+    private int mTotalSize = 0;
 
     private class MySimpleTimer extends Thread{
         private volatile long iLastScanEvent = 0;
@@ -659,10 +660,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         switch (mScanMode){
             default:
             case "ENF":
-                return new int[]{mContainer.size(), -1};
+                return new int[]{mTotalSize, mContainer.size(), -1};
 
             case "FRA":
-                return new int[]{-1, mContainer.size()};
+                return new int[]{mTotalSize, -1, mContainer.size()};
 
             case "ENF_FRA":
                 return getBeaconCountSplitByType();
@@ -682,7 +683,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 }
             }
         }
-        return new int[]{sizeENF, sizeSCF};
+        return new int[]{mTotalSize, sizeENF, sizeSCF};
     }
 
     private class MyScanCallback extends ScanCallback {
@@ -785,6 +786,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 if (beacon == null) {
                     beacon = new UUIDFD6FBeacon(addr, tsNow, isDF6F);
                     mContainer.put(addr, beacon);
+                    mTotalSize++;
                     // if we add an new id, we instantly check for
                     // possible expired ones...
                     delay = 0;
@@ -826,18 +828,18 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     case 2:
                         // dual mode
                         int[] sizes = getBeaconCountSplitByType();
-                        mGuiCallback.newBeconEvent(addr, sizes[0], sizes[1]);
+                        mGuiCallback.newBeconEvent(addr, mTotalSize, sizes[0], sizes[1]);
                         break;
 
                     case 1:
                         // StopCovid France mode
-                        mGuiCallback.newBeconEvent(addr, -1, size);
+                        mGuiCallback.newBeconEvent(addr, mTotalSize, -1, size);
                         break;
 
                     default:
                     case 0:
                         // ExposureNotificationFramework Mode
-                        mGuiCallback.newBeconEvent(addr, size, -1);
+                        mGuiCallback.newBeconEvent(addr,  mTotalSize, size, -1);
                         break;
                 }
             }
@@ -863,15 +865,16 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             iLastContainerCheckTs = tsNow;
             ArrayList<String> addrsToRemove = new ArrayList<>();
             for (UUIDFD6FBeacon otherBeacon : mContainer.values()) {
-                // if beacon not returned in any scan of the last 15sec
+                // if beacon not returned in any scan of the last 25sec
                 // we going to remove it...
-                if (otherBeacon.mLastTs + 15000 < tsNow) {
+                if (otherBeacon.mLastTs + 25000 < tsNow) {
                     addrsToRemove.add(otherBeacon.addr);
                 }
             }
             if (addrsToRemove.size() > 0) {
                 for (String aOtherAddr : addrsToRemove) {
                     mContainer.remove(aOtherAddr);
+                    Log.d(LOG_TAG, "remove: " +aOtherAddr+" "+ mContainer.size() + " " + mContainer.keySet());
                 }
                 if (BuildConfig.DEBUG) {
                     mDoReport = true;

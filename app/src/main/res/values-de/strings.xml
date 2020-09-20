@@ -15,6 +15,7 @@
     <string name="menu_start_notify_action">Start Scan</string>
     <string name="menu_stop_notify_action">Stop Scan</string>
 
+    <string name ="act_total_beacons">Summe: %1$d</string>
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Sender: %1$d</string>
     <string name ="act_active_scf_beacons">StopCovid Sender: %1$d</string>
@@ -24,9 +25,18 @@
 
     <string name="menu_settings">Einstellungen&#8230;</string>
     <string name="pref01_TITLE">Einstellungen</string>
+
+    <string name="pref01_ignorebattery_title">Priorisierte Hintergrundaktivität</string>
+    <string name="pref01_ignorebattery_on">Die Akku-Optimierung ist deaktiviert. Um diese wieder zu aktivieren, muß die App über die System-Einstellungen aus der Liste der "nicht zum optimierenden" Apps entfernt werden.</string>
+    <string name="pref01_ignorebattery_off">Diese Einstellung sollte nur aktiviert werden, wenn die App ungewollterweise regelmäßig vom Betriebssystem beendet wird, wenn diese im Hintergrund läuft. (Deaktivierung der Akku-Optimierung)</string>
+
     <string name="pref01_AUTOSTART_TITLE">Autostart des Dienstes</string>
     <string name="pref01_AUTOSTART_OFF">AUS</string>
     <string name="pref01_AUTOSTART_ON">EIN - Der \'Hintergrund Tracing Dienst\' wir nach einem Neustart des Gerätes automatisch nach erfolgreichem Login gestartet</string>
+
+    <string name="pref01_SHOWTOTAL_TITLE">Gesamtsumme anzeigen</string>
+    <string name="pref01_SHOWTOTAL_OFF">AUS</string>
+    <string name="pref01_SHOWTOTAL_ON">EIN - Die App zeigt zusätzlich die Summe aller bisher gefundenen Beacons an (zum Zurücksetzen Dienst neustarten).</string>
 
     <string name="pref01_SCANMODE_TITLE">Länder (UUIDs)</string>
     <string-array name="pref01_SCANMODE_ENTRIES">

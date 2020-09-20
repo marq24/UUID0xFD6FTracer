@@ -1,0 +1,2 @@
+- Additional option to display total Beacons discovered
+- Option to disable OS Background optimizations for UUID-Tracer

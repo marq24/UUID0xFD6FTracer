@@ -2,11 +2,27 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<androidx.preference.SwitchPreferenceCompat
+		app:key="@string/PKEY_IGNOREBATTERYOPT"
+		app:defaultValue="false"
+		app:title="@string/pref01_ignorebattery_title"
+		app:summaryOn="@string/pref01_ignorebattery_on"
+		app:summaryOff="@string/pref01_ignorebattery_off"
+		app:persistent="false" />
+
+	<androidx.preference.SwitchPreferenceCompat
 		app:key="@string/PKEY_AUTOSTART"
 		app:defaultValue="@string/DVAL_AUTOSTART"
 		app:title="@string/pref01_AUTOSTART_TITLE"
 		app:summaryOff="@string/pref01_AUTOSTART_OFF"
 		app:summaryOn="@string/pref01_AUTOSTART_ON" />
+
+	<androidx.preference.SwitchPreferenceCompat
+		app:key="@string/PKEY_SHOWTOTAL"
+		app:defaultValue="@string/DVAL_SHOWTOTAL"
+		app:title="@string/pref01_SHOWTOTAL_TITLE"
+		app:summaryOff="@string/pref01_SHOWTOTAL_OFF"
+		app:summaryOn="@string/pref01_SHOWTOTAL_ON" />
+
 
 	<androidx.preference.ListPreference
 		app:key="@string/PKEY_SCANMODE"

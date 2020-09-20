@@ -17,6 +17,7 @@
     <string name ="menu_start_notify_action">Start Scan</string>
     <string name ="menu_stop_notify_action">Stop Scan</string>
 
+    <string name="act_total_beacons">Total: %1$d</string>
     <string name="act_active_beacons">Active Beacons: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Beacons: %1$d</string>
     <string name ="act_active_scf_beacons">StopCovid Beacons: %1$d</string>
@@ -26,15 +27,26 @@
     <string name="menu_settings">Settings&#8230;</string>
 
     <string name="pref01_KEY" translatable="false">SETTINGS_01</string>
+    <string name="PKEY_IGNOREBATTERYOPT" translatable="false">BATTERY_OPT</string>
     <string name="PKEY_AUTOSTART" translatable="false">AUTOSTART</string>
     <string name="DVAL_AUTOSTART" translatable="false">false</string>
+    <string name="PKEY_SHOWTOTAL" translatable="false">SHOWTOTALBEACONNUM</string>
+    <string name="DVAL_SHOWTOTAL" translatable="false">false</string>
     <string name="PKEY_SCANMODE" translatable="false">SCANMODE</string>
     <string name="DVAL_SCANMODE" translatable="false">ENF</string>
+
+    <string name="pref01_ignorebattery_title">Prioritized Background Activity</string>
+    <string name="pref01_ignorebattery_on">Battery optimization has been disabled - To enabled it again you need to do this via the general device settings.</string>
+    <string name="pref01_ignorebattery_off">You should only enabled this setting when you encounter unexpected app terminations by the OS.</string>
 
     <string name="pref01_TITLE">Settings</string>
     <string name="pref01_AUTOSTART_TITLE">Service Autostart</string>
     <string name="pref01_AUTOSTART_OFF">OFF</string>
     <string name="pref01_AUTOSTART_ON">ON - The \'Background Tracer Service\' will be automatically started after a device reboot (after successful login)</string>
+
+    <string name="pref01_SHOWTOTAL_TITLE">Display total number</string>
+    <string name="pref01_SHOWTOTAL_OFF">OFF</string>
+    <string name="pref01_SHOWTOTAL_ON">ON - The app also shows the total of all beacons found so far (restart the service to reset).</string>
 
     <string name="pref01_SCANMODE_TITLE">Country\'s (UUIDs)</string>
     <string-array name="pref01_SCANMODE_VALUES" translatable="false">

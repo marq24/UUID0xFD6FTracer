@@ -13,6 +13,7 @@
     <string name="menu_start_notify_action">Lancer l\'analyse</string>
     <string name="menu_stop_notify_action">Arrêter l\'analyse</string>
 
+    <string name="act_total_beacons">Total: %1$d</string>
     <string name="act_active_beacons">Appareils actives: %1$d</string>
     <string name="act_active_enf_beacons">ExpNotif. actives: %1$d</string>
     <string name="act_active_scf_beacons">StopCovid actives: %1$d</string>
@@ -20,11 +21,23 @@
     <string name="menu_start">Démarrer le service de scan</string>
     <string name="menu_stop">Arrêter le service de scan</string>
     <string name="menu_settings">Paramètres&#8230;</string>
+
     <string name="pref01_TITLE">Paramètres</string>
+
+    <string name="pref01_ignorebattery_title">Activité de fond priorisée</string>
+    <string name="pref01_ignorebattery_on">L\'optimisation de la batterie est désactivée. Pour réactiver cela, l\'application doit être supprimée de la liste des applications «à ne pas optimiser» via les paramètres système.</string>
+    <string name="pref01_ignorebattery_off">Ce paramètre ne doit être activé que si l\'application est régulièrement interrompue involontairement par le système d\'exploitation lorsqu\'elle s\'exécute en arrière-plan. (Désactivation de l\'optimisation de la batterie)</string>
+
     <string name="pref01_AUTOSTART_TITLE">Démarrage automatique du service</string>
     <string name="pref01_AUTOSTART_OFF">DÉSACTIVÉ</string>
     <string name="pref01_AUTOSTART_ON">ALLUMÉ - Le \'Service Traceur d\'arrière-plan\' sera automatiquement démarré après un redémarrage de l\'appareil (après une connexion réussie)</string>
+
+    <string name="pref01_SHOWTOTAL_TITLE">Afficher le total</string>
+    <string name="pref01_SHOWTOTAL_OFF">DÉSACTIVÉ</string>
+    <string name="pref01_SHOWTOTAL_ON">ALLUMÉON - L\'application affiche également le total de toutes les balises trouvées jusqu\'à présent (redémarrez le service pour réinitialiser).</string>
+
     <string name="pref01_SCANMODE_TITLE">Pays (UUIDs)</string>
+
     <string-array name="pref01_SCANMODE_ENTRIES">
         <item name="01">UUID 0xDF6F: Tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
         <item name="02">UUID 0xDF64: France (StopCovid France)</item>

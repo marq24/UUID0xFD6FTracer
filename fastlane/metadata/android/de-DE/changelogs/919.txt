@@ -1,0 +1,2 @@
+- Zusätzliche Option zur Anzeige der Anzahl aller bisher gefundenen BlutoothLE Beacons
+- Option zur Deaktivirung der OS-Hintergrundoptimierung für den UUID-Tracer

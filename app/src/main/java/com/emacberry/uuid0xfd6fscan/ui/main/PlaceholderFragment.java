@@ -19,8 +19,10 @@ import java.util.HashMap;
 public class PlaceholderFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private TextView mTOTTextView;
     private TextView mENFTextView;
     private TextView mSCFTextView;
+    private String iTOTTextOnBind;
     private String iENFTextOnBind;
     private String iSCFTextOnBind;
 
@@ -49,6 +51,12 @@ public class PlaceholderFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
+        mTOTTextView = root.findViewById(R.id.tot_txt);
+        if(iTOTTextOnBind != null){
+            mTOTTextView.setText(iTOTTextOnBind);
+        }else{
+            mTOTTextView.setVisibility(View.GONE);
+        }
         mENFTextView = root.findViewById(R.id.enf_txt);
         if(iENFTextOnBind != null){
             mENFTextView.setText(iENFTextOnBind);
@@ -71,32 +79,26 @@ public class PlaceholderFragment extends Fragment {
         mSCFTextView = null;
     }
 
-    public void setText(String txtENF, String txtSCF) {
-        if(txtENF != null) {
-            if (mENFTextView != null) {
-                if(mENFTextView.getVisibility() != View.VISIBLE) {
-                    mENFTextView.setVisibility(View.VISIBLE);
+    public void setText(String txtTOT, String txtENF, String txtSCF) {
+        iTOTTextOnBind = handleTxt(txtTOT, mTOTTextView);
+        iENFTextOnBind = handleTxt(txtENF, mENFTextView);
+        iSCFTextOnBind = handleTxt(txtSCF, mSCFTextView);
+    }
+
+    private String handleTxt(String txt, TextView view) {
+        if(txt != null) {
+            if (view != null) {
+                if(view.getVisibility() != View.VISIBLE) {
+                    view.setVisibility(View.VISIBLE);
                 }
-                mENFTextView.setText(txtENF);
+                view.setText(txt);
             }
-            iENFTextOnBind = txtENF;
+            return txt;
         }else{
-            if (mENFTextView != null && mENFTextView.getVisibility() != View.GONE) {
-                mENFTextView.setVisibility(View.GONE);
+            if (view != null && view.getVisibility() != View.GONE) {
+                view.setVisibility(View.GONE);
             }
-        }
-        if(txtSCF != null) {
-            if (mSCFTextView != null) {
-                if(mSCFTextView.getVisibility() != View.VISIBLE) {
-                    mSCFTextView.setVisibility(View.VISIBLE);
-                }
-                mSCFTextView.setText(txtSCF);
-            }
-            iSCFTextOnBind = txtSCF;
-        }else{
-            if (mSCFTextView != null && mSCFTextView.getVisibility() != View.GONE) {
-                mSCFTextView.setVisibility(View.GONE);
-            }
+            return null;
         }
     }
 }

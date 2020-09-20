@@ -1,10 +1,15 @@
 package com.emacberry.uuid0xfd6fscan.settings;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +22,7 @@ import com.emacberry.uuid0xfd6fscan.R;
 public class Settings01 extends PreferenceFragmentCompat {
 
     private SwitchPreferenceCompat mAutostartSwitch;
+    private SwitchPreferenceCompat batteryOptimization;
     private static final int PERMISSION_CHECK_BOOT = 99;
 
     @Override
@@ -41,6 +47,35 @@ public class Settings01 extends PreferenceFragmentCompat {
             bar.setTitle(R.string.pref01_TITLE);
         }
 
+        batteryOptimization = findPreference(getText(R.string.PKEY_IGNOREBATTERYOPT));
+        batteryOptimization.setOnPreferenceChangeListener((preference, newValue) -> {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Intent intent;
+                if (newValue.toString().equalsIgnoreCase("true")) {
+                    intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getContext().getPackageName()));
+                } else {
+                    intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                }
+                try {
+                    getActivity().startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+            return true;
+        });
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Context c = getContext();
+            if(c != null) {
+                batteryOptimization.setChecked(((PowerManager) c.getSystemService(Context.POWER_SERVICE)).isIgnoringBatteryOptimizations(c.getPackageName()));
+            }
+        }else{
+            batteryOptimization.setEnabled(false);
+            batteryOptimization.setChecked(false);
+            this.getPreferenceScreen().removePreference(batteryOptimization);
+        }
+
         mAutostartSwitch = findPreference(getString(R.string.PKEY_AUTOSTART));
         mAutostartSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             String nv = newValue.toString();
@@ -56,6 +91,20 @@ public class Settings01 extends PreferenceFragmentCompat {
         });
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(batteryOptimization!= null){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Context c = getContext();
+                if(c != null) {
+                    batteryOptimization.setChecked(((PowerManager) c.getSystemService(Context.POWER_SERVICE)).isIgnoringBatteryOptimizations(c.getPackageName()));
+                }
+            }else{
+                batteryOptimization.setChecked(false);
+            }
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

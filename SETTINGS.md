@@ -1,7 +1,17 @@
 # Settings UUID 0xFD6F Tracer
 ![Sample](./misc/docs/settings01.png)
 
+## Prioritized Background Activity
+OFF - Battery optimization has been disabled - To enabled it again you need to do this via the general device settings.
+ON - You should only enabled this setting when you encounter unexpected app terminations by the OS.
+
 ## Service Autostart
+OFF
+ON - The 'Background Tracer Service' will be automatically started after a device reboot (after successful login)
+
+## Display total number
+OFF
+ON - The app also shows the total of all beacons found so far (restart the service to reset).
 
 ## Countries
 ![Sample](./misc/docs/settings02.png)

@@ -61,5 +61,5 @@
     </string-array>
 
     <string name="pref01_country">Countries that make use of the Exposure Notification Framework (UUID 0xFD6F)</string>
-    <string translatable="false" name="pref01_countrylist">Australia, Austria, Belgium, Brazil, Brunei, Canada, Croatia, Denmark, Ecuador, Estonia, Finland, Germany, Gibraltar, Ireland, Italy, Japan, Kenya, Latvia, Malta, Mexico, Netherlands, Northern Ireland, Philippines, Poland, Portugal, Saudi Arabia, Slovenia, South Africa, Spain, Switzerland, United Kingdom, Uruguay, USA [Alabama, Arizona, Nevada, New York, North Dakota, South Carolina, Virginia]</string>
+    <string translatable="false" name="pref01_countrylist">Australia, Austria, Belgium, Brazil, Brunei, Canada, Czech Republic, Croatia, Denmark, Ecuador, Estonia, Finland, Germany, Gibraltar, Ireland, Italy, Japan, Kenya, Latvia, Malta, Mexico, Netherlands, Northern Ireland, Philippines, Poland, Portugal, Saudi Arabia, Slovenia, South Africa, Spain, Switzerland, United Kingdom, Uruguay, USA [Alabama, Arizona, Nevada, New York, North Dakota, South Carolina, Virginia]</string>
 </resources>

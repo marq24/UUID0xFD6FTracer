@@ -828,7 +828,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     case 2:
                         // dual mode
                         int[] sizes = getBeaconCountSplitByType();
-                        mGuiCallback.newBeconEvent(addr, mTotalSize, sizes[0], sizes[1]);
+                        mGuiCallback.newBeconEvent(addr, sizes[0], sizes[1], sizes[2]);
                         break;
 
                     case 1:

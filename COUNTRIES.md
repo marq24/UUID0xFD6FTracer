@@ -7,6 +7,7 @@
 | Brazil | Coronavirus – SUS | Released |
 | Brunei | BruHealth | Testing ENS |
 | Canada | COVID Alert | Released |
+| Czech Republic | eRouška | Released |
 | Croatia | Stop COVID-19 | Released |
 | Denmark | Smittestop | Released |
 | Ecuador | ASI | Released |

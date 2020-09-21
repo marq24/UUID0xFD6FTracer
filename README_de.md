@@ -21,7 +21,7 @@ https://f-droid.org/app/com.emacberry.uuid0xfd6fscan
 https://www.amazon.de/gp/product/B08CY7JY1P
 
 #### Installation auch als Sideload möglich (erfordert 'Installation von unsicheren Quellen zulassen')
-[Download des aktuellen UUID0xFD6FTracer.apk direkt hier von GitHub](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.9/UUID0xFD6F_v0.9.1.9.apk)
+[Download des aktuellen UUID0xFD6FTracer.apk direkt hier von GitHub](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.10/UUID0xFD6F_v0.9.1.10.apk)
 
 ##### Kein Download via GooglePlay?
 Google hat ein zweites Mal entschieden die App aus dem Store zu entfernen, diesmal mit dem Hinweis darauf, dass der App

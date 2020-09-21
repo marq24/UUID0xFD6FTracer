@@ -18,7 +18,7 @@ https://f-droid.org/app/com.emacberry.uuid0xfd6fscan
 https://www.amazon.com/gp/product/B08CY7JY1P
 
 ### Charger le fichier APK (nécessite le paramètre "Autoriser les applications non sécurisées")
-[Télécharger la dernière à partir de UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.9/UUID0xFD6F_v0.9.1.9.apk)
+[Télécharger la dernière à partir de UUID0xFD6FTracer.apk](https://github.com/marq24/UUID0xFD6FTracer/releases/download/0.9.1.10/UUID0xFD6F_v0.9.1.10.apk)
 
 ---
 #### Cette application ne sera pas disponible via le PlayStore de Google

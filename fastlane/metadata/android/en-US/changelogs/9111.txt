@@ -1,0 +1,2 @@
+- Option to enable Bluetooth automatically (except in flight mode)
+- Show informwation if Bluetooh is deactivated

@@ -1,0 +1,2 @@
+- Option zur automatischen Aktivierung von Bluetooth (außer im Flugmodus)
+- Anzeige wenn Bluetooth nicht aktiviert ist

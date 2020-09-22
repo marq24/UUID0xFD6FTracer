@@ -43,6 +43,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     protected static final String INTENT_EXTRA_START = "START_SCAN";
     protected static final String INTENT_EXTRA_STOP = "STOP_SCAN";
+    protected static final String INTENT_EXTRA_STARTBT = "START_BT";
 
     // SERVICE STUFF:
     // http://stackoverflow.com/questions/9740593/android-create-service-that-runs-when-application-stops
@@ -121,6 +122,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private MyScanCallback mScanCallback = new ScannerService.MyScanCallback();
     private Handler mHandler = new Handler();
     private ScannerActivity mGuiCallback = null;
+    public boolean mShowBtIsOffWarning = false;
 
     private boolean isAirplaneMode() {
         try {
@@ -227,13 +229,16 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         Log.w(LOG_TAG, "Service destroyed!!! (fine)");
     }
 
-
     private void handleIntentInt(@Nullable Intent intent) {
         Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
         if (intent.hasExtra(INTENT_EXTRA_START)) {
             startScan(true);
         } else if (intent.hasExtra(INTENT_EXTRA_STOP)) {
             stopScan(true);
+        } else if(intent.hasExtra(INTENT_EXTRA_STARTBT)){
+            if(mBluetoothAdapter != null){
+                mBluetoothAdapter.enable();
+            }
         }
     }
 
@@ -245,7 +250,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         try {
             if (mBluetoothAdapter != null) {
                 if (mBluetoothLeScanner != null && mScanCallback != null) {
-                    mBluetoothLeScanner.stopScan(mScanCallback);
+                    try {
+                        mBluetoothLeScanner.stopScan(mScanCallback);
+                    }catch(Throwable t){
+                        Log.d(LOG_TAG, "" + t.getMessage());
+                    }
                 }
                 try {
                     mBluetoothAdapter.cancelDiscovery();
@@ -266,6 +275,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             mBluetoothAdapter = bluetoothManager.getAdapter();
         }
         if (mBluetoothAdapter != null) {
+            mShowBtIsOffWarning = !mBluetoothAdapter.isEnabled();
             mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
         }
     }
@@ -281,11 +291,27 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 Log.d(LOG_TAG, "mBluetoothLeScanner.stopScan() called");
                 try {
                     mBluetoothLeScanner.flushPendingScanResults(mScanCallback);
+                } catch(IllegalStateException ise) {
+                    if(ise.getMessage().equalsIgnoreCase("bt adapter is not turned on")) {
+                        Log.d(LOG_TAG, "BluetoothAdapter is OFF - all fine");
+                    }else{
+                        ise.printStackTrace();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 try {
-                    mBluetoothLeScanner.stopScan(mScanCallback);
+                    try {
+                        mBluetoothLeScanner.stopScan(mScanCallback);
+                    } catch(IllegalStateException ise) {
+                        if(ise.getMessage().equalsIgnoreCase("bt adapter is not turned on")) {
+                            Log.d(LOG_TAG, "BluetoothAdapter is OFF - all fine");
+                        }else{
+                            ise.printStackTrace();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     mScannIsRunning = false;
                     updateNotification();
                     if(mGuiCallback!=null){
@@ -349,7 +375,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         // for what ever reason the init of the Prefs was not successful?!
         if(mScanMode == null){
             try {
-                mScanMode = Preferences.getInstance(getBaseContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+                mScanMode = Preferences.getInstance(getApplicationContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
             }catch(Throwable t){
                 Log.d(LOG_TAG, ""+t.getMessage());
             } finally {
@@ -446,21 +472,26 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         intent.putExtra(ScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
-        if (mScannIsRunning) {
-            builder.setContentText(mNotifyTextScanning);
-            builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
+        if(mShowBtIsOffWarning) {
+            builder.setContentText(getString(R.string.app_service_msgNoBt));
+            builder.addAction(-1, this.getString(R.string.menu_start_bt_action), getServiceIntent(INTENT_EXTRA_STARTBT));
         } else {
-            if(checkScanPermissions() && mHasScanPermission) {
-                builder.setContentText(getString(R.string.app_service_msgOff));
-                // Check 'start scan' from notification action can cause no scan results after
-                //  the start / this will not happen, if scan is triggered via Activity (no clue yet why)
-                // logcat reports:
-                // E/BluetoothUtils: Permission denial: Need ACCESS_FINE_LOCATION permission to get scan results
-                //
-                // wtf?!
-                builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
-            }else{
-                builder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
+            if (mScannIsRunning) {
+                builder.setContentText(mNotifyTextScanning);
+                builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
+            } else {
+                if (checkScanPermissions() && mHasScanPermission) {
+                    builder.setContentText(getString(R.string.app_service_msgOff));
+                    // Check 'start scan' from notification action can cause no scan results after
+                    //  the start / this will not happen, if scan is triggered via Activity (no clue yet why)
+                    // logcat reports:
+                    // E/BluetoothUtils: Permission denial: Need ACCESS_FINE_LOCATION permission to get scan results
+                    //
+                    // wtf?!
+                    builder.addAction(-1, this.getString(R.string.menu_start_notify_action), getServiceIntent(INTENT_EXTRA_START));
+                } else {
+                    builder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
+                }
             }
         }
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
@@ -556,26 +587,31 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
         boolean notify = false;
         if (mBuilder != null) {
-            int size = mContainer.size();
-            if (mScannIsRunning && size > 0) {
-                String txt = String.format(mNotifyTextAddon, size) + " " + mNotifyTextScanning;
-                mBuilder.setContentText(txt);
-                notify = true;//force || !mKeyguardManager.isKeyguardLocked();
-                mNotifyCanBeReset = true;
-            } else {
-                if (mNotifyCanBeReset) {
-                    mNotifyCanBeReset = false;
-                    if (mScannIsRunning) {
-                        mBuilder.setContentText(mNotifyTextScanning);
-                    } else {
-                        if(mHasScanPermission) {
-                            mBuilder.setContentText(getText(R.string.app_service_msgOff));
-                        }else{
-                            mBuilder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
+            if(mShowBtIsOffWarning) {
+                mBuilder.setContentText(getText(R.string.app_service_msgNoBt));
+                notify = true;
+            }else {
+                int size = mContainer.size();
+                if (mScannIsRunning && size > 0) {
+                    String txt = String.format(mNotifyTextAddon, size) + " " + mNotifyTextScanning;
+                    mBuilder.setContentText(txt);
+                    notify = true;//force || !mKeyguardManager.isKeyguardLocked();
+                    mNotifyCanBeReset = true;
+                } else {
+                    if (mNotifyCanBeReset) {
+                        mNotifyCanBeReset = false;
+                        if (mScannIsRunning) {
+                            mBuilder.setContentText(mNotifyTextScanning);
+                        } else {
+                            if (mHasScanPermission) {
+                                mBuilder.setContentText(getText(R.string.app_service_msgOff));
+                            } else {
+                                mBuilder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
+                            }
                         }
+                        mBuilder.setStyle(null);
+                        notify = true;
                     }
-                    mBuilder.setStyle(null);
-                    notify = true;
                 }
             }
         }
@@ -943,7 +979,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mBluetoothStateReceiver == null) {
             mBluetoothStateReceiver = new BroadcastReceiver() {
                 private int lastState = -1;
-                private boolean enabledBTCauseTurnedOff = false;
+                private boolean autoEnabledBTCauseTurnedOffTriggered = false;
                 private boolean bTLEInitStarted = false;
 
                 @Override
@@ -978,27 +1014,29 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                                 case BluetoothAdapter.STATE_OFF:
                                     bTLEInitStarted = false;
                                     if (mBluetoothAdapter != null) {
-                                        if (!enabledBTCauseTurnedOff) {
-                                            enabledBTCauseTurnedOff = true;
-                                            // cancel all running processes...
-                                            //mBTLEInitNeedToBeCancledCauseBTWasTurnedOff = true;
-                                            try {
-                                                mBluetoothAdapter.cancelDiscovery();
-                                            } catch (Throwable t) {
-                                                Log.d(LOG_TAG, "", t);
-                                            }
+                                        mShowBtIsOffWarning = true;
+                                        // cancel all running processes...
+                                        try {
+                                            mBluetoothAdapter.cancelDiscovery();
+                                        } catch (Throwable t) {
+                                            Log.d(LOG_TAG, "", t);
+                                        }
+                                        stopScan(false);
+                                        updateNotification();
+                                        if(mGuiCallback != null) {
+                                            mGuiCallback.newBeconEvent(null, -1, -1, -1);
+                                        }
+                                        if (!isAirplaneMode()) {
+                                            if(Preferences.getInstance(getBaseContext()).getBoolean(R.string.PKEY_AUTOSTARTBLUETOOTH, R.string.DVAL_AUTOSTARTBLUETOOTH)) {
+                                                if (!autoEnabledBTCauseTurnedOffTriggered) {
+                                                    autoEnabledBTCauseTurnedOffTriggered = true;
 
-                                            if (!isAirplaneMode()) {
-                                                // autorestart BT in 5 seconds...
-                                                if (mHandler != null) {
-                                                    mHandler.postDelayed(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            mBluetoothAdapter.enable();
-                                                        }
-                                                    }, 5000);
-                                                } else {
-                                                    mBluetoothAdapter.enable();
+                                                    // autorestart BT in 5 seconds...
+                                                    if (mHandler != null) {
+                                                        mHandler.postDelayed(() -> mBluetoothAdapter.enable(), 5000);
+                                                    } else {
+                                                        mBluetoothAdapter.enable();
+                                                    }
                                                 }
                                             }
                                         }
@@ -1006,15 +1044,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                                     break;
 
                                 case BluetoothAdapter.STATE_ON:
-                                case 15:
-                                    enabledBTCauseTurnedOff = false;
+                                case 15 /*BluetoothAdapter.STATE_BLE_ON*/:
+                                    autoEnabledBTCauseTurnedOffTriggered = false;
+                                    mShowBtIsOffWarning = false;
                                     if (!bTLEInitStarted) {
-                                        if (mBluetoothAdapter != null) {
-                                            bTLEInitStarted = true;
-                                            // start the LESCANN AGAIN...
-                                            // TODO!!!
-                                            //mBluetoothAdapter.startDiscovery();
-                                        }
+                                        bTLEInitStarted = true;
+                                        ensureAdapterAndScannerInit();
+                                        mScannIsRunning = false;
+                                        startScan(false);
+                                        updateNotification();
                                     }
                                     break;
 
@@ -1032,12 +1070,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             registerReceiver(mBluetoothStateReceiver, filter);
         }
 
-        /*if (mBluetoothAdapter != null) {
+        if (mBluetoothAdapter != null) {
             if (!mBluetoothAdapter.isEnabled()) {
+                mShowBtIsOffWarning = true;
                 if (!isAirplaneMode()) {
-                    mBluetoothAdapter.enable();
+                    if(Preferences.getInstance(getBaseContext()).getBoolean(R.string.PKEY_AUTOSTARTBLUETOOTH, R.string.DVAL_AUTOSTARTBLUETOOTH)) {
+                        mBluetoothAdapter.enable();
+                    }
                 }
             }
-        }*/
+        }
     }
 }

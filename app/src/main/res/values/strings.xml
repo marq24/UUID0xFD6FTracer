@@ -7,6 +7,7 @@
     <string name="app_service_title">Background Tracer Service</string>
     <string name="app_service_msgOff">Please start Scanner</string>
     <string name="app_service_msgOffNoPermissions">Please start the App in order to restart the Scanner</string>
+    <string name="app_service_msgNoBt">To use this feature, turn on Bluetooth</string>
 
     <string name="app_service_msgScan1">Scanning Environment&#8230;</string>
     <string name="app_service_msgScan2">[found: %1$d]</string>
@@ -16,7 +17,9 @@
     <string name ="menu_exit_notify_action">EXIT</string>
     <string name ="menu_start_notify_action">Start Scan</string>
     <string name ="menu_stop_notify_action">Stop Scan</string>
+    <string name ="menu_start_bt_action">Enable Bluetooth</string>
 
+    <string name="act_enable_bt">Please enable Bluetooth</string>
     <string name="act_total_beacons">Total: %1$d</string>
     <string name="act_active_beacons">Active Beacons: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Beacons: %1$d</string>
@@ -30,6 +33,8 @@
     <string name="PKEY_IGNOREBATTERYOPT" translatable="false">BATTERY_OPT</string>
     <string name="PKEY_AUTOSTART" translatable="false">AUTOSTART</string>
     <string name="DVAL_AUTOSTART" translatable="false">false</string>
+    <string name="PKEY_AUTOSTARTBLUETOOTH" translatable="false">AUTOSTARTBLUETOOTH</string>
+    <string name="DVAL_AUTOSTARTBLUETOOTH" translatable="false">false</string>
     <string name="PKEY_SHOWTOTAL" translatable="false">SHOWTOTALBEACONNUM</string>
     <string name="DVAL_SHOWTOTAL" translatable="false">false</string>
     <string name="PKEY_SCANMODE" translatable="false">SCANMODE</string>
@@ -43,6 +48,10 @@
     <string name="pref01_AUTOSTART_TITLE">Service Autostart</string>
     <string name="pref01_AUTOSTART_OFF">OFF</string>
     <string name="pref01_AUTOSTART_ON">ON - The \'Background Tracer Service\' will be automatically started after a device reboot (after successful login)</string>
+
+    <string name="pref01_AUTOSTARTBLUETOOTH_TITLE">Auto enable Bluetooth</string>
+    <string name="pref01_AUTOSTARTBLUETOOTH_OFF">OFF - The Bluetooth state will not be adjusted on service start.</string>
+    <string name="pref01_AUTOSTARTBLUETOOTH_ON">ON - Bluetooth is activated automatically (if accidentally deactivated)\n[Feature disabled in flight-mode]</string>
 
     <string name="pref01_SHOWTOTAL_TITLE">Display total number</string>
     <string name="pref01_SHOWTOTAL_OFF">OFF</string>

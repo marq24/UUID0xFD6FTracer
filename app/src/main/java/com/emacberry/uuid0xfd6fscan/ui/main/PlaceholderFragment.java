@@ -85,6 +85,12 @@ public class PlaceholderFragment extends Fragment {
         iSCFTextOnBind = handleTxt(txtSCF, mSCFTextView);
     }
 
+    public void setInfoText(String info) {
+        handleTxt(info, mTOTTextView);
+        handleTxt(null, mENFTextView);
+        handleTxt(null, mSCFTextView);
+    }
+
     private String handleTxt(String txt, TextView view) {
         if(txt != null) {
             if (view != null) {

@@ -507,21 +507,25 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
         if(mViewPager != null) {
             Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
             if (info instanceof PlaceholderFragment) {
-                String total;
-                if(mShowTotal) {
-                    total = String.format(getString(R.string.act_total_beacons), sizeTotal);
-                }else{
-                    total = null;
-                }
-                if(sizeENF > -1 && sizeSCF > -1){
-                    // dual mode...
-                    ((PlaceholderFragment) info).setText(total, String.format(getString(R.string.act_active_enf_beacons), sizeENF), String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
-                }else if(sizeENF > -1){
-                    // default ExposureNotificationFramework mode
-                    ((PlaceholderFragment) info).setText(total, String.format(getString(R.string.act_active_beacons), sizeENF), null);
-                }else{
-                    // StopCovid France mode
-                    ((PlaceholderFragment) info).setText(total,null, String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                if(mScannerService != null && mScannerService.mShowBtIsOffWarning){
+                    ((PlaceholderFragment) info).setInfoText(getString(R.string.act_enable_bt));
+                }else {
+                    String total;
+                    if (mShowTotal) {
+                        total = String.format(getString(R.string.act_total_beacons), sizeTotal);
+                    } else {
+                        total = null;
+                    }
+                    if (sizeENF > -1 && sizeSCF > -1) {
+                        // dual mode...
+                        ((PlaceholderFragment) info).setText(total, String.format(getString(R.string.act_active_enf_beacons), sizeENF), String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                    } else if (sizeENF > -1) {
+                        // default ExposureNotificationFramework mode
+                        ((PlaceholderFragment) info).setText(total, String.format(getString(R.string.act_active_beacons), sizeENF), null);
+                    } else {
+                        // StopCovid France mode
+                        ((PlaceholderFragment) info).setText(total, null, String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                    }
                 }
             }
         };

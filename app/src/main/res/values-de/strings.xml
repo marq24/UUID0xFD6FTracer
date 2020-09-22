@@ -6,6 +6,7 @@
     <string name="app_service_title">Hintergrund Tracing Dienst</string>
     <string name="app_service_msgOff">Bitte Scan starten</string>
     <string name="app_service_msgOffNoPermissions">Bitte Apps starten, um den Scan erneut zu starten</string>
+    <string name="app_service_msgNoBt">Um diese Funktion zu nutzen, aktivieren Sie bitte Bluetooth</string>
     <string name="app_service_msgScan1">Umgebung wird untersucht&#8230;</string>
     <string name="app_service_msgScan2">[gefunden: %1$d]</string>
 
@@ -14,7 +15,9 @@
     <string name="menu_exit_notify_action">Beenden</string>
     <string name="menu_start_notify_action">Start Scan</string>
     <string name="menu_stop_notify_action">Stop Scan</string>
+    <string name ="menu_start_bt_action">Bluetooth aktivieren</string>
 
+    <string name ="act_enable_bt">Bitte aktivieren Sie Bluetooth</string>
     <string name ="act_total_beacons">Summe: %1$d</string>
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Sender: %1$d</string>
@@ -33,6 +36,10 @@
     <string name="pref01_AUTOSTART_TITLE">Autostart des Dienstes</string>
     <string name="pref01_AUTOSTART_OFF">AUS</string>
     <string name="pref01_AUTOSTART_ON">EIN - Der \'Hintergrund Tracing Dienst\' wir nach einem Neustart des Gerätes automatisch nach erfolgreichem Login gestartet</string>
+
+    <string name="pref01_AUTOSTARTBLUETOOTH_TITLE">Automatische Bluetooth Aktivierung</string>
+    <string name="pref01_AUTOSTARTBLUETOOTH_OFF">AUS - Keine Bluetooth Autostart</string>
+    <string name="pref01_AUTOSTARTBLUETOOTH_ON">EIN - Bluetooth wird automatisch aktiviert (sollte es einmal versehentlich deaktiviert worden sein).\n[Nicht im Flug-Modus]</string>
 
     <string name="pref01_SHOWTOTAL_TITLE">Gesamtsumme anzeigen</string>
     <string name="pref01_SHOWTOTAL_OFF">AUS</string>

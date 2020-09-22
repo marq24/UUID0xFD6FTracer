@@ -17,12 +17,18 @@
 		app:summaryOn="@string/pref01_AUTOSTART_ON" />
 
 	<androidx.preference.SwitchPreferenceCompat
+		app:key="@string/PKEY_AUTOSTARTBLUETOOTH"
+		app:defaultValue="@string/DVAL_AUTOSTARTBLUETOOTH"
+		app:title="@string/pref01_AUTOSTARTBLUETOOTH_TITLE"
+		app:summaryOff="@string/pref01_AUTOSTARTBLUETOOTH_OFF"
+		app:summaryOn="@string/pref01_AUTOSTARTBLUETOOTH_ON" />
+
+	<androidx.preference.SwitchPreferenceCompat
 		app:key="@string/PKEY_SHOWTOTAL"
 		app:defaultValue="@string/DVAL_SHOWTOTAL"
 		app:title="@string/pref01_SHOWTOTAL_TITLE"
 		app:summaryOff="@string/pref01_SHOWTOTAL_OFF"
 		app:summaryOn="@string/pref01_SHOWTOTAL_ON" />
-
 
 	<androidx.preference.ListPreference
 		app:key="@string/PKEY_SCANMODE"

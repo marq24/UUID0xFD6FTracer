@@ -38,6 +38,7 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class ScannerService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -355,6 +356,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         break;
                 }
                 mContainer = new HashMap<>();
+                mScanCallback.mSignalStrengthGroup = new SignalStrengthCollection();
+
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("BAD",     -1000,  -73), 0);
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("WEAK",    -73,    -65), 0);
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("GOOD",    -65,    -52), 0);
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("PERFECT", -52,    1000), 0);
+
                 mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
                 mScannIsRunning = true;
                 updateNotification();
@@ -722,6 +730,78 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         return new int[]{mTotalSize, sizeENF, sizeSCF};
     }
 
+    private class RssiRange implements Comparable{
+        String name;
+        int minValue;
+        int maxValue;
+
+        public RssiRange(String name, int min, int max){
+            this.name = name;
+            this.minValue = min;
+            this.maxValue = max;
+        }
+
+        @Override
+        public int hashCode() {
+            return minValue + maxValue;
+        }
+
+        @Override
+        public int compareTo(Object obj) {
+            if(obj instanceof RssiRange){
+                RssiRange r = (RssiRange) obj;
+                if(r.maxValue < maxValue){
+                    return -1;
+                } else if(r.maxValue == maxValue){
+                    return 0;
+                }else{
+                    return 1;
+                }
+            }
+            return 0;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return name +"["+minValue+"|"+maxValue+"]";
+        }
+    }
+
+    private class SignalStrengthCollection extends TreeMap<RssiRange, Integer> {
+
+        public Integer[] sizes() {
+            Integer[] ret = new Integer[values().size()];
+            super.values().toArray(ret);
+            return ret;
+        }
+
+        public void add(UUIDFD6FBeacon beacon) {
+            int rssi = beacon.sigHistory.get(beacon.sigHistory.lastKey()).intValue();
+            RssiRange range = getRange(rssi);
+            Log.v(LOG_TAG, beacon.addr+" "+rssi+" "+range);
+            if(range != null){
+                put(range, get(range).intValue() + 1 );
+            }
+        }
+
+        private RssiRange getRange(final int rssi) {
+            for(RssiRange range : keySet()){
+                if(range.minValue < rssi && rssi <= range.maxValue){
+                    return range;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void clear() {
+            for(RssiRange range : keySet()){
+                put(range, 0);
+            }
+        }
+    }
+
     private class MyScanCallback extends ScanCallback {
         private long iLastContainerCheckTs = 0;
         public boolean mDoReport = false;
@@ -731,6 +811,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private ParcelUuid mScanUUID = FD6F_UUID;
         private boolean mIsDF6F = true;
         private int iScanModeInt = 0;
+        private SignalStrengthCollection mSignalStrengthGroup = null;
 
         protected void setScanUUID(ParcelUuid uuid) {
             mScanUUID = uuid;
@@ -838,7 +919,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             }
             int newContainerSize = mContainer.size();
             mDoReport = newContainerSize != prevContainerSize;
-
             // after mContainer sync is left we can do the rest...
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 beacon.mTxPower = result.getTxPower();
@@ -851,11 +931,40 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 beacon.addData(data);
             }
 
+            // if the user have configured a signal strength range we need to group the current
+            // available Beacons by their last known signal strength...
+            if(mSignalStrengthGroup != null){
+                mDoReport = groupBySignalStrength() || mDoReport;
+            }
+
             // finally letting the GUI know, that we have new data...
             // have in mind, that this will be triggered quite often
             if (mDoReport) {
                 shouldRefreshGui(addr, newContainerSize);
             }
+        }
+
+        private boolean groupBySignalStrength() {
+            if(mSignalStrengthGroup != null){
+                Integer[] oldSizes = mSignalStrengthGroup.sizes();
+                mSignalStrengthGroup.clear();
+                synchronized (mContainer){
+                    for(UUIDFD6FBeacon beacon: mContainer.values()) {
+                        mSignalStrengthGroup.add(beacon);
+                    }
+                }
+                Integer[] newSizes = mSignalStrengthGroup.sizes();
+                if(oldSizes.length != newSizes.length) {
+                    return true;
+                }else {
+                    for (int i = 0; i < newSizes.length; i++) {
+                        if(newSizes[i].intValue() != oldSizes[i].intValue()){
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private void shouldRefreshGui(String addr, int size){
@@ -900,20 +1009,22 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         protected void checkForOutdatedBeaconsInt(long tsNow){
             iLastContainerCheckTs = tsNow;
             ArrayList<String> addrsToRemove = new ArrayList<>();
-            for (UUIDFD6FBeacon otherBeacon : mContainer.values()) {
-                // if beacon not returned in any scan of the last 25sec
-                // we going to remove it...
-                if (otherBeacon.mLastTs + 25000 < tsNow) {
-                    addrsToRemove.add(otherBeacon.addr);
+            synchronized (mContainer) {
+                for (UUIDFD6FBeacon otherBeacon : mContainer.values()) {
+                    // if beacon not returned in any scan of the last 25sec
+                    // we going to remove it...
+                    if (otherBeacon.mLastTs + 25000 < tsNow) {
+                        addrsToRemove.add(otherBeacon.addr);
+                    }
                 }
-            }
-            if (addrsToRemove.size() > 0) {
-                for (String aOtherAddr : addrsToRemove) {
-                    mContainer.remove(aOtherAddr);
-                    Log.d(LOG_TAG, "remove: " +aOtherAddr+" "+ mContainer.size() + " " + mContainer.keySet());
-                }
-                if (BuildConfig.DEBUG) {
-                    mDoReport = true;
+                if (addrsToRemove.size() > 0) {
+                    for (String aOtherAddr : addrsToRemove) {
+                        mContainer.remove(aOtherAddr);
+                        Log.d(LOG_TAG, "remove: " + aOtherAddr + " " + mContainer.size() + " " + mContainer.keySet());
+                    }
+                    if (BuildConfig.DEBUG) {
+                        mDoReport = true;
+                    }
                 }
             }
         }

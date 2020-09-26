@@ -59,6 +59,8 @@ public class UUIDFD6FBeacon {
         b.append(" [");
         b.append(data.size());
         b.append("] ");
+        b.append(mLatestSignalStrength);
+        b.append("db ");
         b.append(sigHistory.size());
         b.append(' ');
         b.append(new Date(mLastTs));

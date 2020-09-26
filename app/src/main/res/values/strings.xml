@@ -26,6 +26,10 @@
     <string name ="act_active_scf_beacons">StopCovid Beacons: %1$d</string>
     <string name="menu_start">Start Scan Service</string>
     <string name="menu_stop">Stop Scan Service</string>
+    <string name ="act_NEAR">NEAR: %1$d</string>
+    <string name ="act_MEDIUM">MEDIUM: %1$d</string>
+    <string name ="act_FAR">FAR: %1$d</string>
+    <string name ="act_BAD">BAD: %1$d</string>
 
     <string name="menu_settings">Settings&#8230;</string>
 
@@ -83,13 +87,15 @@
     <string name="pref01_country">Countries that make use of the Exposure Notification Framework (UUID 0xFD6F)</string>
     <string translatable="false" name="pref01_countrylist">Australia, Austria, Belgium, Brazil, Brunei, Canada, Czech Republic, Croatia, Denmark, Ecuador, Estonia, Finland, Germany, Gibraltar, Ireland, Italy, Japan, Kenya, Latvia, Malta, Mexico, Netherlands, Northern Ireland, Philippines, Poland, Portugal, Saudi Arabia, Slovenia, South Africa, Spain, Switzerland, United Kingdom, Uruguay, USA [Alabama, Arizona, Nevada, New York, North Dakota, South Carolina, Virginia]</string>
 
+    <string name="pref01_SIGSTRENGTH_title">Expert Settings</string>
+    <string name="pref01_SIGSTRENGTH_summary">Selected value is: -%1$sdb</string>
     <string name="pref01_GROUPBYSIGSTRENGTH_title">Group by Signal strength</string>
-    <string name="pref01_GROUPBYSIGSTRENGTH_off">OFF</string>
-    <string name="pref01_GROUPBYSIGSTRENGTH_on">Group the Beacons by their signal strength into NEAR/MEDIUM/FAR</string>
-    <string name="pref01_GROUPNEARVAL_title">NEAR [def value -82db]</string>
-    <string name="pref01_GROUPMEDVAL_title">MEDIUM [def value -90db]</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_off">No grouping according to signal strengths</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_on">Group the beacons by their signal strength into NEAR/MEDIUM/FAR</string>
+    <string name="pref01_GROUPNEARVAL_title">NEAR [def value: -82db]</string>
+    <string name="pref01_GROUPMEDVAL_title">MEDIUM [def value: -90db]</string>
     <string name="pref01_USETHRESHOLD_title">Use Threshold</string>
-    <string name="pref01_USETHRESHOLD_off">OFF - all found beacons will be listed (no matter how weak the signal strength is)</string>
-    <string name="pref01_USETHRESHOLD_on">ON - specify a minimum db value</string>
-    <string name="pref01_THRESHOLDVAL_title">Threshold value [def value -97db]</string>
+    <string name="pref01_USETHRESHOLD_off">All found beacons will be listed (no matter how weak the signal strength is)</string>
+    <string name="pref01_USETHRESHOLD_on">If the signal strength of a beacon is below the specified threshold it will not taken into account</string>
+    <string name="pref01_THRESHOLDVAL_title">Threshold value [def value: -97db]</string>
 </resources>

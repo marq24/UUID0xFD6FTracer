@@ -20,6 +20,10 @@
     <string name="act_active_beacons">Appareils actives: %1$d</string>
     <string name="act_active_enf_beacons">ExpNotif. actives: %1$d</string>
     <string name="act_active_scf_beacons">StopCovid actives: %1$d</string>
+    <string name ="act_NEAR">PROCHE: %1$d</string>
+    <string name ="act_MEDIUM">MOYEN: %1$d</string>
+    <string name ="act_FAR">ÉLOIGNÉ: %1$d</string>
+    <string name ="act_BAD">IGNORÉ: %1$d</string>
 
     <string name="menu_start">Démarrer le service de scan</string>
     <string name="menu_stop">Arrêter le service de scan</string>
@@ -51,4 +55,16 @@
         <item name="03">UUID 0xDF6F &amp; 0xDF64: France (StopCovid France) et tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
     </string-array>
     <string name="pref01_country">Les pays dont l\'application est basée sur le cadre de notification d\'exposition  (UUID 0xFD6F)</string>
+
+    <string name="pref01_SIGSTRENGTH_title">Paramètres experts</string>
+    <string name="pref01_SIGSTRENGTH_summary">La valeur sélectionnée est: -%1$sdb</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_title">Regrouper par force du signal</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_off">Pas de regroupement en fonction de la force du signal</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_on">Regroupez les balises par la force de leur signal dans PROCHE/MOYEN/ÉLOIGNÉ</string>
+    <string name="pref01_GROUPNEARVAL_title">PROCHE [def valeur: -82db]</string>
+    <string name="pref01_GROUPMEDVAL_title">MOYEN [def valeur: -90db]</string>
+    <string name="pref01_USETHRESHOLD_title">Utiliser le seuil</string>
+    <string name="pref01_USETHRESHOLD_off">Toutes les balises trouvées seront répertoriées (quelle que soit la puissance du signal)</string>
+    <string name="pref01_USETHRESHOLD_on">Si la force du signal d\'une balise est inférieure au seuil spécifié, elle ne sera pas prise en compte</string>
+    <string name="pref01_THRESHOLDVAL_title">Valeur de seuil [def valeur: -97db]</string>
 </resources>

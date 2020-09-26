@@ -553,17 +553,27 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                                 // ONLY GOOD/BAD => threshold is defined...
                                 // we might want to show additionally the number of
                                 // BAD signals?! - for now we skip this...
-                                ((PlaceholderFragment) info).setRangeInfo(null, null, null, "BAD: "+ranges[1].size);
+                                ((PlaceholderFragment) info).setRangeInfo(
+                                        null, null, null,
+                                        String.format(getString(R.string.act_BAD), ranges[1].size));
                                 break;
 
                             case 3:
                                 // NEAR|MEDIUM|FAR
-                                ((PlaceholderFragment) info).setRangeInfo("NEAR: "+ranges[0].size, "MEDIUM: "+ranges[1].size, "FAR: "+ranges[2].size, null);
+                                ((PlaceholderFragment) info).setRangeInfo(
+                                        String.format(getString(R.string.act_NEAR), ranges[0].size),
+                                        String.format(getString(R.string.act_MEDIUM), ranges[1].size),
+                                        String.format(getString(R.string.act_FAR), ranges[2].size),
+                                        null);
                                 break;
 
                             case 4:
                                 // NEAR|MEDIUM|FAR|BAD
-                                ((PlaceholderFragment) info).setRangeInfo("NEAR: "+ranges[0].size, "MEDIUM: "+ranges[1].size, "FAR: "+ranges[2].size, "BAD: "+ranges[3].size);
+                                ((PlaceholderFragment) info).setRangeInfo(
+                                        String.format(getString(R.string.act_NEAR), ranges[0].size),
+                                        String.format(getString(R.string.act_MEDIUM), ranges[1].size),
+                                        String.format(getString(R.string.act_FAR), ranges[2].size),
+                                        String.format(getString(R.string.act_BAD), ranges[3].size));
                                 break;
                         }
                     } else{

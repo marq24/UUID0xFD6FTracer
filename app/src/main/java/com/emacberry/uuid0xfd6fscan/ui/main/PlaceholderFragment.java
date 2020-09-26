@@ -82,12 +82,13 @@ public class PlaceholderFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mTOTTextView = null;
-        mENFTextView = null;
-        mSCFTextView = null;
         iTOTTextOnBind = null;
         iENFTextOnBind = null;
         iSCFTextOnBind = null;
+
+        mTOTTextView = null;
+        mENFTextView = null;
+        mSCFTextView = null;
 
         mNearView = null;
         mMedView = null;

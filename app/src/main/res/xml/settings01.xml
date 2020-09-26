@@ -44,7 +44,7 @@
 	/>
 
 	<androidx.preference.PreferenceCategory
-		app:title="Expert Setting...">
+		app:title="@string/pref01_SIGSTRENGTH_title">
 		<androidx.preference.SwitchPreferenceCompat
 			app:key="@string/PKEY_GROUPBYSIGSTRENGTH"
 			app:defaultValue="@string/DVAL_GROUPBYSIGSTRENGTH"

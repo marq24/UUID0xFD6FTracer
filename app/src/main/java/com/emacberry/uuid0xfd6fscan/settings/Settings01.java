@@ -16,6 +16,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
@@ -122,16 +123,22 @@ public class Settings01 extends PreferenceFragmentCompat {
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             //editText.addTextChangedListener(new MyTextWatcher(editText));
         };
+
+        Preference.SummaryProvider<EditTextPreference> sProvider = preference -> String.format(getString(R.string.pref01_SIGSTRENGTH_summary), preference.getText());
+
         mGroupNear = ((EditTextPreference) findPreference(getString(R.string.PKEY_GROUPNEARVAL)));
         mGroupNear.setOnBindEditTextListener(numberFilter);
+        mGroupNear.setSummaryProvider(sProvider);
         mGroupNear.setEnabled(groupBySignalStrength.isChecked());
 
         mGroupMed = ((EditTextPreference) findPreference(getString(R.string.PKEY_GROUPMEDVAL)));
         mGroupMed.setOnBindEditTextListener(numberFilter);
+        mGroupMed.setSummaryProvider(sProvider);
         mGroupMed.setEnabled(groupBySignalStrength.isChecked());
 
         mTreshold = ((EditTextPreference) findPreference(getString(R.string.PKEY_THRESHOLDVAL)));
         mTreshold.setOnBindEditTextListener(numberFilter);
+        mTreshold.setSummaryProvider(sProvider);
         mTreshold.setEnabled(treshold.isChecked());
     }
 

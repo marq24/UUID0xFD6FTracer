@@ -356,12 +356,24 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         break;
                 }
                 mContainer = new HashMap<>();
-                mScanCallback.mSignalStrengthGroup = new SignalStrengthCollection();
 
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("BAD",     -1000,  -73), 0);
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("WEAK",    -73,    -65), 0);
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("GOOD",    -65,    -52), 0);
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("PERFECT", -52,    1000), 0);
+                /*
+                Near: -infinity < attenuation ≤ 55 dB
+                Medium: 55 dB < attenuation ≤ 63 dB
+                Far: 63 dB < attenuation ≤ 73 dB
+                Bad: 73 dB < attenuation
+
+                If we apply average corrections from the table, we get RSSI boundaries at
+                -100 dB, -90 dB, -82 dB. But since for practical purposes -100 dB is the bottom of
+                the scale, I would recommend either not providing a "bad" bucket (including it in
+                the far one), or using something between -97 and -99 for this bucket.
+                */
+
+                mScanCallback.mSignalStrengthGroup = new SignalStrengthCollection();
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("BAD",     -1000,  -97), 0);
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("FAR",     -97,    -90), 0);
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("MEDIUM",  -90,    -82), 0);
+                mScanCallback.mSignalStrengthGroup.put(new RssiRange("NEAR",    -82,    1000), 0);
 
                 mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
                 mScannIsRunning = true;
@@ -511,34 +523,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         return builder;
     }
 
-    /*private void showLaunchNotification(){
-        Intent fullScreenIntent = new Intent(this, ScannerActivity.class);
-        // For the activity opening when notification cliced
-        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 2022, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification notification = new NotificationCompat.Builder(this, NotificationHelper.getBaseNotificationChannelId(this))
-                .setSmallIcon(R.drawable.ic_app_notify72)
-                .setContentTitle("Notification title")
-                .setContentText("Notification Text")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
-                //.setFullScreenIntent(fullScreenPendingIntent, true)
-                .setContentIntent(fullScreenPendingIntent)
-                .build();
-
-        startForeground(R.id.notify_backservive, notification);
-    }*/
-
     private void showNotification() {
         try {
             mBuilder = getNotificationBuilder();
             startForeground(R.id.notify_backservive, mBuilder.build());
         } catch (SecurityException e) {
             e.printStackTrace();
-            // TODO CHECK PERMISSION
-            /*if (_logger != null) {
-                _logger.checkPermissions("forground");
-            }*/
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -778,14 +768,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
         public void add(UUIDFD6FBeacon beacon) {
             int rssi = beacon.sigHistory.get(beacon.sigHistory.lastKey()).intValue();
-            RssiRange range = getRange(rssi);
+            RssiRange range = getRangeForValue(rssi);
             Log.v(LOG_TAG, beacon.addr+" "+rssi+" "+range);
             if(range != null){
                 put(range, get(range).intValue() + 1 );
             }
         }
 
-        private RssiRange getRange(final int rssi) {
+        private RssiRange getRangeForValue(final int rssi) {
             for(RssiRange range : keySet()){
                 if(range.minValue < rssi && rssi <= range.maxValue){
                     return range;
@@ -794,8 +784,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             return null;
         }
 
-        @Override
-        public void clear() {
+        public void clearSizes() {
             for(RssiRange range : keySet()){
                 put(range, 0);
             }
@@ -917,6 +906,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     checkForOutdatedBeaconsInt(tsNow);
                 }
             }
+
             int newContainerSize = mContainer.size();
             mDoReport = newContainerSize != prevContainerSize;
             // after mContainer sync is left we can do the rest...
@@ -947,7 +937,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private boolean groupBySignalStrength() {
             if(mSignalStrengthGroup != null){
                 Integer[] oldSizes = mSignalStrengthGroup.sizes();
-                mSignalStrengthGroup.clear();
+                mSignalStrengthGroup.clearSizes();
                 synchronized (mContainer){
                     for(UUIDFD6FBeacon beacon: mContainer.values()) {
                         mSignalStrengthGroup.add(beacon);

@@ -132,7 +132,7 @@ public class Settings01 extends PreferenceFragmentCompat {
 
         mTreshold = ((EditTextPreference) findPreference(getString(R.string.PKEY_THRESHOLDVAL)));
         mTreshold.setOnBindEditTextListener(numberFilter);
-        mGroupNear.setEnabled(treshold.isChecked());
+        mTreshold.setEnabled(treshold.isChecked());
     }
 
     /*private class MyTextWatcher implements  TextWatcher{

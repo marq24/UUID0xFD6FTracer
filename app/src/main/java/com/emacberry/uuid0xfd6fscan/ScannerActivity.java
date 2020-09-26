@@ -65,7 +65,7 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                     mScannerService = b.getServerInstance();
                     mScannerService.setGuiCallback(ScannerActivity.this);
                     final int[] sizes = mScannerService.getBeaconCountByType();
-                    runOnUiThread(()-> setActiveBeaconCount(sizes[0], sizes[1], sizes[2], null));
+                    runOnUiThread(()-> setActiveBeaconCount(sizes[0], sizes[1], sizes[2], mScannerService.getSignalStrengthGroupInfo()));
                 }
             }
         }
@@ -491,31 +491,35 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
         }
     }
 
-    public void newBeconEvent(String addr, final int sizeTotal, final int sizeENF, final int sizeSCF, final int[] ranges) {
+    public void newBeconEvent(String addr, final int sizeTotal, final int sizeENF, final int sizeSCF, final SignalStrengthGroupInfo[] ranges) {
         if(mScannerService != null){
             if(addr !=null) {
                 Log.v(LOG_TAG, "newBeconEvent: " + mScannerService.mContainer.get(addr));
             }else{
                 Log.v(LOG_TAG, "newBeconEvent: NO SCAN RESULTS");
             }
-            runOnUiThread(()-> setActiveBeaconCount(sizeTotal, sizeENF, sizeSCF, ranges));
         }
+        runOnUiThread(()-> setActiveBeaconCount(sizeTotal, sizeENF, sizeSCF, ranges));
     }
 
-    private void setActiveBeaconCount(final int sizeTotal, final int sizeENF, final int sizeSCF, final int[] ranges){
+    private void setActiveBeaconCount(final int sizeTotal, final int sizeENF, final int sizeSCF, final SignalStrengthGroupInfo[] ranges){
         // setting the initial TEXT..
         if(mViewPager != null) {
             Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
             if (info instanceof PlaceholderFragment) {
                 if(mScannerService != null && mScannerService.mShowBtIsOffWarning){
-                    ((PlaceholderFragment) info).setInfoText(getString(R.string.act_enable_bt));
+                    ((PlaceholderFragment) info).setNoBluetoothInfoText(getString(R.string.act_enable_bt));
                 }else {
                     String total;
+
+                    // rendering TOTAL INFO BLOCK...
                     if (mShowTotal) {
                         total = String.format(getString(R.string.act_total_beacons), sizeTotal);
                     } else {
                         total = null;
                     }
+
+                    // rendering the ExposureNotification and/or StopCovidFrance info
                     if (sizeENF > -1 && sizeSCF > -1) {
                         // dual mode...
                         ((PlaceholderFragment) info).setText(
@@ -534,6 +538,36 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                         ((PlaceholderFragment) info).setText(total,
                                 null,
                                 String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                    }
+
+                    // render the additional "ranges"
+                    if(ranges != null){
+                        switch (ranges.length){
+                            default:
+                                // default:
+                                // DO NOTHING - unknown number of available fields...
+                                ((PlaceholderFragment) info).setRangeInfo(null, null, null, null);
+                                break;
+
+                            case 2:
+                                // ONLY GOOD/BAD => threshold is defined...
+                                // we might want to show additionally the number of
+                                // BAD signals?! - for now we skip this...
+                                ((PlaceholderFragment) info).setRangeInfo(null, null, null, "BAD: "+ranges[1].size);
+                                break;
+
+                            case 3:
+                                // NEAR|MEDIUM|FAR
+                                ((PlaceholderFragment) info).setRangeInfo("NEAR: "+ranges[0].size, "MEDIUM: "+ranges[1].size, "FAR: "+ranges[2].size, null);
+                                break;
+
+                            case 4:
+                                // NEAR|MEDIUM|FAR|BAD
+                                ((PlaceholderFragment) info).setRangeInfo("NEAR: "+ranges[0].size, "MEDIUM: "+ranges[1].size, "FAR: "+ranges[2].size, "BAD: "+ranges[3].size);
+                                break;
+                        }
+                    } else{
+                        ((PlaceholderFragment) info).setRangeInfo(null, null, null, null);
                     }
                 }
             }

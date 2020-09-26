@@ -26,6 +26,11 @@ public class PlaceholderFragment extends Fragment {
     private String iENFTextOnBind;
     private String iSCFTextOnBind;
 
+    private TextView mNearView;
+    private TextView mMedView;
+    private TextView mFarView;
+    private TextView mBadView;
+
     private static HashMap<Integer, PlaceholderFragment> map = new HashMap<>();
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = map.get(index);
@@ -51,47 +56,65 @@ public class PlaceholderFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-        mTOTTextView = root.findViewById(R.id.tot_txt);
-        if(iTOTTextOnBind != null){
-            mTOTTextView.setText(iTOTTextOnBind);
-        }else{
-            mTOTTextView.setVisibility(View.GONE);
-        }
-        mENFTextView = root.findViewById(R.id.enf_txt);
-        if(iENFTextOnBind != null){
-            mENFTextView.setText(iENFTextOnBind);
-        }else{
-            mENFTextView.setVisibility(View.GONE);
-        }
-        mSCFTextView = root.findViewById(R.id.scf_txt);
-        if(iSCFTextOnBind != null){
-            mSCFTextView.setText(iSCFTextOnBind);
-        }else{
-            mSCFTextView.setVisibility(View.GONE);
-        }
+
+        mTOTTextView = generateTextViewAndSetInitalValueIfPresent(root, R.id.tot_txt, iTOTTextOnBind);
+        mENFTextView = generateTextViewAndSetInitalValueIfPresent(root, R.id.enf_txt, iENFTextOnBind);
+        mSCFTextView = generateTextViewAndSetInitalValueIfPresent(root, R.id.scf_txt, iSCFTextOnBind);
+
+        mNearView = generateTextViewAndSetInitalValueIfPresent(root, R.id.near_txt, null);
+        mMedView = generateTextViewAndSetInitalValueIfPresent(root, R.id.medium_txt, null);
+        mFarView = generateTextViewAndSetInitalValueIfPresent(root, R.id.far_txt, null);
+        mBadView = generateTextViewAndSetInitalValueIfPresent(root, R.id.bad_txt, null);
+
         return root;
+    }
+
+    private TextView generateTextViewAndSetInitalValueIfPresent(View root, int id, String initValue) {
+        TextView aView = root.findViewById(id);
+        if(initValue != null){
+            aView.setText(initValue);
+        }else{
+            aView.setVisibility(View.GONE);
+        }
+        return aView;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mTOTTextView = null;
         mENFTextView = null;
         mSCFTextView = null;
+        iTOTTextOnBind = null;
+        iENFTextOnBind = null;
+        iSCFTextOnBind = null;
+
+        mNearView = null;
+        mMedView = null;
+        mFarView = null;
+        mBadView = null;
     }
 
     public void setText(String txtTOT, String txtENF, String txtSCF) {
-        iTOTTextOnBind = handleTxt(txtTOT, mTOTTextView);
-        iENFTextOnBind = handleTxt(txtENF, mENFTextView);
-        iSCFTextOnBind = handleTxt(txtSCF, mSCFTextView);
+        iTOTTextOnBind = updateTextView(txtTOT, mTOTTextView);
+        iENFTextOnBind = updateTextView(txtENF, mENFTextView);
+        iSCFTextOnBind = updateTextView(txtSCF, mSCFTextView);
     }
 
-    public void setInfoText(String info) {
-        handleTxt(info, mTOTTextView);
-        handleTxt(null, mENFTextView);
-        handleTxt(null, mSCFTextView);
+    public void setNoBluetoothInfoText(String info) {
+        updateTextView(info, mTOTTextView);
+        updateTextView(null, mENFTextView);
+        updateTextView(null, mSCFTextView);
     }
 
-    private String handleTxt(String txt, TextView view) {
+    public void setRangeInfo(String txtNEAR, String txtMEDIUM, String txtFAR, String txtBAD) {
+        updateTextView(txtNEAR, mNearView);
+        updateTextView(txtMEDIUM, mMedView);
+        updateTextView(txtFAR, mFarView);
+        updateTextView(txtBAD, mBadView);
+    }
+
+    private String updateTextView(String txt, TextView view) {
         if(txt != null) {
             if (view != null) {
                 if(view.getVisibility() != View.VISIBLE) {

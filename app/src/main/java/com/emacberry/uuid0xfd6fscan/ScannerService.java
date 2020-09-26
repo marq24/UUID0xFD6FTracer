@@ -768,6 +768,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
+    public SignalStrengthGroupInfo[] getSignalStrengthGroupInfo() {
+        if (mSignalStrengthGroup != null) {
+            return mSignalStrengthGroup.getGroupSizeInfo();
+        }
+        return null;
+    }
+
     public int[] getBeaconCountByType() {
         ensureScanModeSet();
         switch (mPrefScanMode){
@@ -819,30 +826,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         return thresholdFilterValue == -1000 || beacon.mLatestSignalStrength >= thresholdFilterValue;
     }
 
-
-    private enum RssiRangeType{GOOD(0), NEAR(0), MEDIUM(1), FAR(2), BAD(-1);
-        private final int value;
-        RssiRangeType(final int newValue) {
-            value = newValue;
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            switch (value){
-                default:
-                case 0:
-                    return "GOOD/NEAR";
-                case 1:
-                    return "MEDIUM";
-                case 2:
-                    return "FAR";
-                case -1:
-                    return "BAD";
-            }
-        }
-    }
-
     private class RssiRange implements Comparable{
         public RssiRangeType type;
         int minValue;
@@ -890,11 +873,11 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             return ret;
         }
 
-        public int[] sizes2() {
-            int[] ret = new int[values().size()];
+        public SignalStrengthGroupInfo[] getGroupSizeInfo() {
+            SignalStrengthGroupInfo[] ret = new SignalStrengthGroupInfo[size()];
             int i=0;
-            for(Integer obj: values()){
-                ret[i++] = obj.intValue();
+            for(RssiRange aRange: keySet()){
+                ret[i++] = new SignalStrengthGroupInfo(aRange.type, get(aRange).intValue());
             }
             return ret;
         }
@@ -1075,6 +1058,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
         private boolean groupBySignalStrength() {
             if(mSignalStrengthGroup != null){
+                if(BuildConfig.DEBUG) {
+                    Log.v(LOG_TAG, "-------------> start grouping <-------------");
+                }
                 Integer[] oldSizes = mSignalStrengthGroup.sizes();
                 mSignalStrengthGroup.clearCounts();
                 synchronized (mContainer){
@@ -1103,29 +1089,28 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             // But if we have multiple UUIDs or if we have a threshold r another kind
             // of signalStrength grouping the value will be a different one
             if (mGuiCallback != null) {
-                int[] groupSizes = null;
+                SignalStrengthGroupInfo[] groupSizeInfo = null;
                 int totalGoodBeaconCount = totalBeaconCount;
                 if(mSignalStrengthGroup != null){
-                    groupSizes = mSignalStrengthGroup.sizes2();
+                    groupSizeInfo = mSignalStrengthGroup.getGroupSizeInfo();
                     totalGoodBeaconCount = mSignalStrengthGroup.iGoodCount;
-
                 }
                 switch (iScanModeInt){
                     case 2:
                         // dual mode
                         int[] sizes = getBeaconCountSplitByType();
-                        mGuiCallback.newBeconEvent(addr, mTotalSize, sizes[1], sizes[2], groupSizes);
+                        mGuiCallback.newBeconEvent(addr, mTotalSize, sizes[1], sizes[2], groupSizeInfo);
                         break;
 
                     case 1:
                         // StopCovid France mode
-                        mGuiCallback.newBeconEvent(addr, mTotalSize, -1, totalGoodBeaconCount, groupSizes);
+                        mGuiCallback.newBeconEvent(addr, mTotalSize, -1, totalGoodBeaconCount, groupSizeInfo);
                         break;
 
                     default:
                     case 0:
                         // ExposureNotificationFramework Mode
-                        mGuiCallback.newBeconEvent(addr,  mTotalSize, totalGoodBeaconCount, -1, groupSizes);
+                        mGuiCallback.newBeconEvent(addr,  mTotalSize, totalGoodBeaconCount, -1, groupSizeInfo);
                         break;
                 }
             }

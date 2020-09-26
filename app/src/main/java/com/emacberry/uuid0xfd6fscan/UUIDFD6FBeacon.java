@@ -12,6 +12,7 @@ public class UUIDFD6FBeacon {
     public int mTxPower;
     public String addr;
     public long mLastTs;
+    public int mLatestSignalStrength;
     public TreeMap<Long, Integer> sigHistory = new TreeMap<>();
     public HashSet<String> data = new HashSet<>();
     public boolean isENF;
@@ -24,6 +25,7 @@ public class UUIDFD6FBeacon {
 
     public void addRssi(long ts, int rssi, long tsNow) {
         mLastTs = tsNow;
+        mLatestSignalStrength = rssi;
         sigHistory.put(ts, rssi);
     }
 

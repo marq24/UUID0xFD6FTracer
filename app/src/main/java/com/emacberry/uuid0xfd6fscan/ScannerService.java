@@ -64,7 +64,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     // /* SERVICES */
     IBinder mBinder = new LocalBinder();
 
-    private String mScanMode = Preferences.getInstance(getBaseContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+    private Preferences mPrefs = Preferences.getInstance(getBaseContext());
+    private String mPrefScanMode = mPrefs.getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+    private boolean mPrefGroupBySignalStrength = mPrefs.getBoolean(R.string.PKEY_GROUPBYSIGSTRENGTH, R.string.DVAL_GROUPBYSIGSTRENGTH);
+    private String mPrefGroupNearValAsString = mPrefs.getString(R.string.PKEY_GROUPNEARVAL, R.string.DVAL_GROUPNEARVAL);
+    private String mPrefGroupMedValAsString = mPrefs.getString(R.string.PKEY_GROUPMEDVAL, R.string.DVAL_GROUPMEDVAL);
+    private boolean mPrefUseThreshold = mPrefs.getBoolean(R.string.PKEY_USETHRESHOLD, R.string.DVAL_USETHRESHOLD);
+    private String mPrefThresholdValAsString = mPrefs.getString(R.string.PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -72,8 +78,38 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         //Log.d(LOG_TAG, "onSharedPreferenceChanged "+key);
         if(key.equals(getString(R.string.PKEY_SCANMODE))){
             String newScanMode = sharedPreferences.getString(getString(R.string.PKEY_SCANMODE), null);
-            if(mScanMode== null || !mScanMode.equals(newScanMode)){
-                mScanMode = newScanMode;
+            if(mPrefScanMode == null || !mPrefScanMode.equals(newScanMode)){
+                mPrefScanMode = newScanMode;
+                restartScan();
+            }
+        } else if(key.equals(getString(R.string.PKEY_GROUPBYSIGSTRENGTH))){
+            boolean newGroupVal = sharedPreferences.getBoolean(getString(R.string.PKEY_GROUPBYSIGSTRENGTH), false);
+            if(mPrefGroupBySignalStrength != newGroupVal){
+                mPrefGroupBySignalStrength = newGroupVal;
+                restartScan();
+            }
+        } else if(key.equals(getString(R.string.PKEY_USETHRESHOLD))){
+            boolean newUseThreshold = sharedPreferences.getBoolean(getString(R.string.PKEY_USETHRESHOLD), false);
+            if(mPrefUseThreshold != newUseThreshold){
+                mPrefUseThreshold = newUseThreshold;
+                restartScan();
+            }
+        } else if(key.equals(getString(R.string.PKEY_GROUPNEARVAL))){
+            String newNearVal = sharedPreferences.getString(getString(R.string.PKEY_GROUPNEARVAL), getString(R.string.DVAL_GROUPNEARVAL));
+            if(mPrefGroupNearValAsString == null || !mPrefGroupNearValAsString.equals(newNearVal)){
+                mPrefGroupNearValAsString = newNearVal;
+                restartScan();
+            }
+        } else if(key.equals(getString(R.string.PKEY_GROUPMEDVAL))){
+            String newMedVal = sharedPreferences.getString(getString(R.string.PKEY_GROUPMEDVAL), getString(R.string.DVAL_GROUPMEDVAL));
+            if(mPrefGroupMedValAsString == null || !mPrefGroupMedValAsString.equals(newMedVal)){
+                mPrefGroupMedValAsString = newMedVal;
+                restartScan();
+            }
+        } else if(key.equals(getString(R.string.PKEY_THRESHOLDVAL))){
+            String newThresholdVal = sharedPreferences.getString(getString(R.string.PKEY_THRESHOLDVAL), getString(R.string.DVAL_THRESHOLDVAL));
+            if(mPrefThresholdValAsString == null || !mPrefThresholdValAsString.equals(newThresholdVal)){
+                mPrefThresholdValAsString = newThresholdVal;
                 restartScan();
             }
         }
@@ -327,6 +363,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     private boolean mScannIsRunning = false;
     private boolean mHasScanPermission = false;
+
     public void startScan(boolean viaGui) {
         if (viaGui) {
             mScannStopedViaGui = false;
@@ -336,7 +373,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
                 ensureScanModeSet();
                 ArrayList<ScanFilter> f = new ArrayList<>();
-                switch (mScanMode){
+                switch (mPrefScanMode){
                     case "ENF_FRA":
                         //f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
                         f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
@@ -369,11 +406,44 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 the far one), or using something between -97 and -99 for this bucket.
                 */
 
-                mScanCallback.mSignalStrengthGroup = new SignalStrengthCollection();
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("BAD",     -1000,  -97), 0);
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("FAR",     -97,    -90), 0);
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("MEDIUM",  -90,    -82), 0);
-                mScanCallback.mSignalStrengthGroup.put(new RssiRange("NEAR",    -82,    1000), 0);
+                if(!mPrefGroupBySignalStrength) {
+                    if(!mPrefUseThreshold) {
+                        mSignalStrengthGroup = null;
+                    }else{
+                        int thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                        mSignalStrengthGroup = new SignalStrengthCollection();
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.BAD,1000, thresholdVal), 0);
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.GOOD, thresholdVal, 0), 0);
+                    }
+                } else {
+                    int goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
+                    int medEnd = Integer.parseInt(mPrefGroupMedValAsString);
+                    // have in mind the values (in the prefs) are still "positive" so the comparision
+                    // is revered
+                    if(goodEnd >= medEnd) {
+                        // ok we need to use some fallback since the usr has specified false values...
+                        mPrefGroupNearValAsString = getString(R.string.DVAL_GROUPNEARVAL);
+                        mPrefGroupMedValAsString = getString(R.string.DVAL_GROUPMEDVAL);
+                        goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
+                        medEnd = Integer.parseInt(mPrefGroupMedValAsString);
+                    }
+                    mSignalStrengthGroup = new SignalStrengthCollection();
+                    if(!mPrefUseThreshold){
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.FAR,1000, medEnd), 0);
+                    }else{
+                        int thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                        // have in mind the values (in the prefs) are still "positive" so the comparision
+                        // is revered
+                        if(medEnd >= thresholdVal){
+                            mPrefThresholdValAsString = getString(R.string.DVAL_THRESHOLDVAL);
+                            thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                        }
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.BAD,1000, thresholdVal), 0);
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.FAR, thresholdVal, medEnd), 0);
+                    }
+                    mSignalStrengthGroup.put(new RssiRange(RssiRangeType.MEDIUM, medEnd, goodEnd), 0);
+                    mSignalStrengthGroup.put(new RssiRange(RssiRangeType.NEAR, goodEnd, 0), 0);
+                }
 
                 mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
                 mScannIsRunning = true;
@@ -393,14 +463,14 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     private void ensureScanModeSet() {
         // for what ever reason the init of the Prefs was not successful?!
-        if(mScanMode == null){
+        if(mPrefScanMode == null){
             try {
-                mScanMode = Preferences.getInstance(getApplicationContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+                mPrefScanMode = Preferences.getInstance(getApplicationContext()).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
             }catch(Throwable t){
                 Log.d(LOG_TAG, ""+t.getMessage());
             } finally {
-                if(mScanMode == null){
-                    mScanMode = "ENF";
+                if(mPrefScanMode == null){
+                    mPrefScanMode = "ENF";
                 }
             }
         }
@@ -579,7 +649,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private void updateNotificationText(boolean force) {
+    private void updateNotificationText(boolean force, int size) {
         if (mKeyguardManager == null) {
             mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         }
@@ -589,7 +659,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 mBuilder.setContentText(getText(R.string.app_service_msgNoBt));
                 notify = true;
             }else {
-                int size = mContainer.size();
+                // if we have not any information about the current size that we should
+                // display in the notification text we need to fetch it again...
+                if(size == -1) {
+                    if (mPrefGroupBySignalStrength && mSignalStrengthGroup != null) {
+                        size = mSignalStrengthGroup.iGoodCount;
+                    } else {
+                        size = mContainer.size();
+                    }
+                }
                 if (mScannIsRunning && size > 0) {
                     String txt = String.format(mNotifyTextAddon, size) + " " + mNotifyTextScanning;
                     mBuilder.setContentText(txt);
@@ -635,6 +713,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }*/
 
     protected HashMap<String, UUIDFD6FBeacon> mContainer = new HashMap<>();
+    protected SignalStrengthCollection mSignalStrengthGroup = null;
     private int mTotalSize = 0;
 
     private class MySimpleTimer extends Thread{
@@ -691,13 +770,21 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     public int[] getBeaconCountByType() {
         ensureScanModeSet();
-        switch (mScanMode){
+        switch (mPrefScanMode){
             default:
             case "ENF":
-                return new int[]{mTotalSize, mContainer.size(), -1};
+                if(mSignalStrengthGroup !=null){
+                    return new int[]{mTotalSize, mSignalStrengthGroup.iGoodCount, -1};
+                }else {
+                    return new int[]{mTotalSize, mContainer.size(), -1};
+                }
 
             case "FRA":
-                return new int[]{mTotalSize, -1, mContainer.size()};
+                if(mSignalStrengthGroup !=null){
+                    return new int[]{mTotalSize, -1, mSignalStrengthGroup.iGoodCount};
+                }else {
+                    return new int[]{mTotalSize, -1, mContainer.size()};
+                }
 
             case "ENF_FRA":
                 return getBeaconCountSplitByType();
@@ -707,28 +794,64 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private int[] getBeaconCountSplitByType() {
         int sizeENF = 0;
         int sizeSCF = 0;
+        // grrrr we might need to filter here again by the signalStrength in order to get a valid
+        // total count of beacons per type
+        int thresholdFilterValue = -1000;
+        if(mPrefUseThreshold){
+            thresholdFilterValue = -1 * Integer.parseInt(mPrefThresholdValAsString);
+        }
         synchronized (mContainer){
             for(UUIDFD6FBeacon b : mContainer.values()){
-                //int neededToBeValidStatement = b.isENF ? sizeENF++ : sizeSCF++;
-                if(b.isENF){
-                    sizeENF++;
-                }else{
-                    sizeSCF++;
+                if(acceptSignalStrength(b, thresholdFilterValue)) {
+                    //int neededToBeValidStatement = b.isENF ? sizeENF++ : sizeSCF++;
+                    if (b.isENF) {
+                        sizeENF++;
+                    } else {
+                        sizeSCF++;
+                    }
                 }
             }
         }
         return new int[]{mTotalSize, sizeENF, sizeSCF};
     }
 
+    private boolean acceptSignalStrength(UUIDFD6FBeacon beacon, int thresholdFilterValue) {
+        return thresholdFilterValue == -1000 || beacon.mLatestSignalStrength >= thresholdFilterValue;
+    }
+
+
+    private enum RssiRangeType{GOOD(0), NEAR(0), MEDIUM(1), FAR(2), BAD(-1);
+        private final int value;
+        RssiRangeType(final int newValue) {
+            value = newValue;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (value){
+                default:
+                case 0:
+                    return "GOOD/NEAR";
+                case 1:
+                    return "MEDIUM";
+                case 2:
+                    return "FAR";
+                case -1:
+                    return "BAD";
+            }
+        }
+    }
+
     private class RssiRange implements Comparable{
-        String name;
+        public RssiRangeType type;
         int minValue;
         int maxValue;
 
-        public RssiRange(String name, int min, int max){
-            this.name = name;
-            this.minValue = min;
-            this.maxValue = max;
+        public RssiRange(RssiRangeType type, int min, int max){
+            this.type = type;
+            this.minValue = -min;
+            this.maxValue = -max;
         }
 
         @Override
@@ -754,11 +877,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         @NonNull
         @Override
         public String toString() {
-            return name +"["+minValue+"|"+maxValue+"]";
+            return type.toString() +"["+maxValue+"db|"+minValue+"db]";
         }
     }
 
     private class SignalStrengthCollection extends TreeMap<RssiRange, Integer> {
+        private int iGoodCount = 0;
 
         public Integer[] sizes() {
             Integer[] ret = new Integer[values().size()];
@@ -766,25 +890,40 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             return ret;
         }
 
+        public int[] sizes2() {
+            int[] ret = new int[values().size()];
+            int i=0;
+            for(Integer obj: values()){
+                ret[i++] = obj.intValue();
+            }
+            return ret;
+        }
+
         public void add(UUIDFD6FBeacon beacon) {
-            int rssi = beacon.sigHistory.get(beacon.sigHistory.lastKey()).intValue();
+            int rssi = beacon.mLatestSignalStrength;
             RssiRange range = getRangeForValue(rssi);
-            Log.v(LOG_TAG, beacon.addr+" "+rssi+" "+range);
             if(range != null){
+                if(range.type.value > -1){
+                    iGoodCount++;
+                }
                 put(range, get(range).intValue() + 1 );
+            }
+            if(BuildConfig.DEBUG) {
+                Log.v(LOG_TAG, beacon.addr + " " + rssi + "db " + range);
             }
         }
 
         private RssiRange getRangeForValue(final int rssi) {
             for(RssiRange range : keySet()){
-                if(range.minValue < rssi && rssi <= range.maxValue){
+                if(range.maxValue > rssi && rssi >= range.minValue){
                     return range;
                 }
             }
             return null;
         }
 
-        public void clearSizes() {
+        public void clearCounts() {
+            iGoodCount = 0;
             for(RssiRange range : keySet()){
                 put(range, 0);
             }
@@ -800,7 +939,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private ParcelUuid mScanUUID = FD6F_UUID;
         private boolean mIsDF6F = true;
         private int iScanModeInt = 0;
-        private SignalStrengthCollection mSignalStrengthGroup = null;
+
 
         protected void setScanUUID(ParcelUuid uuid) {
             mScanUUID = uuid;
@@ -937,7 +1076,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private boolean groupBySignalStrength() {
             if(mSignalStrengthGroup != null){
                 Integer[] oldSizes = mSignalStrengthGroup.sizes();
-                mSignalStrengthGroup.clearSizes();
+                mSignalStrengthGroup.clearCounts();
                 synchronized (mContainer){
                     for(UUIDFD6FBeacon beacon: mContainer.values()) {
                         mSignalStrengthGroup.add(beacon);
@@ -957,33 +1096,51 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             return false;
         }
 
-        private void shouldRefreshGui(String addr, int size){
+        private void shouldRefreshGui(String addr, int totalBeaconCount){
+            // if we do not have any special settings, then the 'totalBeaconCount'
+            // is already the number we want to display everywhere (Notification and
+            // in the activity text...
+            // But if we have multiple UUIDs or if we have a threshold r another kind
+            // of signalStrength grouping the value will be a different one
             if (mGuiCallback != null) {
+                int[] groupSizes = null;
+                int totalGoodBeaconCount = totalBeaconCount;
+                if(mSignalStrengthGroup != null){
+                    groupSizes = mSignalStrengthGroup.sizes2();
+                    totalGoodBeaconCount = mSignalStrengthGroup.iGoodCount;
+
+                }
                 switch (iScanModeInt){
                     case 2:
                         // dual mode
                         int[] sizes = getBeaconCountSplitByType();
-                        mGuiCallback.newBeconEvent(addr, sizes[0], sizes[1], sizes[2]);
+                        mGuiCallback.newBeconEvent(addr, mTotalSize, sizes[1], sizes[2], groupSizes);
                         break;
 
                     case 1:
                         // StopCovid France mode
-                        mGuiCallback.newBeconEvent(addr, mTotalSize, -1, size);
+                        mGuiCallback.newBeconEvent(addr, mTotalSize, -1, totalGoodBeaconCount, groupSizes);
                         break;
 
                     default:
                     case 0:
                         // ExposureNotificationFramework Mode
-                        mGuiCallback.newBeconEvent(addr,  mTotalSize, size, -1);
+                        mGuiCallback.newBeconEvent(addr,  mTotalSize, totalGoodBeaconCount, -1, groupSizes);
                         break;
                 }
             }
             // only IF the display is active we will update the notification
             // -> we have to check what is with the amoled display devices?!
             if (mDisplayIsOn) {
-                updateNotificationText(false);
+                if(mSignalStrengthGroup != null){
+                    updateNotificationText(false, mSignalStrengthGroup.iGoodCount);
+                }else {
+                    updateNotificationText(false, totalBeaconCount);
+                }
             }
-            Log.d(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
+            if(BuildConfig.DEBUG) {
+                Log.d(LOG_TAG, mContainer.size() + " " + mContainer.keySet());
+            }
             mDoReport = false;
         }
 
@@ -1011,6 +1168,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     for (String aOtherAddr : addrsToRemove) {
                         mContainer.remove(aOtherAddr);
                         Log.d(LOG_TAG, "remove: " + aOtherAddr + " " + mContainer.size() + " " + mContainer.keySet());
+                    }
+                    if(mSignalStrengthGroup != null) {
+                        groupBySignalStrength();
                     }
                     if (BuildConfig.DEBUG) {
                         mDoReport = true;
@@ -1047,7 +1207,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private class NotificationUpdateTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            updateNotificationText(true);
+            updateNotificationText(true, -1);
             return null;
         }
     }
@@ -1125,10 +1285,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                                         stopScan(false);
                                         updateNotification();
                                         if(mGuiCallback != null) {
-                                            mGuiCallback.newBeconEvent(null, -1, -1, -1);
+                                            mGuiCallback.newBeconEvent(null, -1, -1, -1, null);
                                         }
                                         if (!isAirplaneMode()) {
-                                            if(Preferences.getInstance(getBaseContext()).getBoolean(R.string.PKEY_AUTOSTARTBLUETOOTH, R.string.DVAL_AUTOSTARTBLUETOOTH)) {
+                                            if(mPrefs.getBoolean(R.string.PKEY_AUTOSTARTBLUETOOTH, R.string.DVAL_AUTOSTARTBLUETOOTH)) {
                                                 if (!autoEnabledBTCauseTurnedOffTriggered) {
                                                     autoEnabledBTCauseTurnedOffTriggered = true;
 
@@ -1175,7 +1335,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if (!mBluetoothAdapter.isEnabled()) {
                 mShowBtIsOffWarning = true;
                 if (!isAirplaneMode()) {
-                    if(Preferences.getInstance(getBaseContext()).getBoolean(R.string.PKEY_AUTOSTARTBLUETOOTH, R.string.DVAL_AUTOSTARTBLUETOOTH)) {
+                    if(mPrefs.getBoolean(R.string.PKEY_AUTOSTARTBLUETOOTH, R.string.DVAL_AUTOSTARTBLUETOOTH)) {
                         mBluetoothAdapter.enable();
                     }
                 }

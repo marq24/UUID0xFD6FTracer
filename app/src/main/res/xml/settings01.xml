@@ -43,4 +43,41 @@
 		app:summary="@string/pref01_countrylist"
 	/>
 
+	<androidx.preference.PreferenceCategory
+		app:title="Expert Setting...">
+		<androidx.preference.SwitchPreferenceCompat
+			app:key="@string/PKEY_GROUPBYSIGSTRENGTH"
+			app:defaultValue="@string/DVAL_GROUPBYSIGSTRENGTH"
+			app:title="@string/pref01_GROUPBYSIGSTRENGTH_title"
+			app:summaryOn="@string/pref01_GROUPBYSIGSTRENGTH_on"
+			app:summaryOff="@string/pref01_GROUPBYSIGSTRENGTH_off"
+			/>
+		<androidx.preference.EditTextPreference
+			app:key="@string/PKEY_GROUPNEARVAL"
+			app:defaultValue="@string/DVAL_GROUPNEARVAL"
+			app:title="@string/pref01_GROUPNEARVAL_title"
+			app:useSimpleSummaryProvider="true"
+			/>
+		<androidx.preference.EditTextPreference
+			app:key="@string/PKEY_GROUPMEDVAL"
+			app:defaultValue="@string/DVAL_GROUPMEDVAL"
+			app:title="@string/pref01_GROUPMEDVAL_title"
+			app:useSimpleSummaryProvider="true"
+			/>
+		<androidx.preference.SwitchPreferenceCompat
+			app:key="@string/PKEY_USETHRESHOLD"
+			app:defaultValue="@string/DVAL_USETHRESHOLD"
+			app:title="@string/pref01_USETHRESHOLD_title"
+			app:summaryOn="@string/pref01_USETHRESHOLD_on"
+			app:summaryOff="@string/pref01_USETHRESHOLD_off"
+			/>
+		<androidx.preference.EditTextPreference
+			app:key="@string/PKEY_THRESHOLDVAL"
+			app:defaultValue="@string/DVAL_THRESHOLDVAL"
+			app:title="@string/pref01_THRESHOLDVAL_title"
+			app:useSimpleSummaryProvider="true"
+			/>
+
+	</androidx.preference.PreferenceCategory>
+
 </androidx.preference.PreferenceScreen>

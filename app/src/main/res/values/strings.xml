@@ -40,6 +40,17 @@
     <string name="PKEY_SCANMODE" translatable="false">SCANMODE</string>
     <string name="DVAL_SCANMODE" translatable="false">ENF</string>
 
+    <string name="PKEY_GROUPBYSIGSTRENGTH" translatable="false">GROUPBYSIGSTRENGTH</string>
+    <string name="DVAL_GROUPBYSIGSTRENGTH" translatable="false">false</string>
+    <string name="PKEY_GROUPNEARVAL" translatable="false">GROUPNEARVAL</string>
+    <string name="DVAL_GROUPNEARVAL" translatable="false">82</string>
+    <string name="PKEY_GROUPMEDVAL" translatable="false">GROUPMEDVAL</string>
+    <string name="DVAL_GROUPMEDVAL" translatable="false">90</string>
+    <string name="PKEY_USETHRESHOLD" translatable="false">USETHRESHOLD</string>
+    <string name="DVAL_USETHRESHOLD" translatable="false">false</string>
+    <string name="PKEY_THRESHOLDVAL" translatable="false">THRESHOLDVAL</string>
+    <string name="DVAL_THRESHOLDVAL" translatable="false">97</string>
+
     <string name="pref01_ignorebattery_title">Prioritized Background Activity</string>
     <string name="pref01_ignorebattery_on">Battery optimization has been disabled - To enabled it again you need to do this via the general device settings.</string>
     <string name="pref01_ignorebattery_off">You should only enabled this setting when you encounter unexpected app terminations by the OS.</string>
@@ -71,4 +82,14 @@
 
     <string name="pref01_country">Countries that make use of the Exposure Notification Framework (UUID 0xFD6F)</string>
     <string translatable="false" name="pref01_countrylist">Australia, Austria, Belgium, Brazil, Brunei, Canada, Czech Republic, Croatia, Denmark, Ecuador, Estonia, Finland, Germany, Gibraltar, Ireland, Italy, Japan, Kenya, Latvia, Malta, Mexico, Netherlands, Northern Ireland, Philippines, Poland, Portugal, Saudi Arabia, Slovenia, South Africa, Spain, Switzerland, United Kingdom, Uruguay, USA [Alabama, Arizona, Nevada, New York, North Dakota, South Carolina, Virginia]</string>
+
+    <string name="pref01_GROUPBYSIGSTRENGTH_title">Group by Signal strength</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_off">OFF</string>
+    <string name="pref01_GROUPBYSIGSTRENGTH_on">Group the Beacons by their signal strength into NEAR/MEDIUM/FAR</string>
+    <string name="pref01_GROUPNEARVAL_title">NEAR [def value -82db]</string>
+    <string name="pref01_GROUPMEDVAL_title">MEDIUM [def value -90db]</string>
+    <string name="pref01_USETHRESHOLD_title">Use Threshold</string>
+    <string name="pref01_USETHRESHOLD_off">OFF - all found beacons will be listed (no matter how weak the signal strength is)</string>
+    <string name="pref01_USETHRESHOLD_on">ON - specify a minimum db value</string>
+    <string name="pref01_THRESHOLDVAL_title">Threshold value [def value -97db]</string>
 </resources>

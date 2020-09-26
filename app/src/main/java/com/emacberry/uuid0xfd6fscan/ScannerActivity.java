@@ -65,7 +65,7 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                     mScannerService = b.getServerInstance();
                     mScannerService.setGuiCallback(ScannerActivity.this);
                     final int[] sizes = mScannerService.getBeaconCountByType();
-                    runOnUiThread(()-> setActiveBeaconCount(sizes[0], sizes[1], sizes[2]));
+                    runOnUiThread(()-> setActiveBeaconCount(sizes[0], sizes[1], sizes[2], null));
                 }
             }
         }
@@ -243,16 +243,16 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
             mActivityIsCreated = true;
             switch (Preferences.getInstance(this).getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE)){
                 case "ENF_FRA":
-                    setActiveBeaconCount(0,0, 0);
+                    setActiveBeaconCount(0, 0, 0, null);
                     break;
 
                 case "FRA":
-                    setActiveBeaconCount(0,-1, 0);
+                    setActiveBeaconCount(0, -1, 0, null);
                     break;
 
                 default:
                 case "ENF":
-                    setActiveBeaconCount(0,0, -1);
+                    setActiveBeaconCount(0, 0, -1, null);
                     break;
             }
 
@@ -491,18 +491,18 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
         }
     }
 
-    public void newBeconEvent(String addr, final int sizeTotal, final int sizeENF, final int sizeSCF) {
+    public void newBeconEvent(String addr, final int sizeTotal, final int sizeENF, final int sizeSCF, final int[] ranges) {
         if(mScannerService != null){
             if(addr !=null) {
                 Log.v(LOG_TAG, "newBeconEvent: " + mScannerService.mContainer.get(addr));
             }else{
                 Log.v(LOG_TAG, "newBeconEvent: NO SCAN RESULTS");
             }
-            runOnUiThread(()-> setActiveBeaconCount(sizeTotal, sizeENF, sizeSCF));
+            runOnUiThread(()-> setActiveBeaconCount(sizeTotal, sizeENF, sizeSCF, ranges));
         }
     }
 
-    private void setActiveBeaconCount(final int sizeTotal, final int sizeENF, final int sizeSCF){
+    private void setActiveBeaconCount(final int sizeTotal, final int sizeENF, final int sizeSCF, final int[] ranges){
         // setting the initial TEXT..
         if(mViewPager != null) {
             Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
@@ -518,13 +518,22 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                     }
                     if (sizeENF > -1 && sizeSCF > -1) {
                         // dual mode...
-                        ((PlaceholderFragment) info).setText(total, String.format(getString(R.string.act_active_enf_beacons), sizeENF), String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                        ((PlaceholderFragment) info).setText(
+                                total,
+                                String.format(getString(R.string.act_active_enf_beacons), sizeENF),
+                                String.format(getString(R.string.act_active_scf_beacons), sizeSCF)
+                        );
                     } else if (sizeENF > -1) {
                         // default ExposureNotificationFramework mode
-                        ((PlaceholderFragment) info).setText(total, String.format(getString(R.string.act_active_beacons), sizeENF), null);
+                        ((PlaceholderFragment) info).setText(
+                                total,
+                                String.format(getString(R.string.act_active_beacons), sizeENF),
+                                null);
                     } else {
                         // StopCovid France mode
-                        ((PlaceholderFragment) info).setText(total, null, String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+                        ((PlaceholderFragment) info).setText(total,
+                                null,
+                                String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
                     }
                 }
             }

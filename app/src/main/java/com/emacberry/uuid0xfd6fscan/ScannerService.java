@@ -64,54 +64,63 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     // /* SERVICES */
     IBinder mBinder = new LocalBinder();
 
+    private final String PKEY_SCANMODE = getString(R.string.PKEY_SCANMODE);
+    private final String PKEY_GROUPBYSIGSTRENGTH = getString(R.string.PKEY_GROUPBYSIGSTRENGTH);
+    private final String PKEY_USETHRESHOLD = getString(R.string.PKEY_USETHRESHOLD);
+    private final String PKEY_GROUPNEARVAL = getString(R.string.PKEY_GROUPNEARVAL);
+    private final String PKEY_GROUPMEDVAL = getString(R.string.PKEY_GROUPMEDVAL);
+    private final String PKEY_THRESHOLDVAL = getString(R.string.PKEY_THRESHOLDVAL);
+
     private Preferences mPrefs = Preferences.getInstance(getBaseContext());
-    private String mPrefScanMode = mPrefs.getString(R.string.PKEY_SCANMODE, R.string.DVAL_SCANMODE);
-    private boolean mPrefGroupBySignalStrength = mPrefs.getBoolean(R.string.PKEY_GROUPBYSIGSTRENGTH, R.string.DVAL_GROUPBYSIGSTRENGTH);
-    private String mPrefGroupNearValAsString = mPrefs.getString(R.string.PKEY_GROUPNEARVAL, R.string.DVAL_GROUPNEARVAL);
-    private String mPrefGroupMedValAsString = mPrefs.getString(R.string.PKEY_GROUPMEDVAL, R.string.DVAL_GROUPMEDVAL);
-    private boolean mPrefUseThreshold = mPrefs.getBoolean(R.string.PKEY_USETHRESHOLD, R.string.DVAL_USETHRESHOLD);
-    private String mPrefThresholdValAsString = mPrefs.getString(R.string.PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
+    private String mPrefScanMode                = mPrefs.getString(PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+    private boolean mPrefGroupBySignalStrength  = mPrefs.getBoolean(PKEY_GROUPBYSIGSTRENGTH, R.string.DVAL_GROUPBYSIGSTRENGTH);
+    private String mPrefGroupNearValAsString    = mPrefs.getString(PKEY_GROUPNEARVAL, R.string.DVAL_GROUPNEARVAL);
+    private String mPrefGroupMedValAsString     = mPrefs.getString(PKEY_GROUPMEDVAL, R.string.DVAL_GROUPMEDVAL);
+    private boolean mPrefUseThreshold           = mPrefs.getBoolean(PKEY_USETHRESHOLD, R.string.DVAL_USETHRESHOLD);
+    private String mPrefThresholdValAsString    = mPrefs.getString(PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        // DO NOTHING RIGHT NOW...
-        //Log.d(LOG_TAG, "onSharedPreferenceChanged "+key);
-        if(key.equals(getString(R.string.PKEY_SCANMODE))){
-            String newScanMode = sharedPreferences.getString(getString(R.string.PKEY_SCANMODE), null);
-            if(mPrefScanMode == null || !mPrefScanMode.equals(newScanMode)){
-                mPrefScanMode = newScanMode;
-                restartScan();
-            }
-        } else if(key.equals(getString(R.string.PKEY_GROUPBYSIGSTRENGTH))){
-            boolean newGroupVal = sharedPreferences.getBoolean(getString(R.string.PKEY_GROUPBYSIGSTRENGTH), false);
-            if(mPrefGroupBySignalStrength != newGroupVal){
-                mPrefGroupBySignalStrength = newGroupVal;
-                restartScan();
-            }
-        } else if(key.equals(getString(R.string.PKEY_USETHRESHOLD))){
-            boolean newUseThreshold = sharedPreferences.getBoolean(getString(R.string.PKEY_USETHRESHOLD), false);
-            if(mPrefUseThreshold != newUseThreshold){
-                mPrefUseThreshold = newUseThreshold;
-                restartScan();
-            }
-        } else if(key.equals(getString(R.string.PKEY_GROUPNEARVAL))){
-            String newNearVal = sharedPreferences.getString(getString(R.string.PKEY_GROUPNEARVAL), getString(R.string.DVAL_GROUPNEARVAL));
-            if(mPrefGroupNearValAsString == null || !mPrefGroupNearValAsString.equals(newNearVal)){
-                mPrefGroupNearValAsString = newNearVal;
-                restartScan();
-            }
-        } else if(key.equals(getString(R.string.PKEY_GROUPMEDVAL))){
-            String newMedVal = sharedPreferences.getString(getString(R.string.PKEY_GROUPMEDVAL), getString(R.string.DVAL_GROUPMEDVAL));
-            if(mPrefGroupMedValAsString == null || !mPrefGroupMedValAsString.equals(newMedVal)){
-                mPrefGroupMedValAsString = newMedVal;
-                restartScan();
-            }
-        } else if(key.equals(getString(R.string.PKEY_THRESHOLDVAL))){
-            String newThresholdVal = sharedPreferences.getString(getString(R.string.PKEY_THRESHOLDVAL), getString(R.string.DVAL_THRESHOLDVAL));
-            if(mPrefThresholdValAsString == null || !mPrefThresholdValAsString.equals(newThresholdVal)){
-                mPrefThresholdValAsString = newThresholdVal;
-                restartScan();
-            }
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        /*switch (key){
+            case sPKEY_SCANMODE:
+                mPrefScanMode = checkStringPref(sPKEY_SCANMODE, mPrefScanMode, prefs);
+                break;
+
+            default:
+                break;
+        }*/
+        if(key.equals(PKEY_SCANMODE)){
+            mPrefScanMode = checkStringPref(prefs, PKEY_SCANMODE, mPrefScanMode);
+        } else if(key.equals(PKEY_GROUPBYSIGSTRENGTH)){
+            mPrefGroupBySignalStrength = checkBooleanPref(prefs, PKEY_GROUPBYSIGSTRENGTH, mPrefGroupBySignalStrength);
+        } else if(key.equals(PKEY_USETHRESHOLD)){
+            mPrefUseThreshold = checkBooleanPref(prefs, PKEY_USETHRESHOLD, mPrefUseThreshold);
+        } else if(key.equals(PKEY_GROUPNEARVAL)){
+            mPrefGroupNearValAsString = checkStringPref(prefs, PKEY_GROUPNEARVAL, mPrefGroupNearValAsString);
+        } else if(key.equals(PKEY_GROUPMEDVAL)){
+            mPrefGroupMedValAsString = checkStringPref(prefs, PKEY_GROUPMEDVAL, mPrefGroupMedValAsString);
+        } else if(key.equals(PKEY_THRESHOLDVAL)){
+            mPrefThresholdValAsString = checkStringPref(prefs, PKEY_THRESHOLDVAL, mPrefThresholdValAsString);
+        }
+    }
+
+    private String checkStringPref(SharedPreferences prefs, String pKey, String curValue) {
+        String newPrefValue = prefs.getString(pKey, null);
+        if(curValue == null || !curValue.equals(newPrefValue)){
+            restartScan();
+            return newPrefValue;
+        }else{
+            return curValue;
+        }
+    }
+
+    private boolean checkBooleanPref(SharedPreferences prefs, String pKey, boolean curValue) {
+        boolean newPrefValue = prefs.getBoolean(pKey, false);
+        if(curValue != newPrefValue){
+            restartScan();
+            return newPrefValue;
+        }else{
+            return curValue;
         }
     }
 

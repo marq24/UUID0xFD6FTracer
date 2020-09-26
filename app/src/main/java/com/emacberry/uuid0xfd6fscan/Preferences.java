@@ -62,6 +62,12 @@ public class Preferences {
         }
         return false;
     }
+    public boolean getBoolean(String pkey, int dval) {
+        if(prefData != null){
+            return prefData.getBoolean(pkey, Boolean.parseBoolean(c.getString(dval)));
+        }
+        return false;
+    }
 
     public String getString(int pkey, int dval) {
         if(prefData != null){
@@ -69,6 +75,14 @@ public class Preferences {
         }
         return null;
     }
+
+    public String getString(String pkey, int dval) {
+        if(prefData != null){
+            return prefData.getString(pkey, c.getString(dval));
+        }
+        return null;
+    }
+
 
     public void setBoolean(int pkey, boolean b) {
         if(prefData != null) {

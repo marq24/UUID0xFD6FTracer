@@ -10,13 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.text.InputType;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
@@ -28,10 +25,6 @@ public class Settings01 extends PreferenceFragmentCompat {
     private SwitchPreferenceCompat mAutostartSwitch;
     private SwitchPreferenceCompat batteryOptimization;
 
-    private EditTextPreference mTreshold;
-    private EditTextPreference mGroupMed;
-    private EditTextPreference mGroupNear;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,15 +33,6 @@ public class Settings01 extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings01);
-        /*androidx.activity.result.contract.ActivityResultContracts.RequestPermission x = new ActivityResultContracts.RequestPermission();
-        ActivityResultLauncher<String> mx = getActivity().registerForActivityResult(x, new ActivityResultCallback<Boolean>() {
-            @Override
-            public void onActivityResult(Boolean result) {
-                System.out.println(result);
-            }
-        });
-        mx.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        */
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (bar != null) {
             bar.setTitle(R.string.pref01_TITLE);
@@ -96,76 +80,7 @@ public class Settings01 extends PreferenceFragmentCompat {
             }
             return true;
         });
-
-        // EXPERT Settings....
-        SwitchPreferenceCompat groupBySignalStrength = findPreference(getString(R.string.PKEY_GROUPBYSIGSTRENGTH));
-        groupBySignalStrength.setOnPreferenceChangeListener((preference, newValue) -> {
-            if(newValue != null && newValue.toString().toLowerCase().startsWith("t")){
-                mGroupNear.setEnabled(true);
-                mGroupMed.setEnabled(true);
-            }else{
-                mGroupNear.setEnabled(false);
-                mGroupMed.setEnabled(false);
-            }
-            return true;
-        });
-        SwitchPreferenceCompat treshold = findPreference(getString(R.string.PKEY_USETHRESHOLD));
-        treshold.setOnPreferenceChangeListener((preference, newValue) -> {
-            if(newValue != null && newValue.toString().toLowerCase().startsWith("t")){
-                mTreshold.setEnabled(true);
-            }else{
-                mTreshold.setEnabled(false);
-            }
-            return true;
-        });
-
-        EditTextPreference.OnBindEditTextListener numberFilter = (EditTextPreference.OnBindEditTextListener) editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            //editText.addTextChangedListener(new MyTextWatcher(editText));
-        };
-
-        Preference.SummaryProvider<EditTextPreference> sProvider = preference -> String.format(getString(R.string.pref01_SIGSTRENGTH_summary), preference.getText());
-
-        mGroupNear = ((EditTextPreference) findPreference(getString(R.string.PKEY_GROUPNEARVAL)));
-        mGroupNear.setOnBindEditTextListener(numberFilter);
-        mGroupNear.setSummaryProvider(sProvider);
-        mGroupNear.setEnabled(groupBySignalStrength.isChecked());
-
-        mGroupMed = ((EditTextPreference) findPreference(getString(R.string.PKEY_GROUPMEDVAL)));
-        mGroupMed.setOnBindEditTextListener(numberFilter);
-        mGroupMed.setSummaryProvider(sProvider);
-        mGroupMed.setEnabled(groupBySignalStrength.isChecked());
-
-        mTreshold = ((EditTextPreference) findPreference(getString(R.string.PKEY_THRESHOLDVAL)));
-        mTreshold.setOnBindEditTextListener(numberFilter);
-        mTreshold.setSummaryProvider(sProvider);
-        mTreshold.setEnabled(treshold.isChecked());
     }
-
-    /*private class MyTextWatcher implements  TextWatcher{
-        private EditText iEdit;
-
-        private MyTextWatcher(EditText edit) {
-            this.iEdit = edit;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            iEdit.removeTextChangedListener(this);
-
-            String replaced = s.toString().replaceAll("[^[0-9]]", "");
-            iEdit.setText(replaced);
-            iEdit.setSelection(replaced.length());
-
-            iEdit.addTextChangedListener(this);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {}
-    }*/
 
     @Override
     public void onResume(){

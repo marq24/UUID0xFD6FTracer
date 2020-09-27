@@ -57,15 +57,15 @@
     </string-array>
     <string name="pref01_country">Länder deren App auf dem Exposure Notification Framework basiert  (UUID 0xFD6F)</string>
 
-    <string name="pref01_SIGSTRENGTH_title">Experten Einstellungen</string>
-    <string name="pref01_SIGSTRENGTH_summary">Ausgewählter Wert ist: -%1$sdb</string>
-    <string name="pref01_GROUPBYSIGSTRENGTH_title">Nach Signalstärke gruppieren</string>
-    <string name="pref01_GROUPBYSIGSTRENGTH_off">Keine Gruppierung nach Signalstärken</string>
-    <string name="pref01_GROUPBYSIGSTRENGTH_on">Die Becons werden basierend of ihrer Signalstäre in NAH/MITTEL/FERN aufgeteilt</string>
-    <string name="pref01_GROUPNEARVAL_title">NAH [def. Wert: -82db]</string>
-    <string name="pref01_GROUPMEDVAL_title">MITTEL [def. Wert: -90db]</string>
-    <string name="pref01_USETHRESHOLD_title">Schwellenwert verwenden</string>
-    <string name="pref01_USETHRESHOLD_off">Alle gefundenen Beacons werden berücksichtigt (unabhägig von ihrer Signalstärke)</string>
-    <string name="pref01_USETHRESHOLD_on">Wenn die Signalstärke eines Beacons den angegebenen Schwellenwert unterschreitet wird dieses nicht berücksichtigt</string>
-    <string name="pref01_THRESHOLDVAL_title">Schwellenwert [def. Wert: -97db]</string>
+    <string name="pref02_SIGSTRENGTH_title">Experten Einstellungen&#8230;</string>
+    <string name="pref02_SIGSTRENGTH_summary">Ausgewählter Wert ist: -%1$sdb</string>
+    <string name="pref02_GROUPBYSIGSTRENGTH_title">Nach Signalstärke gruppieren</string>
+    <string name="pref02_GROUPBYSIGSTRENGTH_off">Keine Gruppierung nach Signalstärken</string>
+    <string name="pref02_GROUPBYSIGSTRENGTH_on">Die Becons werden basierend of ihrer Signalstäre in NAH/MITTEL/FERN aufgeteilt</string>
+    <string name="pref02_GROUPNEARVAL_title">NAH [def. Wert: -82db]</string>
+    <string name="pref02_GROUPMEDVAL_title">MITTEL [def. Wert: -90db]</string>
+    <string name="pref02_USETHRESHOLD_title">Schwellenwert verwenden</string>
+    <string name="pref02_USETHRESHOLD_off">Alle gefundenen Beacons werden berücksichtigt (unabhägig von ihrer Signalstärke)</string>
+    <string name="pref02_USETHRESHOLD_on">Wenn die Signalstärke eines Beacons den angegebenen Schwellenwert unterschreitet wird dieses nicht berücksichtigt</string>
+    <string name="pref02_THRESHOLDVAL_title">Schwellenwert [def. Wert: -97db]</string>
 </resources>

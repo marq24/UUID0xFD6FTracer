@@ -64,20 +64,36 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     // /* SERVICES */
     IBinder mBinder = new LocalBinder();
 
-    private final String PKEY_SCANMODE = getString(R.string.PKEY_SCANMODE);
-    private final String PKEY_GROUPBYSIGSTRENGTH = getString(R.string.PKEY_GROUPBYSIGSTRENGTH);
-    private final String PKEY_USETHRESHOLD = getString(R.string.PKEY_USETHRESHOLD);
-    private final String PKEY_GROUPNEARVAL = getString(R.string.PKEY_GROUPNEARVAL);
-    private final String PKEY_GROUPMEDVAL = getString(R.string.PKEY_GROUPMEDVAL);
-    private final String PKEY_THRESHOLDVAL = getString(R.string.PKEY_THRESHOLDVAL);
+    private String PKEY_SCANMODE;
+    private String PKEY_GROUPBYSIGSTRENGTH;
+    private String PKEY_USETHRESHOLD;
+    private String PKEY_GROUPNEARVAL;
+    private String PKEY_GROUPMEDVAL;
+    private String PKEY_THRESHOLDVAL;
 
     private Preferences mPrefs = Preferences.getInstance(getBaseContext());
-    private String mPrefScanMode                = mPrefs.getString(PKEY_SCANMODE, R.string.DVAL_SCANMODE);
-    private boolean mPrefGroupBySignalStrength  = mPrefs.getBoolean(PKEY_GROUPBYSIGSTRENGTH, R.string.DVAL_GROUPBYSIGSTRENGTH);
-    private String mPrefGroupNearValAsString    = mPrefs.getString(PKEY_GROUPNEARVAL, R.string.DVAL_GROUPNEARVAL);
-    private String mPrefGroupMedValAsString     = mPrefs.getString(PKEY_GROUPMEDVAL, R.string.DVAL_GROUPMEDVAL);
-    private boolean mPrefUseThreshold           = mPrefs.getBoolean(PKEY_USETHRESHOLD, R.string.DVAL_USETHRESHOLD);
-    private String mPrefThresholdValAsString    = mPrefs.getString(PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
+    private String mPrefScanMode;
+    private boolean mPrefGroupBySignalStrength;
+    private String mPrefGroupNearValAsString;
+    private String mPrefGroupMedValAsString;
+    private boolean mPrefUseThreshold;
+    private String mPrefThresholdValAsString;
+
+    private void initPrefs(){
+        PKEY_SCANMODE = getString(R.string.PKEY_SCANMODE);
+        PKEY_GROUPBYSIGSTRENGTH = getString(R.string.PKEY_GROUPBYSIGSTRENGTH);
+        PKEY_USETHRESHOLD = getString(R.string.PKEY_USETHRESHOLD);
+        PKEY_GROUPNEARVAL = getString(R.string.PKEY_GROUPNEARVAL);
+        PKEY_GROUPMEDVAL = getString(R.string.PKEY_GROUPMEDVAL);
+        PKEY_THRESHOLDVAL = getString(R.string.PKEY_THRESHOLDVAL);
+
+        mPrefScanMode               = mPrefs.getString(PKEY_SCANMODE, R.string.DVAL_SCANMODE);
+        mPrefGroupBySignalStrength  = mPrefs.getBoolean(PKEY_GROUPBYSIGSTRENGTH, R.string.DVAL_GROUPBYSIGSTRENGTH);
+        mPrefGroupNearValAsString   = mPrefs.getString(PKEY_GROUPNEARVAL, R.string.DVAL_GROUPNEARVAL);
+        mPrefGroupMedValAsString    = mPrefs.getString(PKEY_GROUPMEDVAL, R.string.DVAL_GROUPMEDVAL);
+        mPrefUseThreshold           = mPrefs.getBoolean(PKEY_USETHRESHOLD, R.string.DVAL_USETHRESHOLD);
+        mPrefThresholdValAsString   = mPrefs.getString(PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
+    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -238,10 +254,12 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     public void onCreate() {
         try {
             super.onCreate();
-            Preferences.getInstance(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
+            initPrefs();
+            mPrefs.registerOnSharedPreferenceChangeListener(this);
             if(mHandler == null){
                 mHandler = new Handler();
             }
+
         } catch (Throwable t) {
             t.printStackTrace();
         }

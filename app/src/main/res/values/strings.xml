@@ -53,7 +53,7 @@
     <string name="PKEY_USETHRESHOLD" translatable="false">USETHRESHOLD</string>
     <string name="DVAL_USETHRESHOLD" translatable="false">false</string>
     <string name="PKEY_THRESHOLDVAL" translatable="false">THRESHOLDVAL</string>
-    <string name="DVAL_THRESHOLDVAL" translatable="false">97</string>
+    <string name="DVAL_THRESHOLDVAL" translatable="false">98</string>
 
     <string name="pref01_ignorebattery_title">Prioritized Background Activity</string>
     <string name="pref01_ignorebattery_on">Battery optimization has been disabled - To enabled it again you need to do this via the general device settings.</string>
@@ -97,5 +97,5 @@
     <string name="pref02_USETHRESHOLD_title">Use Threshold</string>
     <string name="pref02_USETHRESHOLD_off">All found beacons will be listed (no matter how weak the signal strength is)</string>
     <string name="pref02_USETHRESHOLD_on">If the signal strength of a beacon is below the specified threshold it will not taken into account</string>
-    <string name="pref02_THRESHOLDVAL_title">Threshold value [def value: -97db]</string>
+    <string name="pref02_THRESHOLDVAL_title">Threshold value [def value: -98db]</string>
 </resources>

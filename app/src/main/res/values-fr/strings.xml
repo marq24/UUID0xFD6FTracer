@@ -66,5 +66,5 @@
     <string name="pref02_USETHRESHOLD_title">Utiliser le seuil</string>
     <string name="pref02_USETHRESHOLD_off">Toutes les balises trouvées seront répertoriées (quelle que soit la puissance du signal)</string>
     <string name="pref02_USETHRESHOLD_on">Si la force du signal d\'une balise est inférieure au seuil spécifié, elle ne sera pas prise en compte</string>
-    <string name="pref02_THRESHOLDVAL_title">Valeur de seuil [def valeur: -97db]</string>
+    <string name="pref02_THRESHOLDVAL_title">Valeur de seuil [def valeur: -98db]</string>
 </resources>

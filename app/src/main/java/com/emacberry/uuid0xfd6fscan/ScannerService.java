@@ -96,6 +96,47 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         mPrefThresholdValAsString = mPrefs.getString(PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
     }
 
+    /*@Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (key.equals(PKEY_SCANMODE)) {
+            String newVal = prefs.getString(PKEY_SCANMODE, null);
+            if (mPrefScanMode == null || !mPrefScanMode.equals(newVal)) {
+                mPrefScanMode = newVal;
+                restartScan();
+            }
+        } else if (key.equals(PKEY_GROUPNEARVAL)) {
+            String newVal = prefs.getString(PKEY_GROUPNEARVAL, null);
+            if (mPrefGroupNearValAsString == null || !mPrefGroupNearValAsString.equals(newVal)) {
+                mPrefGroupNearValAsString = newVal;
+                restartScan();
+            }
+        } else if (key.equals(PKEY_GROUPMEDVAL)) {
+            String newVal = prefs.getString(PKEY_GROUPMEDVAL, null);
+            if (mPrefGroupMedValAsString == null || !mPrefGroupMedValAsString.equals(newVal)) {
+                mPrefGroupMedValAsString = newVal;
+                restartScan();
+            }
+        } else if (key.equals(PKEY_THRESHOLDVAL)) {
+            String newVal = prefs.getString(PKEY_THRESHOLDVAL, null);
+            if (mPrefThresholdValAsString == null || !mPrefThresholdValAsString.equals(newVal)) {
+                mPrefThresholdValAsString = newVal;
+                restartScan();
+            }
+        } else if (key.equals(PKEY_GROUPBYSIGSTRENGTH)) {
+            boolean newVal = prefs.getBoolean(PKEY_GROUPBYSIGSTRENGTH, false);
+            if (mPrefGroupBySignalStrength != newVal) {
+                mPrefGroupBySignalStrength = newVal;
+                restartScan();
+            }
+        } else if (key.equals(PKEY_USETHRESHOLD)) {
+            boolean newVal = prefs.getBoolean(PKEY_USETHRESHOLD, false);
+            if (mPrefUseThreshold != newVal) {
+                mPrefUseThreshold = newVal;
+                restartScan();
+            }
+        }
+    }*/
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         /*switch (key){
@@ -122,30 +163,45 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private String checkStringPref(SharedPreferences prefs, String pKey, String curValue) {
-        String newPrefValue = prefs.getString(pKey, null);
-        if (curValue == null || !curValue.equals(newPrefValue)) {
-            // we need to wait with the restart, since the the new preference value will be
-            // applied when returning from this method...
-            if (mHandler != null) {
-                mHandler.postDelayed(() -> restartScan(), 250);
-            }
-            return newPrefValue;
+        String newValue = prefs.getString(pKey, null);
+        if (curValue == null || !curValue.equals(newValue)) {
+            triggerRestartScanCauseOfPrefChange();
+            return newValue;
         } else {
             return curValue;
         }
     }
 
     private boolean checkBooleanPref(SharedPreferences prefs, String pKey, boolean curValue) {
-        boolean newPrefValue = prefs.getBoolean(pKey, false);
-        if (curValue != newPrefValue) {
-            // we need to wait with the restart, since the the new preference value will be
-            // applied when returning from this method...
-            if (mHandler != null) {
-                mHandler.postDelayed(() -> restartScan(), 250);
-            }
-            return newPrefValue;
+        boolean newValue = prefs.getBoolean(pKey, false);
+        if (curValue != newValue) {
+            triggerRestartScanCauseOfPrefChange();
+            return newValue;
         } else {
             return curValue;
+        }
+    }
+
+    private ScanRestarter mScanRestarter = null;
+    private class ScanRestarter extends Thread {
+        private long iStartTime = System.currentTimeMillis();
+        public void run(){
+            while(iStartTime + 5000 > System.currentTimeMillis()){
+                try { sleep(250); } catch (InterruptedException e) { e.printStackTrace(); }
+            }
+            Log.d(LOG_TAG, "trigger scan restart cause of preferences changes");
+            restartScan();
+            mScanRestarter = null;
+        }
+    }
+
+    private void triggerRestartScanCauseOfPrefChange() {
+        if(mScanRestarter == null){
+            mScanRestarter = new ScanRestarter();
+            mScanRestarter.start();
+        }
+        if(mScanRestarter != null){
+            mScanRestarter.iStartTime = System.currentTimeMillis();
         }
     }
 

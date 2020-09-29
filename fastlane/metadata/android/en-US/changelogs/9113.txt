@@ -1,0 +1,2 @@
+- Expert Settings: Group beacons by signal strength NEAR/MIDDLE/FAR
+- Expert Settings: Threshold when not to take a beacon into account

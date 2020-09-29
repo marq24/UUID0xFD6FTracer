@@ -1,0 +1,2 @@
+- Experten Einstellungen: Gruppierung der Beacons nach Signalstärken in NAH/MITTEL/FERN
+- Experten Einstellungen: Signalstärken Schwellenwert ab dem ein Beacons nicht mehr berücksichtigt wird

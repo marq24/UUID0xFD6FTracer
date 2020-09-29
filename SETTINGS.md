@@ -26,3 +26,15 @@ Apple & Google. Please find a list below
 separate counter (in the App - not in the system notification)
 
 [List of countries that make use of the _Exposure Notification Framework_ (UUID 0xFD6F Beacaons)](./COUNTRIES.md)
+
+## Expert Settings
+### Group by Signal strength
+Group the beacons by their signal strength into NEAR/MEDIUM/FAR
+#### NEAR [def value: -82db] | MEDIUM [def value: -90db]
+This means that if the signal strength is smaller the minus 82db, then the beacon is considered to be NEAR. Everything
+between -82db and -90db will be considered as MIDDLE and everything below -90db will be listed at FAR.
+
+So basically it's: 0db > NEAR-Range > -82db > MEDIUM-Range > -90db > FAR-Range > -∞db  
+
+### Use Threshold
+If the signal strength of a beacon is below the specified threshold it will not taken into account

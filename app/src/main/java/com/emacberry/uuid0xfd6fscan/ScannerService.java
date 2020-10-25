@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
@@ -96,47 +97,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         mPrefThresholdValAsString = mPrefs.getString(PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
     }
 
-    /*@Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (key.equals(PKEY_SCANMODE)) {
-            String newVal = prefs.getString(PKEY_SCANMODE, null);
-            if (mPrefScanMode == null || !mPrefScanMode.equals(newVal)) {
-                mPrefScanMode = newVal;
-                restartScan();
-            }
-        } else if (key.equals(PKEY_GROUPNEARVAL)) {
-            String newVal = prefs.getString(PKEY_GROUPNEARVAL, null);
-            if (mPrefGroupNearValAsString == null || !mPrefGroupNearValAsString.equals(newVal)) {
-                mPrefGroupNearValAsString = newVal;
-                restartScan();
-            }
-        } else if (key.equals(PKEY_GROUPMEDVAL)) {
-            String newVal = prefs.getString(PKEY_GROUPMEDVAL, null);
-            if (mPrefGroupMedValAsString == null || !mPrefGroupMedValAsString.equals(newVal)) {
-                mPrefGroupMedValAsString = newVal;
-                restartScan();
-            }
-        } else if (key.equals(PKEY_THRESHOLDVAL)) {
-            String newVal = prefs.getString(PKEY_THRESHOLDVAL, null);
-            if (mPrefThresholdValAsString == null || !mPrefThresholdValAsString.equals(newVal)) {
-                mPrefThresholdValAsString = newVal;
-                restartScan();
-            }
-        } else if (key.equals(PKEY_GROUPBYSIGSTRENGTH)) {
-            boolean newVal = prefs.getBoolean(PKEY_GROUPBYSIGSTRENGTH, false);
-            if (mPrefGroupBySignalStrength != newVal) {
-                mPrefGroupBySignalStrength = newVal;
-                restartScan();
-            }
-        } else if (key.equals(PKEY_USETHRESHOLD)) {
-            boolean newVal = prefs.getBoolean(PKEY_USETHRESHOLD, false);
-            if (mPrefUseThreshold != newVal) {
-                mPrefUseThreshold = newVal;
-                restartScan();
-            }
-        }
-    }*/
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         /*switch (key){
@@ -182,29 +142,6 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
     }
 
-    private ScanRestarter mScanRestarter = null;
-    private class ScanRestarter extends Thread {
-        private long iStartTime = System.currentTimeMillis();
-        public void run(){
-            while(iStartTime + 5000 > System.currentTimeMillis()){
-                try { sleep(250); } catch (InterruptedException e) { e.printStackTrace(); }
-            }
-            Log.d(LOG_TAG, "trigger scan restart cause of preferences changes");
-            restartScan();
-            mScanRestarter = null;
-        }
-    }
-
-    private void triggerRestartScanCauseOfPrefChange() {
-        if(mScanRestarter == null){
-            mScanRestarter = new ScanRestarter();
-            mScanRestarter.start();
-        }
-        if(mScanRestarter != null){
-            mScanRestarter.iStartTime = System.currentTimeMillis();
-        }
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(LOG_TAG, "onBind called " + intent);
@@ -236,6 +173,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mainActivity != null) {
             // activity connected...
             if (!mScannIsRunning && !mScannStopedViaGui) {
+                ensureAdapterAndScannerInit();
                 startScan(true);
             }
         }
@@ -243,6 +181,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
 
     private BroadcastReceiver mScreenOnOffReceiver;
     private BroadcastReceiver mBluetoothStateReceiver;
+    private BroadcastReceiver mLocationProviderStateReceiver;
+
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBluetoothLeScanner;
@@ -254,6 +194,31 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private boolean isAirplaneMode() {
         try {
             return Settings.System.getInt(getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
+
+    private LocationManager mLocationManager;
+    private boolean isLocationProviderEnabled() {
+        try {
+            if(mLocationManager == null){
+                mLocationManager = (LocationManager) getSystemService(Context. LOCATION_SERVICE );
+            }
+            boolean gps_enabled = false;
+            try {
+                gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch (Exception e) {
+                e.printStackTrace() ;
+            }
+            return gps_enabled;
+            /*boolean network_enabled = false;
+            try {
+                network_enabled = lm.isProviderEnabled(LocationManager. NETWORK_PROVIDER ) ;
+            } catch (Exception e) {
+                e.printStackTrace() ;
+            }*/
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
@@ -285,8 +250,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 ensureAdapterAndScannerInit();
 
                 startScreenStateObserver();
-                // BT ON OFF OBSERVER...
+
+                // BT ON/OFF OBSERVER...
                 startDeviceBluetoothStatusObserver();
+
+                // LocationService ON/OFF Observer
+                startLocationProviderStatusObserver();
+
             } catch (SecurityException s) {
                 Log.d(LOG_TAG, "", s);
                 // TODO: check permissions!!!!
@@ -309,7 +279,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             // when the service is started we should check if the
             // scanner is running
             if (mHandler != null) {
-                mHandler.postDelayed(() -> checkForScannStart(), 5000);
+                checkForScanStart(15000);
             }
             return START_STICKY;
         }
@@ -334,21 +304,17 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     @Override
     public void onDestroy() {
         Log.w(LOG_TAG, "Service.onDestroy() called - shutting down Scanner");
+        if (mScanChecker != null) {
+            try {
+                mScanChecker.cancel();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
         ensureAdapterAndScannerClosed();
-        if (mBluetoothStateReceiver != null) {
-            try {
-                unregisterReceiver(mBluetoothStateReceiver);
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        }
-        if (mScreenOnOffReceiver != null) {
-            try {
-                unregisterReceiver(mScreenOnOffReceiver);
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        }
+        unregisterBroadcastReceiver(mScreenOnOffReceiver);
+        unregisterBroadcastReceiver(mBluetoothStateReceiver);
+        unregisterBroadcastReceiver(mLocationProviderStateReceiver);
         mHandler = null;
 
         Preferences.getInstance(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
@@ -356,6 +322,16 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         stopForeground(true);
         super.onDestroy();
         Log.w(LOG_TAG, "Service destroyed!!! (fine)");
+    }
+
+    private void unregisterBroadcastReceiver(BroadcastReceiver receiver) {
+        if (receiver != null) {
+            try {
+                unregisterReceiver(receiver);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
     }
 
     private void handleIntentInt(@Nullable Intent intent) {
@@ -457,99 +433,103 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private boolean mHasScanPermission = false;
 
     public void startScan(boolean viaGui) {
-        if (viaGui) {
-            mScannStopedViaGui = false;
-        }
-        if (checkScanPermissions()) {
-            if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
-                Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
-                ensureScanModeSet();
-                ArrayList<ScanFilter> f = new ArrayList<>();
-                switch (mPrefScanMode) {
-                    case "ENF_FRA":
-                        //f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
-                        f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
-                        f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
-                        mScanCallback.setScanUUID(null);
-                        break;
+        if(isLocationProviderEnabled()) {
+            if (viaGui) {
+                mScannStopedViaGui = false;
+            }
+            if (checkScanPermissions()) {
+                if (mBluetoothLeScanner != null && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && !mScannIsRunning) {
+                    Log.d(LOG_TAG, "mBluetoothLeScanner.startScan() called");
+                    ensureScanModeSet();
+                    ArrayList<ScanFilter> f = new ArrayList<>();
+                    switch (mPrefScanMode) {
+                        case "ENF_FRA":
+                            //f.add(new ScanFilter.Builder().setServiceUuid(FD6X_UUID, FD6X_MASK).build());
+                            f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
+                            f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
+                            mScanCallback.setScanUUID(null);
+                            break;
 
-                    case "FRA":
-                        f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
-                        mScanCallback.setScanUUID(FD64_UUID);
-                        break;
+                        case "FRA":
+                            f.add(new ScanFilter.Builder().setServiceUuid(FD64_UUID).build());
+                            mScanCallback.setScanUUID(FD64_UUID);
+                            break;
 
-                    default:
-                    case "ENF":
-                        f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
-                        mScanCallback.setScanUUID(FD6F_UUID);
-                        break;
-                }
-                mContainer = new HashMap<>();
-
-                /*
-                Near: -infinity < attenuation ≤ 55 dB
-                Medium: 55 dB < attenuation ≤ 63 dB
-                Far: 63 dB < attenuation ≤ 73 dB
-                Bad: 73 dB < attenuation
-
-                If we apply average corrections from the table, we get RSSI boundaries at
-                -100 dB, -90 dB, -82 dB. But since for practical purposes -100 dB is the bottom of
-                the scale, I would recommend either not providing a "bad" bucket (including it in
-                the far one), or using something between -97 and -99 for this bucket.
-                */
-
-                if (!mPrefGroupBySignalStrength) {
-                    if (!mPrefUseThreshold) {
-                        mSignalStrengthGroup = null;
-                    } else {
-                        int thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
-                        mSignalStrengthGroup = new SignalStrengthCollection();
-                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.BAD, 1000, thresholdVal), 0);
-                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.GOOD, thresholdVal, 0), 0);
+                        default:
+                        case "ENF":
+                            f.add(new ScanFilter.Builder().setServiceUuid(FD6F_UUID).build());
+                            mScanCallback.setScanUUID(FD6F_UUID);
+                            break;
                     }
-                } else {
-                    int goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
-                    int medEnd = Integer.parseInt(mPrefGroupMedValAsString);
-                    // have in mind the values (in the prefs) are still "positive" so the comparision
-                    // is revered
-                    if (goodEnd >= medEnd) {
-                        // ok we need to use some fallback since the usr has specified false values...
-                        mPrefGroupNearValAsString = getString(R.string.DVAL_GROUPNEARVAL);
-                        mPrefGroupMedValAsString = getString(R.string.DVAL_GROUPMEDVAL);
-                        goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
-                        medEnd = Integer.parseInt(mPrefGroupMedValAsString);
-                    }
-                    mSignalStrengthGroup = new SignalStrengthCollection();
-                    if (!mPrefUseThreshold) {
-                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.FAR, 1000, medEnd), 0);
+                    mContainer = new HashMap<>();
+
+                    /*
+                    Near: -infinity < attenuation ≤ 55 dB
+                    Medium: 55 dB < attenuation ≤ 63 dB
+                    Far: 63 dB < attenuation ≤ 73 dB
+                    Bad: 73 dB < attenuation
+
+                    If we apply average corrections from the table, we get RSSI boundaries at
+                    -100 dB, -90 dB, -82 dB. But since for practical purposes -100 dB is the bottom of
+                    the scale, I would recommend either not providing a "bad" bucket (including it in
+                    the far one), or using something between -97 and -99 for this bucket.
+                    */
+
+                    if (!mPrefGroupBySignalStrength) {
+                        if (!mPrefUseThreshold) {
+                            mSignalStrengthGroup = null;
+                        } else {
+                            int thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                            mSignalStrengthGroup = new SignalStrengthCollection();
+                            mSignalStrengthGroup.put(new RssiRange(RssiRangeType.BAD, 1000, thresholdVal), 0);
+                            mSignalStrengthGroup.put(new RssiRange(RssiRangeType.GOOD, thresholdVal, 0), 0);
+                        }
                     } else {
-                        int thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                        int goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
+                        int medEnd = Integer.parseInt(mPrefGroupMedValAsString);
                         // have in mind the values (in the prefs) are still "positive" so the comparision
                         // is revered
-                        if (medEnd >= thresholdVal) {
-                            mPrefThresholdValAsString = getString(R.string.DVAL_THRESHOLDVAL);
-                            thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                        if (goodEnd >= medEnd) {
+                            // ok we need to use some fallback since the usr has specified false values...
+                            mPrefGroupNearValAsString = getString(R.string.DVAL_GROUPNEARVAL);
+                            mPrefGroupMedValAsString = getString(R.string.DVAL_GROUPMEDVAL);
+                            goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
+                            medEnd = Integer.parseInt(mPrefGroupMedValAsString);
                         }
-                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.BAD, 1000, thresholdVal), 0);
-                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.FAR, thresholdVal, medEnd), 0);
+                        mSignalStrengthGroup = new SignalStrengthCollection();
+                        if (!mPrefUseThreshold) {
+                            mSignalStrengthGroup.put(new RssiRange(RssiRangeType.FAR, 1000, medEnd), 0);
+                        } else {
+                            int thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                            // have in mind the values (in the prefs) are still "positive" so the comparision
+                            // is revered
+                            if (medEnd >= thresholdVal) {
+                                mPrefThresholdValAsString = getString(R.string.DVAL_THRESHOLDVAL);
+                                thresholdVal = Integer.parseInt(mPrefThresholdValAsString);
+                            }
+                            mSignalStrengthGroup.put(new RssiRange(RssiRangeType.BAD, 1000, thresholdVal), 0);
+                            mSignalStrengthGroup.put(new RssiRange(RssiRangeType.FAR, thresholdVal, medEnd), 0);
+                        }
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.MEDIUM, medEnd, goodEnd), 0);
+                        mSignalStrengthGroup.put(new RssiRange(RssiRangeType.NEAR, goodEnd, 0), 0);
                     }
-                    mSignalStrengthGroup.put(new RssiRange(RssiRangeType.MEDIUM, medEnd, goodEnd), 0);
-                    mSignalStrengthGroup.put(new RssiRange(RssiRangeType.NEAR, goodEnd, 0), 0);
+                    //Log.d(LOG_TAG, "mBluetoothLeScanner.startScan(...) BEFORE");
+                    mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
+                    //Log.d(LOG_TAG, "mBluetoothLeScanner.startScan(...) AFTER");
+                    mScannIsRunning = true;
+                    updateNotification();
+                    if (mGuiCallback != null) {
+                        mGuiCallback.updateButtonImg();
+                    }
                 }
-
-                mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
-                mScannIsRunning = true;
+                // check after 1min if we have a scan result..
+                checkForScanStart(60000);
+            } else {
+                // no permission...? start activity and request START again
                 updateNotification();
-                if (mGuiCallback != null) {
-                    mGuiCallback.updateButtonImg();
-                }
             }
-            if (mHandler != null) {
-                mHandler.postDelayed(() -> checkForScannStart(), 30000);
-            }
-        } else {
-            // no permission...? start activity and request START again
-            updateNotification();
+        }else{
+            Log.w(LOG_TAG, "Scanner was not started cause GPS ist OFF");
         }
     }
 
@@ -596,31 +576,118 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private boolean mScannResultsOnStart = false;
     private boolean mScannStopedViaGui = false;
 
-    public void checkForScannStart() {
-        if (!mScannStopedViaGui) {
-            if (mHandler != null) {
-                if (mScannIsRunning && !mScannResultsOnStart) {
-                    Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
-                    mHandler.postDelayed(() -> stopScan(false), 500);
-                    mHandler.postDelayed(() -> startScan(false), 5000);
-                } else if (!mScannIsRunning) {
-                    Log.w(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
-                    mHandler.postDelayed(() -> startScan(false), 500);
+    private ScanChecker mScanChecker;
+
+    public synchronized void checkForScanStart(long delayInMs) {
+        if (mScanChecker != null) {
+            mScanChecker.reset(delayInMs);
+        } else {
+            mScanChecker = new ScanChecker(delayInMs);
+            mScanChecker.start();
+        }
+    }
+
+    private class ScanChecker extends Thread {
+        private long iStartTime;
+        private boolean iCanceled = false;
+
+        public ScanChecker(long delayInMs) {
+            iStartTime = System.currentTimeMillis() + delayInMs;
+        }
+
+        private synchronized void reset(long delayInMs) {
+            long newStartTime = System.currentTimeMillis() + delayInMs;
+            if (newStartTime < iStartTime) {
+                Log.d(LOG_TAG, "update 'checkForScanStart()' to " + (delayInMs / 1000) + "s");
+                iStartTime = newStartTime;
+                interrupt();
+            } else {
+                Log.d(LOG_TAG, "skip set new start time 'checkForScanStart()' to " + (delayInMs / 1000) + "s");
+            }
+        }
+
+        public void run() {
+            long now = System.currentTimeMillis();
+            while (!iCanceled && iStartTime - now > 0) {
+                long sleepTime = iStartTime - now;
+                Log.d(LOG_TAG, "calling checkForScanStart() in " + (sleepTime / 1000) + "s");
+                try {
+                    sleep(sleepTime);
+                } catch (InterruptedException e) {
+                }
+                now = System.currentTimeMillis();
+            }
+            if (!iCanceled) {
+                Log.d(LOG_TAG, "calling checkForScanStart() NOW");
+                checkForScanStartInt();
+            } else {
+                Log.d(LOG_TAG, "calling checkForScanStart() CANCELED - fine");
+            }
+            mScanChecker = null;
+        }
+
+        public void cancel() {
+            iCanceled = true;
+            interrupt();
+        }
+
+        private void checkForScanStartInt() {
+            if (!mScannStopedViaGui) {
+                if (mHandler != null) {
+                    if (mScannIsRunning && !mScannResultsOnStart) {
+                        Log.i(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: TRUE");
+                        mHandler.postDelayed(() -> stopScan(false), 500);
+                        mHandler.postDelayed(() -> startScan(false), 5000);
+                    } else if (!mScannIsRunning) {
+                        Log.i(LOG_TAG, "checkForScannStart() triggered - mScannIsRunning: FALSE");
+                        mHandler.postDelayed(() -> startScan(false), 500);
+                    } else {
+                        Log.i(LOG_TAG, "checkForScannStart() triggered - NOTHING TO DO");
+                    }
                 }
             }
         }
     }
 
-    public void restartScan() {
-        if (!mScannStopedViaGui) {
-            if (mHandler != null) {
-                if (mScannIsRunning && mScannResultsOnStart) {
-                    Log.w(LOG_TAG, "restartScan() triggered - mScannIsRunning: TRUE");
-                    mHandler.postDelayed(() -> stopScan(false), 500);
-                    mHandler.postDelayed(() -> startScan(false), 5000);
-                } else if (!mScannIsRunning) {
-                    Log.w(LOG_TAG, "restartScan() triggered - mScannIsRunning: FALSE");
-                    mHandler.postDelayed(() -> startScan(false), 500);
+    private ScanRestarter mScanRestarter = null;
+
+    private void triggerRestartScanCauseOfPrefChange() {
+        if (mScanRestarter == null) {
+            mScanRestarter = new ScanRestarter();
+            mScanRestarter.start();
+        }
+        if (mScanRestarter != null) {
+            mScanRestarter.iStartTime = System.currentTimeMillis();
+        }
+    }
+
+    private class ScanRestarter extends Thread {
+        private long iStartTime = System.currentTimeMillis();
+
+        public void run() {
+            while (iStartTime + 5000 > System.currentTimeMillis()) {
+                try {
+                    sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Log.d(LOG_TAG, "trigger scan restart cause of preferences changes");
+            restartScan();
+            mScanRestarter = null;
+        }
+
+        private void restartScan() {
+            if (!mScannStopedViaGui) {
+                if (mHandler != null) {
+                    if (mScannIsRunning && mScannResultsOnStart) {
+                        Log.w(LOG_TAG, "restartScan() triggered - mScannIsRunning: TRUE");
+                        mHandler.postDelayed(() -> stopScan(false), 500);
+                        mHandler.postDelayed(() -> startScan(false), 5000);
+                    } else if (!mScannIsRunning) {
+                        Log.w(LOG_TAG, "restartScan() triggered - mScannIsRunning: FALSE");
+                        mHandler.postDelayed(() -> startScan(false), 500);
+                    }
                 }
             }
         }
@@ -1418,6 +1485,38 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     }
                 }
             }
+        }
+    }
+
+    private void startLocationProviderStatusObserver() {
+        if (mLocationProviderStateReceiver == null) {
+            mLocationProviderStateReceiver = new BroadcastReceiver() {
+                boolean iState = isLocationProviderEnabled();
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    final String action = intent.getAction();
+                    /*Bundle bundle = intent.getExtras();
+                    for (String key : bundle.keySet()) {
+                        Log.e(LOG_TAG, key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
+                    }*/
+                    if (action != null && action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                        if (intent.hasExtra(LocationManager.EXTRA_PROVIDER_ENABLED) && intent.hasExtra(LocationManager.EXTRA_PROVIDER_NAME)) {
+                            boolean enabled = intent.getBooleanExtra(LocationManager.EXTRA_PROVIDER_ENABLED, false);
+                            if(iState != enabled) {
+                                if (!enabled) {
+                                    Log.w(LOG_TAG, "Location is disabled");
+                                } else {
+                                    Log.w(LOG_TAG, "Location is enabled - call checkForScanStart(...)");
+                                    checkForScanStart(2500);
+                                }
+                            }
+                            iState = enabled;
+                        }
+                    }
+                }
+            };
+            IntentFilter filter = new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION);
+            registerReceiver(mLocationProviderStateReceiver, filter);
         }
     }
 }

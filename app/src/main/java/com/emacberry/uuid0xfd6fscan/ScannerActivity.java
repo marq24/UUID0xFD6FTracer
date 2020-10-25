@@ -92,7 +92,7 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
                     // contacts-related task you need to do.
                     if(mScannerService != null){
                         if(mScannerService.isScanning()){
-                            mScannerService.checkForScannStart();
+                            mScannerService.checkForScanStart(15000);
                         }else{
                             mScannerService.startScan(true);
                         }

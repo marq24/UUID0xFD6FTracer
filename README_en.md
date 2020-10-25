@@ -1,7 +1,7 @@
 # UUID 0xFD6F Tracer ![AppLogo](./app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
 
 Main purpose of the app is to scan your current environment for active devices running an application that make use of
-Google's & Apple's _Exposure Notification Framework_ (like the German CoronaWarnApp) or the StopCovid France App (which
+Google's & Apple's _Exposure Notification Framework_ (like the German CoronaWarnApp) or the TousAntiCovid (StopCovid France) App (which
 is not based on the framework - but use a similar technology to trace randomized anonymous contact information).
 
 [List of countries that make use of the _Exposure Notification Framework_ (UUID 0xFD6F Beacaons)](./COUNTRIES.md)

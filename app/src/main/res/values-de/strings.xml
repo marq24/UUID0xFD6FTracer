@@ -23,7 +23,7 @@
     <string name ="act_total_beacons">Summe: %1$d</string>
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Sender: %1$d</string>
-    <string name ="act_active_scf_beacons">StopCovid Sender: %1$d</string>
+    <string name ="act_active_scf_beacons">AntiCovid Sender: %1$d</string>
     <string name ="act_NEAR">NAH: %1$d</string>
     <string name ="act_MEDIUM">MITTEL: %1$d</string>
     <string name ="act_FAR">FERN: %1$d</string>
@@ -54,8 +54,8 @@
     <string name="pref01_SCANMODE_TITLE">Länder (UUIDs)</string>
     <string-array name="pref01_SCANMODE_ENTRIES">
         <item name="01">UUID 0xDF6F: Alle Länder deren App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
-        <item name="02">UUID 0xDF64: Frankreich (StopCovid France)</item>
-        <item name="03">UUID 0xDF6F &amp; 0xDF64: Frankreich (StopCovid France) und Alle Länder dessen App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
+        <item name="02">UUID 0xDF64: Frankreich (TousAntiCovid)</item>
+        <item name="03">UUID 0xDF6F &amp; 0xDF64: Frankreich (TousAntiCovid) und Alle Länder dessen App auf dem Exposure Notification Framework basiert (wie in Deutschland die CoronaWarnApp)</item>
     </string-array>
     <string name="pref01_country">Länder deren App auf dem Exposure Notification Framework basiert  (UUID 0xFD6F)</string>
 

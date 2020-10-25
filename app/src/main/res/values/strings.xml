@@ -26,7 +26,7 @@
     <string name="act_total_beacons">Total: %1$d</string>
     <string name="act_active_beacons">Active Beacons: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Beacons: %1$d</string>
-    <string name ="act_active_scf_beacons">StopCovid Beacons: %1$d</string>
+    <string name ="act_active_scf_beacons">AntiCovid Beacons: %1$d</string>
     <string name="menu_start">Start Scan Service</string>
     <string name="menu_stop">Stop Scan Service</string>
     <string name ="act_NEAR">NEAR: %1$d</string>
@@ -83,8 +83,8 @@
     </string-array>
     <string-array name="pref01_SCANMODE_ENTRIES">
         <item name="01">UUID 0xDF6F: All Countries make use of the Exposure Notification Framework like the German CoronaWarnApp</item>
-        <item name="02">UUID 0xDF64: France (StopCovid France)</item>
-        <item name="03">UUID 0xDF6F &amp; 0xDF64: France (StopCovid France) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
+        <item name="02">UUID 0xDF64: France (TousAntiCovid)</item>
+        <item name="03">UUID 0xDF6F &amp; 0xDF64: France (TousAntiCovid) and Exposure Notification Framework based apps like the German CoronaWarnApp</item>
     </string-array>
 
     <string name="pref01_country">Countries that make use of the Exposure Notification Framework (UUID 0xFD6F)</string>

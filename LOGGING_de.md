@@ -17,7 +17,7 @@ https://play.google.com/store/apps/details?id=com.emacberry.gpslogger
 
 ## Logging verwenden
 Zunächst muss man in den Einstellungen der App das Aufzeichnen der BluetoothLE Beacons [mit der UUID **0xFD6F**
-(deutsche 'CoronaWarnApp') & **0xFD64** (französische 'StopCovid France' App)] aktivieren. Hierzu startet man die app,
+(deutsche 'CoronaWarnApp') & **0xFD64** (französische 'TousAntiCovid' ('StopCovid France') App)] aktivieren. Hierzu startet man die app,
 öffnet das Menu und wählt den Menüpunkt 'Einstellungen'. Aus der Liste von Optionen wählt man den obersten Punkt
 'Allgemeine Einstellungen...'. Dort den Schalter 'UUID Beacon Scanner' aktivieren. (Diese Einstellung muss natürlich nur
 einmal erfolgen.)

@@ -1,8 +1,8 @@
 # UUID 0xFD6F Tracer ![AppLogo](./app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
-Il y a une fonctionnalité que j'ai manquée dans l'application 'StopCovid France'. Je sais que je l'ai installé et
+Il y a une fonctionnalité que j'ai manquée dans l'application 'TousAntiCovid' (aka 'StopCovid France'). Je sais que je l'ai installé et
 activé - mais qu'en est-il dans mon environnement actuel? Avoir des gens autour de moi aussi l'application au début?
 
-StopCovid France n'utilise pas le cadre de _Exposure Notification Framework_ développé par Google et Apple, mais met en
+TousAntiCovid n'utilise pas le cadre de _Exposure Notification Framework_ développé par Google et Apple, mais met en
 œuvre l'échange d'informations de contact lui-même. La fonctionnalité est très similaire - seul l'UUID de la BluetoothLE
 Beacon est **0xFD64** (au lieu de 0xFD6F).
 

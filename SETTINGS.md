@@ -21,7 +21,7 @@ listening.
 
 - UUID **0xDF6F**: Countries in which Apps are in place that make use of the ExposureNotification Framework developed by
 Apple & Google. Please find a list below
-- UUID **0xDF64**: StopCovid France
+- UUID **0xDF64**: TousAntiCovid (StopCovid France)
 - UUID **0xDF6F** and **0xDF64**: So a combination of both UUIDs - where the app is going to display for each UUID a
 separate counter (in the App - not in the system notification)
 

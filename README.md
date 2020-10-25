@@ -8,8 +8,8 @@
 
 ## English
 Main purpose of the app is to scan your current environment for active devices running an application that make use of
-Google's & Apple's _Exposure Notification Framework_ (like the German CoronaWarnApp) or the StopCovid France App (which
-is not based on the framework - but use a similar technology to trace randomized anonymous contact information). 
+Google's & Apple's _Exposure Notification Framework_ (like the German CoronaWarnApp) or the TousAntiCovid (France) App
+(which is not based on the framework - but use a similar technology to trace randomized anonymous contact information). 
 
 [Read all details and additional downbload options...](/README_en.md)
 
@@ -23,10 +23,11 @@ Corona-Warn-App installiert wurde und aktiviert wurde).
 [Mehr Details & zusätzliche Installationsoptionen...](/README_de.md)
 
 ## Français
-Il y a une fonctionnalité que j'ai manquée dans l'application 'StopCovid France'. Je sais que je l'ai installé et
-activé - mais qu'en est-il dans mon environnement actuel? Avoir des gens autour de moi aussi l'application au début?
+Il y a une fonctionnalité que j'ai manquée dans l'application 'TousAntiCovid' (aka 'StopCovid France'). Je sais que
+je l'ai installé et activé - mais qu'en est-il dans mon environnement actuel? Avoir des gens autour de moi aussi
+l'application au début?
 
-StopCovid France n'utilise pas le cadre de _Exposure Notification Framework_ développé par Google et Apple, mais met en
+TousAntiCovid n'utilise pas le cadre de _Exposure Notification Framework_ développé par Google et Apple, mais met en
 œuvre l'échange d'informations de contact lui-même. La fonctionnalité est très similaire - seul l'UUID de la BluetoothLE
 Beacon est **0xFD64** (au lieu de 0xFD6F).
 

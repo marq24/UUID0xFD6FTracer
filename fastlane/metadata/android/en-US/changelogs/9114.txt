@@ -1,0 +1,2 @@
+- Show information if location service is not activated
+Unfortunately, the location service has to be activated on Android if you want to use the Bluetooth LowEnergy scanner - the app never uses your location!

@@ -1,0 +1,2 @@
+- Information wenn Standortdienst nicht aktiviert ist
+Leider muss unter Android der Standortdienst aktiviert sein, wenn man den Bluetooth LowEnergy Scanner verwenden möchte - die App verwendet zu keinem Zeitpunkt Euren Standort!

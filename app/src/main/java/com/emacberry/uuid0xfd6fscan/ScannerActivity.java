@@ -509,7 +509,9 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
             if (info instanceof PlaceholderFragment) {
                 if(mScannerService != null && mScannerService.mShowBtIsOffWarning){
                     ((PlaceholderFragment) info).setNoBluetoothInfoText(getString(R.string.act_enable_bt));
-                }else {
+                } else if(mScannerService != null && !mScannerService.isLocationProviderEnabled()) {
+                    ((PlaceholderFragment) info).setNoBluetoothInfoText(getString(R.string.act_enable_location));
+                } else {
                     String total;
 
                     // rendering TOTAL INFO BLOCK...

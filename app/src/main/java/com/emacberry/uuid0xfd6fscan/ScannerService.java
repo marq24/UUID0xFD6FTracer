@@ -46,6 +46,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     protected static final String INTENT_EXTRA_START = "START_SCAN";
     protected static final String INTENT_EXTRA_STOP = "STOP_SCAN";
     protected static final String INTENT_EXTRA_STARTBT = "START_BT";
+    protected static final String INTENT_EXTRA_STARTLOC = "START_LOC";
 
     // SERVICE STUFF:
     // http://stackoverflow.com/questions/9740593/android-create-service-that-runs-when-application-stops
@@ -201,7 +202,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     }
 
     private LocationManager mLocationManager;
-    private boolean isLocationProviderEnabled() {
+    public boolean isLocationProviderEnabled() {
         try {
             if(mLocationManager == null){
                 mLocationManager = (LocationManager) getSystemService(Context. LOCATION_SERVICE );
@@ -344,6 +345,10 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if (mBluetoothAdapter != null) {
                 mBluetoothAdapter.enable();
             }
+        } else if (intent.hasExtra(INTENT_EXTRA_STARTLOC)) {
+            Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         }
     }
 
@@ -725,6 +730,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mShowBtIsOffWarning) {
             builder.setContentText(getString(R.string.app_service_msgNoBt));
             builder.addAction(-1, this.getString(R.string.menu_start_bt_action), getServiceIntent(INTENT_EXTRA_STARTBT));
+        } else if(!isLocationProviderEnabled()){
+            builder.setContentText(getString(R.string.app_service_msgNoLocation));
+            builder.addAction(-1, this.getString(R.string.menu_start_location_action), getServiceIntent(INTENT_EXTRA_STARTLOC));
         } else {
             if (mScannIsRunning) {
                 builder.setContentText(mNotifyTextScanning);
@@ -817,6 +825,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         if (mBuilder != null) {
             if (mShowBtIsOffWarning) {
                 mBuilder.setContentText(getText(R.string.app_service_msgNoBt));
+                notify = true;
+            } else if(!isLocationProviderEnabled()) {
+                mBuilder.setContentText(getText(R.string.app_service_msgNoLocation));
                 notify = true;
             } else {
                 // if we have not any information about the current size that we should
@@ -1495,20 +1506,17 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     final String action = intent.getAction();
-                    /*Bundle bundle = intent.getExtras();
-                    for (String key : bundle.keySet()) {
-                        Log.e(LOG_TAG, key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
-                    }*/
                     if (action != null && action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
                         if (intent.hasExtra(LocationManager.EXTRA_PROVIDER_ENABLED) && intent.hasExtra(LocationManager.EXTRA_PROVIDER_NAME)) {
                             boolean enabled = intent.getBooleanExtra(LocationManager.EXTRA_PROVIDER_ENABLED, false);
                             if(iState != enabled) {
-                                if (!enabled) {
-                                    Log.w(LOG_TAG, "Location is disabled");
-                                } else {
+                                if (enabled) {
                                     Log.w(LOG_TAG, "Location is enabled - call checkForScanStart(...)");
                                     checkForScanStart(2500);
+                                } else {
+                                    Log.w(LOG_TAG, "Location is disabled");
                                 }
+                                updateNotification();
                             }
                             iState = enabled;
                         }

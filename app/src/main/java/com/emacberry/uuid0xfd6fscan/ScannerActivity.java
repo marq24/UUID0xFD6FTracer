@@ -503,87 +503,94 @@ public class ScannerActivity extends AppCompatActivity implements SharedPreferen
     }
 
     private void setActiveBeaconCount(final int sizeTotal, final int sizeENF, final int sizeSCF, final SignalStrengthGroupInfo[] ranges){
-        // setting the initial TEXT..
         if(mViewPager != null) {
             Fragment info = ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0);
             if (info instanceof PlaceholderFragment) {
-                if(mScannerService != null && mScannerService.mShowBtIsOffWarning){
+                boolean mShowBTWarn = mScannerService != null && mScannerService.mShowBtIsOffWarning;
+                boolean mShowLocWarn = mScannerService != null && !mScannerService.isLocationProviderEnabled();
+                if(!mShowBTWarn && !mShowLocWarn){
+                    updateGui((PlaceholderFragment) info, sizeTotal, sizeENF, sizeSCF, ranges);
+                } else if(mShowBTWarn && mShowLocWarn){
+                    ((PlaceholderFragment) info).setNoBluetoothInfoText(getString(R.string.act_enable_both));
+                } else if(mShowBTWarn) {
                     ((PlaceholderFragment) info).setNoBluetoothInfoText(getString(R.string.act_enable_bt));
-                } else if(mScannerService != null && !mScannerService.isLocationProviderEnabled()) {
+                } else if(mShowLocWarn) {
                     ((PlaceholderFragment) info).setNoBluetoothInfoText(getString(R.string.act_enable_location));
-                } else {
-                    String total;
-
-                    // rendering TOTAL INFO BLOCK...
-                    if (mShowTotal) {
-                        total = String.format(getString(R.string.act_total_beacons), sizeTotal);
-                    } else {
-                        total = null;
-                    }
-
-                    // rendering the ExposureNotification and/or StopCovidFrance info
-                    if (sizeENF > -1 && sizeSCF > -1) {
-                        // dual mode...
-                        ((PlaceholderFragment) info).setText(
-                                total,
-                                String.format(getString(R.string.act_active_enf_beacons), sizeENF),
-                                String.format(getString(R.string.act_active_scf_beacons), sizeSCF)
-                        );
-                    } else if (sizeENF > -1) {
-                        // default ExposureNotificationFramework mode
-                        ((PlaceholderFragment) info).setText(
-                                total,
-                                String.format(getString(R.string.act_active_beacons), sizeENF),
-                                null);
-                    } else {
-                        // StopCovid France mode
-                        ((PlaceholderFragment) info).setText(total,
-                                null,
-                                String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
-                    }
-
-                    // render the additional "ranges"
-                    if(ranges != null){
-                        switch (ranges.length){
-                            default:
-                                // default:
-                                // DO NOTHING - unknown number of available fields...
-                                ((PlaceholderFragment) info).setRangeInfo(null, null, null, null);
-                                break;
-
-                            case 2:
-                                // ONLY GOOD/BAD => threshold is defined...
-                                // we might want to show additionally the number of
-                                // BAD signals?! - for now we skip this...
-                                ((PlaceholderFragment) info).setRangeInfo(
-                                        null, null, null,
-                                        String.format(getString(R.string.act_BAD), ranges[1].size));
-                                break;
-
-                            case 3:
-                                // NEAR|MEDIUM|FAR
-                                ((PlaceholderFragment) info).setRangeInfo(
-                                        String.format(getString(R.string.act_NEAR), ranges[0].size),
-                                        String.format(getString(R.string.act_MEDIUM), ranges[1].size),
-                                        String.format(getString(R.string.act_FAR), ranges[2].size),
-                                        null);
-                                break;
-
-                            case 4:
-                                // NEAR|MEDIUM|FAR|BAD
-                                ((PlaceholderFragment) info).setRangeInfo(
-                                        String.format(getString(R.string.act_NEAR), ranges[0].size),
-                                        String.format(getString(R.string.act_MEDIUM), ranges[1].size),
-                                        String.format(getString(R.string.act_FAR), ranges[2].size),
-                                        String.format(getString(R.string.act_BAD), ranges[3].size));
-                                break;
-                        }
-                    } else{
-                        ((PlaceholderFragment) info).setRangeInfo(null, null, null, null);
-                    }
                 }
             }
         };
+    }
+
+    private void updateGui(PlaceholderFragment info, final int sizeTotal, final int sizeENF, final int sizeSCF, final SignalStrengthGroupInfo[] ranges){
+        String total;
+
+        // rendering TOTAL INFO BLOCK...
+        if (mShowTotal && sizeTotal >-1) {
+            total = String.format(getString(R.string.act_total_beacons), sizeTotal);
+        } else {
+            total = null;
+        }
+
+        // rendering the ExposureNotification and/or StopCovidFrance info
+        if (sizeENF > -1 && sizeSCF > -1) {
+            // dual mode...
+            info.setText(
+                    total,
+                    String.format(getString(R.string.act_active_enf_beacons), sizeENF),
+                    String.format(getString(R.string.act_active_scf_beacons), sizeSCF)
+            );
+        } else if (sizeENF > -1) {
+            // default ExposureNotificationFramework mode
+            info.setText(
+                    total,
+                    String.format(getString(R.string.act_active_beacons), sizeENF),
+                    null);
+        } else if (sizeSCF > -1){
+            // StopCovid France mode
+            info.setText(total,
+                    null,
+                    String.format(getString(R.string.act_active_scf_beacons), sizeSCF));
+        }
+
+        // render the additional "ranges"
+        if(ranges != null){
+            switch (ranges.length){
+                default:
+                    // default:
+                    // DO NOTHING - unknown number of available fields...
+                    info.setRangeInfo(null, null, null, null);
+                    break;
+
+                case 2:
+                    // ONLY GOOD/BAD => threshold is defined...
+                    // we might want to show additionally the number of
+                    // BAD signals?! - for now we skip this...
+                    info.setRangeInfo(
+                            null, null, null,
+                            String.format(getString(R.string.act_BAD), ranges[1].size));
+                    break;
+
+                case 3:
+                    // NEAR|MEDIUM|FAR
+                    info.setRangeInfo(
+                            String.format(getString(R.string.act_NEAR), ranges[0].size),
+                            String.format(getString(R.string.act_MEDIUM), ranges[1].size),
+                            String.format(getString(R.string.act_FAR), ranges[2].size),
+                            null);
+                    break;
+
+                case 4:
+                    // NEAR|MEDIUM|FAR|BAD
+                    info.setRangeInfo(
+                            String.format(getString(R.string.act_NEAR), ranges[0].size),
+                            String.format(getString(R.string.act_MEDIUM), ranges[1].size),
+                            String.format(getString(R.string.act_FAR), ranges[2].size),
+                            String.format(getString(R.string.act_BAD), ranges[3].size));
+                    break;
+            }
+        } else{
+            info.setRangeInfo(null, null, null, null);
+        }
     }
 
     private class MyOnTabListenerAndroidX implements ActionBar.TabListener {

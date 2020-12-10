@@ -1,0 +1,2 @@
+- Differenzierte Anzeige von Warnunung bei inaktiven Diensten (Bluetooth/Standort)
+- kleine bugfixes

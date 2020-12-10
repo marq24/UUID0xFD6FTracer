@@ -47,6 +47,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     protected static final String INTENT_EXTRA_STOP = "STOP_SCAN";
     protected static final String INTENT_EXTRA_STARTBT = "START_BT";
     protected static final String INTENT_EXTRA_STARTLOC = "START_LOC";
+    protected static final String INTENT_EXTRA_STARTBOTH = "START_BOTH";
 
     // SERVICE STUFF:
     // http://stackoverflow.com/questions/9740593/android-create-service-that-runs-when-application-stops
@@ -339,13 +340,19 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         Log.d(LOG_TAG, "start intent extras: " + intent.getExtras());
         if (intent.hasExtra(INTENT_EXTRA_START)) {
             startScan(true);
-        } else if (intent.hasExtra(INTENT_EXTRA_STOP)) {
+        }
+
+        if (intent.hasExtra(INTENT_EXTRA_STOP)) {
             stopScan(true);
-        } else if (intent.hasExtra(INTENT_EXTRA_STARTBT)) {
+        }
+
+        if (intent.hasExtra(INTENT_EXTRA_STARTBT) || intent.hasExtra(INTENT_EXTRA_STARTBOTH)) {
             if (mBluetoothAdapter != null) {
                 mBluetoothAdapter.enable();
             }
-        } else if (intent.hasExtra(INTENT_EXTRA_STARTLOC)) {
+        }
+
+        if (intent.hasExtra(INTENT_EXTRA_STARTLOC) || intent.hasExtra(INTENT_EXTRA_STARTBOTH)) {
             Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
@@ -727,13 +734,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         intent.putExtra(ScannerActivity.INTENT_EXTRA_SERVICE_ACTION, true);
         builder.setContentIntent(PendingIntent.getActivity(this, intent.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
-        if (mShowBtIsOffWarning) {
-            builder.setContentText(getString(R.string.app_service_msgNoBt));
-            builder.addAction(-1, this.getString(R.string.menu_start_bt_action), getServiceIntent(INTENT_EXTRA_STARTBT));
-        } else if(!isLocationProviderEnabled()){
-            builder.setContentText(getString(R.string.app_service_msgNoLocation));
-            builder.addAction(-1, this.getString(R.string.menu_start_location_action), getServiceIntent(INTENT_EXTRA_STARTLOC));
-        } else {
+        boolean mShowLocWarn = !isLocationProviderEnabled();
+
+        if (!mShowBtIsOffWarning && !mShowLocWarn) {
             if (mScannIsRunning) {
                 builder.setContentText(mNotifyTextScanning);
                 builder.addAction(-1, this.getString(R.string.menu_stop_notify_action), getServiceIntent(INTENT_EXTRA_STOP));
@@ -751,7 +754,17 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     builder.setContentText(getText(R.string.app_service_msgOffNoPermissions));
                 }
             }
+        }else if(mShowBtIsOffWarning && mShowLocWarn){
+            builder.setContentText(getString(R.string.app_service_msgNoBoth));
+            builder.addAction(-1, this.getString(R.string.menu_start_both_action), getServiceIntent(INTENT_EXTRA_STARTBOTH));
+        }else if(mShowBtIsOffWarning){
+            builder.setContentText(getString(R.string.app_service_msgNoBt));
+            builder.addAction(-1, this.getString(R.string.menu_start_bt_action), getServiceIntent(INTENT_EXTRA_STARTBT));
+        }else if(mShowLocWarn){
+            builder.setContentText(getString(R.string.app_service_msgNoLocation));
+            builder.addAction(-1, this.getString(R.string.menu_start_location_action), getServiceIntent(INTENT_EXTRA_STARTLOC));
         }
+
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             builder.addAction(R.drawable.ic_outline_exit_to_app_24px, this.getString(R.string.menu_exit_notify_action), getTerminateAppIntent(ScannerActivity.INTENT_EXTRA_TERMINATE_APP));
         } else {
@@ -823,13 +836,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }
         boolean notify = false;
         if (mBuilder != null) {
-            if (mShowBtIsOffWarning) {
-                mBuilder.setContentText(getText(R.string.app_service_msgNoBt));
-                notify = true;
-            } else if(!isLocationProviderEnabled()) {
-                mBuilder.setContentText(getText(R.string.app_service_msgNoLocation));
-                notify = true;
-            } else {
+            boolean mShowLocWarn = !isLocationProviderEnabled();
+            if (!mShowBtIsOffWarning && !mShowLocWarn) {
                 // if we have not any information about the current size that we should
                 // display in the notification text we need to fetch it again...
                 if (size == -1) {
@@ -860,6 +868,15 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         notify = true;
                     }
                 }
+            }else if(mShowBtIsOffWarning && mShowLocWarn){
+                mBuilder.setContentText(getText(R.string.app_service_msgNoBoth));
+                notify = true;
+            }else if (mShowBtIsOffWarning) {
+                mBuilder.setContentText(getText(R.string.app_service_msgNoBt));
+                notify = true;
+            } else if(mShowLocWarn) {
+                mBuilder.setContentText(getText(R.string.app_service_msgNoLocation));
+                notify = true;
             }
         }
 
@@ -1470,6 +1487,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                                         mScannIsRunning = false;
                                         startScan(false);
                                         updateNotification();
+                                        if (mGuiCallback != null) {
+                                            mGuiCallback.newBeconEvent(null, -1, -1, -1, null);
+                                        }
                                     }
                                     break;
 
@@ -1517,6 +1537,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                                     Log.w(LOG_TAG, "Location is disabled");
                                 }
                                 updateNotification();
+                                if (mGuiCallback != null) {
+                                    mGuiCallback.newBeconEvent(null, -1, -1, -1, null);
+                                }
                             }
                             iState = enabled;
                         }

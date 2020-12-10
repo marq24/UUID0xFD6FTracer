@@ -7,6 +7,7 @@
     <string name="app_service_msgOffNoPermissions">Veuillez démarrer l\'application pour redémarrer le scanner</string>
     <string name="app_service_msgNoBt">Activez Bluetooth</string>
     <string name="app_service_msgNoLocation">Activez le service de localisation</string>
+    <string name="app_service_msgNoBoth">Activez Bluetooth &amp; le service de localisation</string>
     <string name="app_service_msgScan1">Environnement de numérisation&#8230;</string>
     <string name="app_service_msgScan2">[a trouvé: %1$d]</string>
     <string name="menu_finish">Fermer l\'application</string>
@@ -16,9 +17,11 @@
     <string name="menu_stop_notify_action">Arrêter l\'analyse</string>
     <string name="menu_start_bt_action">Lancer Bluetooth</string>
     <string name="menu_start_location_action">Lancer le service de localisation</string>
+    <string name="menu_start_both_action">Lancer la services</string>
 
     <string name="act_enable_bt">Veuillez activer Bluetooth</string>
     <string name="act_enable_location">Veuillez activer le service de localisation</string>
+    <string name="act_enable_both">Veuillez activer Bluetooth &amp; le service de localisation</string>
     <string name="act_total_beacons">Total: %1$d</string>
     <string name="act_active_beacons">Appareils actives: %1$d</string>
     <string name="act_active_enf_beacons">ExpNotif. actives: %1$d</string>

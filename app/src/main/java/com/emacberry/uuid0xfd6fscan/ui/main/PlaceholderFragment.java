@@ -103,9 +103,12 @@ public class PlaceholderFragment extends Fragment {
     }
 
     public void setNoBluetoothInfoText(String info) {
-        updateTextView(info, mTOTTextView);
+        iTOTTextOnBind = updateTextView(info, mTOTTextView);
         updateTextView(null, mENFTextView);
         updateTextView(null, mSCFTextView);
+        iENFTextOnBind = null;
+        iSCFTextOnBind = null;
+        setRangeInfo(null, null, null, null);
     }
 
     public void setRangeInfo(String txtNEAR, String txtMEDIUM, String txtFAR, String txtBAD) {

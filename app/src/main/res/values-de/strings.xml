@@ -8,6 +8,7 @@
     <string name="app_service_msgOffNoPermissions">Bitte Apps starten, um den Scan erneut zu starten</string>
     <string name="app_service_msgNoBt">Aktivieren Sie bitte Bluetooth</string>
     <string name="app_service_msgNoLocation">Aktivieren Sie bitte den Standortdienst</string>
+    <string name="app_service_msgNoBoth">Aktivieren Sie Bluetooth &amp; den Standortdienst</string>
     <string name="app_service_msgScan1">Umgebung wird untersucht&#8230;</string>
     <string name="app_service_msgScan2">[gefunden: %1$d]</string>
 
@@ -15,11 +16,14 @@
     <string name="menu_exit">Service Beenden</string>
     <string name="menu_exit_notify_action">Beenden</string>
     <string name="menu_start_notify_action">Start Scan</string>
-    <string name="menu_stop_notify_action">Stop Scan</string>
+    <string name ="menu_stop_notify_action">Stop Scan</string>
     <string name ="menu_start_bt_action">Bluetooth aktivieren</string>
+    <string name ="menu_start_location_action">Standort aktivieren</string>
+    <string name ="menu_start_both_action">Dienste aktivieren</string>
 
     <string name ="act_enable_bt">Bitte aktivieren Sie Bluetooth</string>
     <string name ="act_enable_location">Bitte aktivieren Sie den Standortdienst</string>
+    <string name ="act_enable_both">Bitte aktivieren Sie Bluetooth &amp; den Standortdienst</string>
     <string name ="act_total_beacons">Summe: %1$d</string>
     <string name ="act_active_beacons">Aktive Sender: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Sender: %1$d</string>
@@ -70,5 +74,4 @@
     <string name="pref02_USETHRESHOLD_off">Alle gefundenen Beacons werden berücksichtigt (unabhägig von ihrer Signalstärke)</string>
     <string name="pref02_USETHRESHOLD_on">Wenn die Signalstärke eines Beacons den angegebenen Schwellenwert unterschreitet wird dieses nicht berücksichtigt</string>
     <string name="pref02_THRESHOLDVAL_title">Schwellenwert [def. Wert: -98db]</string>
-    <string name="menu_start_location_action">Standort aktivieren</string>
 </resources>

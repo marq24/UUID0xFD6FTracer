@@ -9,6 +9,7 @@
     <string name="app_service_msgOffNoPermissions">Please start the App in order to restart the Scanner</string>
     <string name="app_service_msgNoBt">To use this feature, turn on Bluetooth</string>
     <string name="app_service_msgNoLocation">To use this feature, turn on Location service</string>
+    <string name="app_service_msgNoBoth">To use this feature, turn on Bluetooth &amp; Location service</string>
 
     <string name="app_service_msgScan1">Scanning Environment&#8230;</string>
     <string name="app_service_msgScan2">[found: %1$d]</string>
@@ -20,9 +21,11 @@
     <string name ="menu_stop_notify_action">Stop Scan</string>
     <string name ="menu_start_bt_action">Enable Bluetooth</string>
     <string name ="menu_start_location_action">Enable Location service</string>
+    <string name ="menu_start_both_action">Enable services</string>
 
     <string name="act_enable_bt">Please enable Bluetooth</string>
     <string name="act_enable_location">Please enable Location service</string>
+    <string name="act_enable_both">Please enable Bluetooth &amp; Location service</string>
     <string name="act_total_beacons">Total: %1$d</string>
     <string name="act_active_beacons">Active Beacons: %1$d</string>
     <string name ="act_active_enf_beacons">ExpNotif. Beacons: %1$d</string>

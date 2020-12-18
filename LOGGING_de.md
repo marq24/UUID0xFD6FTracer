@@ -1,11 +1,11 @@
 # Logging UUID 0xFD6F
 
 ## GPSLogger II ![AppLogo](./misc/docs/gpsl-icon.png)
-Mit der aktuellsten Version der App GPSLogger (ab v2.0.0.116) ist es möglich die empfangenen Informationen (Zeit & Ort)
-zu speichern. Die App die seit über 10 Jahren immer wieder weiter entwicklet wird, hat natürlich noch eine vielzahl von
+Mit der der GPSLogger II App (ab v2.0.0.116) ist es möglich BluetoothLE Beacon Informationen (Zeit & Ort) aufzuzeichnen und
+zu speichern. Die App, die seit über 10 Jahren immer wieder weiter entwicklet wird, hat natürlich noch eine vielzahl von
 Funktionen mehr - aber wenn man nicht nur wissen möchte, wieviele BluetoothLE Beacons aktuell um einen herum ein
 _Exposure Notification_ Signal senden, sondern diese Information in relation zu Zeit und Ort stehen möchte, dann ist
-dies über diese App möglich.
+dies über die GPSLogger II App möglich.
 
 Der GPSLogger II ist natürlich auch kostenfrei und enthält keine Werbung.
 
@@ -22,12 +22,16 @@ Zunächst muss man in den Einstellungen der App das Aufzeichnen der BluetoothLE 
 'Allgemeine Einstellungen...'. Dort den Schalter 'UUID Beacon Scanner' aktivieren. (Diese Einstellung muss natürlich nur
 einmal erfolgen.)
 
-Um Ihr System nicht unnötig zu belasten, sollten der 'UUID GPSLogger II Scann Dienst' und der 'UUID 0xFD6F Tracer' nicht
+Um Euer System nicht unnötig zu belasten, sollten der 'UUID GPSLogger II Scann Dienst' und der 'UUID 0xFD6F Tracer' nicht
 gleichzeitig laufen - es schadet aber auch nicht wirklich.
 
 Sobald der Scanner in den Einstellungen aktiviert wurde, kann die Aufzeichnung über den 'REC' Button in der Hauptleiste
 gestartet werden... Nach einer kurzen Zeit sollten alle Beacons der Umgebung angezeigt werden. Bitte beachten, dass die
 Beacons regelmäßig Ihrer Adresse ändern und deswegen als neuer Beacon erkannt werden.
+
+**WICHTIG** Eine Anzeige auf der Karte erfolgt **nur** bei der Aufzeichnung - Ebenso is es wichtig zu verstehen, dass der Marker
+auf der Karte Eure eigene Position darstellt (und nicht die Position des Smartphones von dem aus das Beacon sein signal sendet) -
+also der Ort an dem Ihr Euch befunden habt, das das Gerät das Signal empfangen hat.
 
 ![Sample](./misc/docs/gpsl-uuid.png)
 

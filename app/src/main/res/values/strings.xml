@@ -49,6 +49,8 @@
     <string name="DVAL_SHOWTOTAL" translatable="false">false</string>
     <string name="PKEY_SCANMODE" translatable="false">SCANMODE</string>
     <string name="DVAL_SCANMODE" translatable="false">ENF</string>
+    <string name="PKEY_FORCEGPS" translatable="false">FORCEGPS</string>
+    <string name="DVAL_FORCEGPS" translatable="false">true</string>
 
     <string name="PKEY_GROUPBYSIGSTRENGTH" translatable="false">GROUPBYSIGSTRENGTH</string>
     <string name="DVAL_GROUPBYSIGSTRENGTH" translatable="false">false</string>
@@ -104,4 +106,7 @@
     <string name="pref02_USETHRESHOLD_off">All found beacons will be listed (no matter how weak the signal strength is)</string>
     <string name="pref02_USETHRESHOLD_on">If the signal strength of a beacon is below the specified threshold it will not taken into account</string>
     <string name="pref02_THRESHOLDVAL_title">Threshold value [def value: -98db]</string>
+    <string name="pref02_FORCEGPS_title">Force GPS Signal</string>
+    <string name="pref02_FORCEGPS_off">\'Network\' and \'Passive\' location provider(s) will be also accepted</string>
+    <string name="pref02_FORCEGPS_on">Active GPS location provider required</string>
 </resources>

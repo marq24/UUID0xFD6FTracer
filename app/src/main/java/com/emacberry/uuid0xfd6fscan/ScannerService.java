@@ -73,6 +73,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private String PKEY_GROUPNEARVAL;
     private String PKEY_GROUPMEDVAL;
     private String PKEY_THRESHOLDVAL;
+    private String PKEY_FORCEGPS;
 
     private Preferences mPrefs;
     private String mPrefScanMode;
@@ -81,6 +82,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
     private String mPrefGroupMedValAsString;
     private boolean mPrefUseThreshold;
     private String mPrefThresholdValAsString;
+    private boolean mPrefForceGps;
 
     private void initPrefs() {
         PKEY_SCANMODE = getString(R.string.PKEY_SCANMODE);
@@ -89,6 +91,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         PKEY_GROUPNEARVAL = getString(R.string.PKEY_GROUPNEARVAL);
         PKEY_GROUPMEDVAL = getString(R.string.PKEY_GROUPMEDVAL);
         PKEY_THRESHOLDVAL = getString(R.string.PKEY_THRESHOLDVAL);
+        PKEY_FORCEGPS = getString(R.string.PKEY_FORCEGPS);
 
         mPrefs = Preferences.getInstance(getBaseContext());
         mPrefScanMode = mPrefs.getString(PKEY_SCANMODE, R.string.DVAL_SCANMODE);
@@ -97,6 +100,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         mPrefGroupMedValAsString = mPrefs.getString(PKEY_GROUPMEDVAL, R.string.DVAL_GROUPMEDVAL);
         mPrefUseThreshold = mPrefs.getBoolean(PKEY_USETHRESHOLD, R.string.DVAL_USETHRESHOLD);
         mPrefThresholdValAsString = mPrefs.getString(PKEY_THRESHOLDVAL, R.string.DVAL_THRESHOLDVAL);
+        mPrefForceGps = mPrefs.getBoolean(PKEY_FORCEGPS, R.string.DVAL_FORCEGPS);
     }
 
     @Override
@@ -121,6 +125,8 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             mPrefGroupMedValAsString = checkStringPref(prefs, PKEY_GROUPMEDVAL, mPrefGroupMedValAsString);
         } else if (key.equals(PKEY_THRESHOLDVAL)) {
             mPrefThresholdValAsString = checkStringPref(prefs, PKEY_THRESHOLDVAL, mPrefThresholdValAsString);
+        } else if (key.equals(PKEY_FORCEGPS)) {
+            mPrefForceGps = checkBooleanPref(prefs, PKEY_FORCEGPS, mPrefForceGps);
         }
     }
 
@@ -208,19 +214,24 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
             if(mLocationManager == null){
                 mLocationManager = (LocationManager) getSystemService(Context. LOCATION_SERVICE );
             }
-            boolean gps_enabled = false;
+            boolean loc_enabled = false;
             try {
-                gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                loc_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                if(!mPrefForceGps) {
+                    if (!loc_enabled) {
+                        loc_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    }
+                    if (!loc_enabled) {
+                        loc_enabled = mLocationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
+                    }
+                    if (!loc_enabled) {
+                        loc_enabled = mLocationManager.isProviderEnabled("fused");
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace() ;
             }
-            return gps_enabled;
-            /*boolean network_enabled = false;
-            try {
-                network_enabled = lm.isProviderEnabled(LocationManager. NETWORK_PROVIDER ) ;
-            } catch (Exception e) {
-                e.printStackTrace() ;
-            }*/
+            return loc_enabled;
         } catch (Throwable t) {
             t.printStackTrace();
             return false;

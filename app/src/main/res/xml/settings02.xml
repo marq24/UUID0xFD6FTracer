@@ -2,6 +2,12 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     app:title="@string/pref02_SIGSTRENGTH_title">
     <androidx.preference.SwitchPreferenceCompat
+        app:defaultValue="@string/DVAL_FORCEGPS"
+        app:key="@string/PKEY_FORCEGPS"
+        app:summaryOff="@string/pref02_FORCEGPS_off"
+        app:summaryOn="@string/pref02_FORCEGPS_on"
+        app:title="@string/pref02_FORCEGPS_title" />
+    <androidx.preference.SwitchPreferenceCompat
         app:defaultValue="@string/DVAL_GROUPBYSIGSTRENGTH"
         app:key="@string/PKEY_GROUPBYSIGSTRENGTH"
         app:summaryOff="@string/pref02_GROUPBYSIGSTRENGTH_off"

@@ -74,4 +74,7 @@
     <string name="pref02_USETHRESHOLD_off">Alle gefundenen Beacons werden berücksichtigt (unabhägig von ihrer Signalstärke)</string>
     <string name="pref02_USETHRESHOLD_on">Wenn die Signalstärke eines Beacons den angegebenen Schwellenwert unterschreitet wird dieses nicht berücksichtigt</string>
     <string name="pref02_THRESHOLDVAL_title">Schwellenwert [def. Wert: -98db]</string>
+    <string name="pref02_FORCEGPS_title">GPS Signal erforderlich</string>
+    <string name="pref02_FORCEGPS_off">\'Netzwerk\' oder \'Passive\' wird ebenso als Standortdienst akzeptiert</string>
+    <string name="pref02_FORCEGPS_on">Der GPS basierter Standortdienst wird benötigt</string>
 </resources>

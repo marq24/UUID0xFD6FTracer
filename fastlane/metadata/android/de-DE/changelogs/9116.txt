@@ -1,0 +1,1 @@
+- Einstellung hinzugefügt, um alternative Standortanbieter-Dienste zuzulassen

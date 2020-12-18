@@ -1,0 +1,1 @@
+- Added setting to allow alternate location provider services

@@ -56,9 +56,9 @@
     <string name="pref01_SCANMODE_TITLE">Pays (UUIDs)</string>
 
     <string-array name="pref01_SCANMODE_ENTRIES">
-        <item name="01">UUID 0xDF6F: Tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
-        <item name="02">UUID 0xDF64: France (TousAntiCovid)</item>
-        <item name="03">UUID 0xDF6F &amp; 0xDF64: France (TousAntiCovid) et tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
+        <item name="01">UUID 0xFD6F: Tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
+        <item name="02">UUID 0xFD64: France (TousAntiCovid)</item>
+        <item name="03">UUID 0xFD6F &amp; 0xFD64: France (TousAntiCovid) et tous les pays dont l\'application est basée sur le cadre de notification d\'exposition (comme CoronaWarnApp en Allemagne)</item>
     </string-array>
     <string name="pref01_country">Les pays dont l\'application est basée sur le cadre de notification d\'exposition  (UUID 0xFD6F)</string>
 

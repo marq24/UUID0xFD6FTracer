@@ -511,7 +511,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         int goodEnd = Integer.parseInt(mPrefGroupNearValAsString);
                         int medEnd = Integer.parseInt(mPrefGroupMedValAsString);
                         // have in mind the values (in the prefs) are still "positive" so the comparision
-                        // is revered
+                        // is reverted
                         if (goodEnd >= medEnd) {
                             // ok we need to use some fallback since the usr has specified false values...
                             mPrefGroupNearValAsString = getString(R.string.DVAL_GROUPNEARVAL);
@@ -536,9 +536,7 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                         mSignalStrengthGroup.put(new RssiRange(RssiRangeType.MEDIUM, medEnd, goodEnd), 0);
                         mSignalStrengthGroup.put(new RssiRange(RssiRangeType.NEAR, goodEnd, 0), 0);
                     }
-                    //Log.d(LOG_TAG, "mBluetoothLeScanner.startScan(...) BEFORE");
-                    mBluetoothLeScanner.startScan(f, new ScanSettings.Builder().build(), mScanCallback);
-                    //Log.d(LOG_TAG, "mBluetoothLeScanner.startScan(...) AFTER");
+                    mBluetoothLeScanner.startScan(f, generateScanSettings().build(), mScanCallback);
                     mScannIsRunning = true;
                     updateNotification();
                     if (mGuiCallback != null) {
@@ -554,6 +552,161 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         }else{
             Log.w(LOG_TAG, "Scanner was not started cause GPS ist OFF");
         }
+    }
+
+    private ScanSettings.Builder generateScanSettings() {
+        // added after reviewing https://github.com/google/exposure-notifications-internals
+        // com.google.samples.exposurenotification.ble.scanner.BleScannerImpl
+        // "cool" that the new "we don't want to tell you more details" is now called just
+        // "FIXME!" - you just SUCKS! -> see
+        // https://github.com/google/exposure-notifications-internals/blob/8f751a666697c3cae0a56ae3464c2c6cbe31b69e/exposurenotification/src/main/java/com/google/samples/exposurenotification/ble/scanner/BleScannerImpl.java#L231
+
+        ScanSettings.Builder ssb = new ScanSettings.Builder();
+        /* DEFAULT VALUES:
+        mScanMode = SCAN_MODE_LOW_POWER;
+        mCallbackType = CALLBACK_TYPE_ALL_MATCHES;
+        mScanResultType = SCAN_RESULT_TYPE_FULL;
+        mReportDelayMillis = 0;
+        mMatchMode = MATCH_MODE_AGGRESSIVE;
+        mNumOfMatchesPerFilter = MATCH_NUM_MAX_ADVERTISEMENT;
+        mLegacy = true;
+        mPhy = PHY_LE_ALL_SUPPORTED;
+        */
+
+        /****************************
+         * SCAN_MODE
+         ****************************/
+        /**
+         * A special Bluetooth LE scan mode. Applications using this scan mode will passively listen for
+         * other scan results without starting BLE scans themselves.
+         */
+        //public static final int SCAN_MODE_OPPORTUNISTIC = -1;
+
+        /**
+         * Perform Bluetooth LE scan in low power mode. This is the default scan mode as it consumes the
+         * least power. This mode is enforced if the scanning application is not in foreground.
+         */
+        //public static final int SCAN_MODE_LOW_POWER = 0;
+
+        /**
+         * Perform Bluetooth LE scan in balanced power mode. Scan results are returned at a rate that
+         * provides a good trade-off between scan frequency and power consumption.
+         */
+        //public static final int SCAN_MODE_BALANCED = 1;
+
+        /**
+         * Scan using highest duty cycle. It's recommended to only use this mode when the application is
+         * running in the foreground.
+         */
+        //public static final int SCAN_MODE_LOW_LATENCY = 2;
+        ssb.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER);
+
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            /****************************
+             * CALLBACK_TYPE
+             ****************************/
+            /**
+             * Trigger a callback for every Bluetooth advertisement found that matches the filter criteria.
+             * If no filter is active, all advertisement packets are reported.
+             */
+            //public static final int CALLBACK_TYPE_ALL_MATCHES = 1;
+
+            /**
+             * A result callback is only triggered for the first advertisement packet received that matches
+             * the filter criteria.
+             */
+            //public static final int CALLBACK_TYPE_FIRST_MATCH = 2;
+
+            /**
+             * Receive a callback when advertisements are no longer received from a device that has been
+             * previously reported by a first match callback.
+             */
+            //public static final int CALLBACK_TYPE_MATCH_LOST = 4;
+            ssb.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
+
+
+            /****************************
+             * MATCH_MODE
+             ****************************/
+            /**
+             * In Aggressive mode, hw will determine a match sooner even with feeble signal strength
+             * and few number of sightings/match in a duration.
+             */
+            //public static final int MATCH_MODE_AGGRESSIVE = 1;
+
+            /**
+             * For sticky mode, higher threshold of signal strength and sightings is required
+             * before reporting by hw
+             */
+            //public static final int MATCH_MODE_STICKY = 2;
+            ssb.setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE);
+
+
+            /****************************
+             * MATCH_NUM
+             ****************************/
+            /**
+             * Determines how many advertisements to match per filter, as this is scarce hw resource
+             */
+            /**
+             * Match one advertisement per filter
+             */
+            //public static final int MATCH_NUM_ONE_ADVERTISEMENT = 1;
+
+            /**
+             * Match few advertisement per filter, depends on current capability and availibility of
+             * the resources in hw
+             */
+            //public static final int MATCH_NUM_FEW_ADVERTISEMENT = 2;
+
+            /**
+             * Match as many advertisement per filter as hw could allow, depends on current
+             * capability and availibility of the resources in hw
+             */
+            //public static final int MATCH_NUM_MAX_ADVERTISEMENT = 3;
+            ssb.setNumOfMatches(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT);
+
+
+            /****************************
+             * SCAN_RESULT_TYPE [NOT POSSIBLE]
+             ****************************/
+            /**
+             * Request full scan results which contain the device, rssi, advertising data, scan response
+             * as well as the scan timestamp.
+             *
+             * @hide
+             */
+            //@SystemApi
+            //public static final int SCAN_RESULT_TYPE_FULL = 0;
+
+            /**
+             * Request abbreviated scan results which contain the device, rssi and scan timestamp.
+             * <p>
+             * <b>Note:</b> It is possible for an application to get more scan results than it asked for, if
+             * there are multiple apps using this type.
+             *
+             * @hide
+             */
+            //@SystemApi
+            //public static final int SCAN_RESULT_TYPE_ABBREVIATED = 1;
+            //ssb.setScanResultType(ScanSettings.SCAN_RESULT_TYPE_FULL);
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                /**
+                 * Set whether only legacy advertisments should be returned in scan results.
+                 * Legacy advertisements include advertisements as specified by the
+                 * Bluetooth core specification 4.2 and below. This is true by default
+                 * for compatibility with older apps.
+                 *
+                 * @param legacy true if only legacy advertisements will be returned
+                 */
+                ssb.setLegacy(false);
+            }
+        }
+
+        return ssb;
     }
 
     private void ensureScanModeSet() {
@@ -1119,21 +1272,21 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
         private long iLastTs = 0;
         private MySimpleTimer iTimoutTimer = null;
         private ParcelUuid mScanUUID = FD6F_UUID;
-        private boolean mIsDF6F = true;
+        private boolean mIsFD6F = true;
         private int iScanModeInt = 0;
 
 
         protected void setScanUUID(ParcelUuid uuid) {
             mScanUUID = uuid;
             if (uuid != null) {
-                mIsDF6F = uuid.equals(FD6F_UUID);
-                if (mIsDF6F) {
+                mIsFD6F = uuid.equals(FD6F_UUID);
+                if (mIsFD6F) {
                     iScanModeInt = 0;
                 } else {
                     iScanModeInt = 1;
                 }
             } else {
-                mIsDF6F = false;
+                mIsFD6F = false;
                 iScanModeInt = 2;
             }
         }
@@ -1161,13 +1314,13 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                     ParcelUuid[] uuids = btDevice.getUuids();
                     if (uuids != null) {
                         for (int i = 0; i < uuids.length; i++) {
-                            boolean isDF6F = uuids[i].equals(FD6F_UUID);
-                            if (isDF6F || uuids[i].equals(FD64_UUID)) {
+                            boolean isFD6F = uuids[i].equals(FD6F_UUID);
+                            if (isFD6F || uuids[i].equals(FD64_UUID)) {
                                 ScanRecord rec = result.getScanRecord();
                                 if (rec != null) {
-                                    processDevice(btDevice, result, rec, tsNow, isDF6F, rec.getServiceData(uuids[i]));
+                                    processDevice(btDevice, result, rec, tsNow, isFD6F, rec.getServiceData(uuids[i]));
                                 } else {
-                                    processDevice(btDevice, result, null, tsNow, isDF6F, null);
+                                    processDevice(btDevice, result, null, tsNow, isFD6F, null);
                                 }
                                 break;
                             }
@@ -1192,9 +1345,9 @@ public class ScannerService extends Service implements SharedPreferences.OnShare
                 // single UUID-Mode...
                 ScanRecord rec = result.getScanRecord();
                 if (rec != null) {
-                    processDevice(btDevice, result, rec, tsNow, mIsDF6F, rec.getServiceData(mScanUUID));
+                    processDevice(btDevice, result, rec, tsNow, mIsFD6F, rec.getServiceData(mScanUUID));
                 } else {
-                    processDevice(btDevice, result, null, tsNow, mIsDF6F, null);
+                    processDevice(btDevice, result, null, tsNow, mIsFD6F, null);
                 }
             }
         }

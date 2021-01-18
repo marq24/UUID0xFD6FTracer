@@ -2,34 +2,40 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     app:title="@string/pref02_SIGSTRENGTH_title">
     <androidx.preference.SwitchPreferenceCompat
+        app:iconSpaceReserved="false"
         app:defaultValue="@string/DVAL_FORCEGPS"
         app:key="@string/PKEY_FORCEGPS"
         app:summaryOff="@string/pref02_FORCEGPS_off"
         app:summaryOn="@string/pref02_FORCEGPS_on"
         app:title="@string/pref02_FORCEGPS_title" />
     <androidx.preference.SwitchPreferenceCompat
+        app:iconSpaceReserved="false"
         app:defaultValue="@string/DVAL_GROUPBYSIGSTRENGTH"
         app:key="@string/PKEY_GROUPBYSIGSTRENGTH"
         app:summaryOff="@string/pref02_GROUPBYSIGSTRENGTH_off"
         app:summaryOn="@string/pref02_GROUPBYSIGSTRENGTH_on"
         app:title="@string/pref02_GROUPBYSIGSTRENGTH_title" />
     <androidx.preference.EditTextPreference
+        app:iconSpaceReserved="false"
         app:defaultValue="@string/DVAL_GROUPNEARVAL"
         app:key="@string/PKEY_GROUPNEARVAL"
         app:title="@string/pref02_GROUPNEARVAL_title"
         app:useSimpleSummaryProvider="true" />
     <androidx.preference.EditTextPreference
+        app:iconSpaceReserved="false"
         app:defaultValue="@string/DVAL_GROUPMEDVAL"
         app:key="@string/PKEY_GROUPMEDVAL"
         app:title="@string/pref02_GROUPMEDVAL_title"
         app:useSimpleSummaryProvider="true" />
     <androidx.preference.SwitchPreferenceCompat
+        app:iconSpaceReserved="false"
         app:defaultValue="@string/DVAL_USETHRESHOLD"
         app:key="@string/PKEY_USETHRESHOLD"
         app:summaryOff="@string/pref02_USETHRESHOLD_off"
         app:summaryOn="@string/pref02_USETHRESHOLD_on"
         app:title="@string/pref02_USETHRESHOLD_title" />
     <androidx.preference.EditTextPreference
+        app:iconSpaceReserved="false"
         app:defaultValue="@string/DVAL_THRESHOLDVAL"
         app:key="@string/PKEY_THRESHOLDVAL"
         app:title="@string/pref02_THRESHOLDVAL_title"

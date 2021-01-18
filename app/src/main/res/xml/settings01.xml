@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<androidx.preference.SwitchPreferenceCompat
+		app:iconSpaceReserved="false"
 		app:key="@string/PKEY_IGNOREBATTERYOPT"
 		app:defaultValue="false"
 		app:title="@string/pref01_ignorebattery_title"
@@ -10,6 +12,7 @@
 		app:persistent="false" />
 
 	<androidx.preference.SwitchPreferenceCompat
+		app:iconSpaceReserved="false"
 		app:key="@string/PKEY_AUTOSTART"
 		app:defaultValue="@string/DVAL_AUTOSTART"
 		app:title="@string/pref01_AUTOSTART_TITLE"
@@ -17,6 +20,7 @@
 		app:summaryOn="@string/pref01_AUTOSTART_ON" />
 
 	<androidx.preference.SwitchPreferenceCompat
+		app:iconSpaceReserved="false"
 		app:key="@string/PKEY_AUTOSTARTBLUETOOTH"
 		app:defaultValue="@string/DVAL_AUTOSTARTBLUETOOTH"
 		app:title="@string/pref01_AUTOSTARTBLUETOOTH_TITLE"
@@ -24,6 +28,7 @@
 		app:summaryOn="@string/pref01_AUTOSTARTBLUETOOTH_ON" />
 
 	<androidx.preference.SwitchPreferenceCompat
+		app:iconSpaceReserved="false"
 		app:key="@string/PKEY_SHOWTOTAL"
 		app:defaultValue="@string/DVAL_SHOWTOTAL"
 		app:title="@string/pref01_SHOWTOTAL_TITLE"
@@ -31,10 +36,12 @@
 		app:summaryOn="@string/pref01_SHOWTOTAL_ON" />
 
 	<Preference
+		app:iconSpaceReserved="false"
 		app:fragment="com.emacberry.uuid0xfd6fscan.settings.Settings02Expert"
 		app:title="@string/pref02_SIGSTRENGTH_title" />
 
 	<androidx.preference.ListPreference
+		app:iconSpaceReserved="false"
 		app:key="@string/PKEY_SCANMODE"
 		app:defaultValue="@string/DVAL_SCANMODE"
 		app:title="@string/pref01_SCANMODE_TITLE"
@@ -43,6 +50,7 @@
 		app:summary="%s"
 	/>
 	<Preference
+		app:iconSpaceReserved="false"
 		app:title="@string/pref01_country"
 		app:summary="@string/pref01_countrylist"
 	/>

@@ -1,0 +1,1 @@
+- fixed typo in Settings ('0xFD' instead of '0xDF')

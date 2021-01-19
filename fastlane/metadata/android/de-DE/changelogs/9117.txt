@@ -1,0 +1,1 @@
+- Schreibfehler in Einstellungen korrigiert ('0xFD' statt '0xDF')

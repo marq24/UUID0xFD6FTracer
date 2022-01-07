@@ -67,7 +67,7 @@
     <string name="pref02_SIGSTRENGTH_summary">Ausgewählter Wert ist: -%1$sdb</string>
     <string name="pref02_GROUPBYSIGSTRENGTH_title">Nach Signalstärke gruppieren</string>
     <string name="pref02_GROUPBYSIGSTRENGTH_off">Keine Gruppierung nach Signalstärken</string>
-    <string name="pref02_GROUPBYSIGSTRENGTH_on">Die Becons werden basierend of ihrer Signalstäre in NAH/MITTEL/FERN aufgeteilt</string>
+    <string name="pref02_GROUPBYSIGSTRENGTH_on">Die Beacons werden basierend of ihrer Signalstäre in NAH/MITTEL/FERN aufgeteilt</string>
     <string name="pref02_GROUPNEARVAL_title">NAH [def. Wert: -82db]</string>
     <string name="pref02_GROUPMEDVAL_title">MITTEL [def. Wert: -90db]</string>
     <string name="pref02_USETHRESHOLD_title">Schwellenwert verwenden</string>
